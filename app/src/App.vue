@@ -1,9 +1,10 @@
 <template>
   <div id="app" v-on:keyup.f="openSearchModal" v-on:keyup.e="openRecentTables" tabindex="0">
 
-    <SearchModal v-if="active_database" :modalisopen="searchmodalopen" v-on:closesearchmodal="closeSearchModal()" :active_database="active_database" />
+    <SearchModal v-if="active_database" :modalisopen="searchmodalopen" v-on:closesearchmodal="closeSearchModal()"
+                 :active_database="active_database" />
 
-<!--    <RecentTables :modalisopen="recenttablesopen" v-on:closerecenttables="closeRecentTables()" />-->
+    <!--    <RecentTables :modalisopen="recenttablesopen" v-on:closerecenttables="closeRecentTables()" />-->
 
     <header class="bg-gray-500 text-gray-200 py-5 px-10 mb-4">
       <h3>Rove</h3>
@@ -19,7 +20,7 @@
 
       <TableList :active_database="active_database" />
 
-      <router-view :key="$route.fullPath" :active_database="active_database"  />
+      <router-view :key="$route.fullPath" :active_database="active_database" />
 
     </div>
   </div>
@@ -79,8 +80,8 @@
     },
 
     watch: {
-      $route (to, from){
-        this.searchmodalopen = false;
+      $route(to, from) {
+        this.searchmodalopen  = false;
         this.recenttablesopen = false;
         this.$nextTick();
         document.getElementById('app').focus();
@@ -114,12 +115,12 @@
       },
 
       openSearchModal() {
-        if(this.searchmodalopen || this.recenttablesopen) return;
+        if (this.searchmodalopen || this.recenttablesopen) return;
         this.searchmodalopen = true;
       },
 
       openRecentTables() {
-        if(this.searchmodalopen || this.recenttablesopen) return;
+        if (this.searchmodalopen || this.recenttablesopen) return;
         this.recenttablesopen = true;
       },
 

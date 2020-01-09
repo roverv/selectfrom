@@ -21,20 +21,21 @@
     <div class="w-full flex items-start">
 
       <div class="relative w-full">
-      <table cellspacing="0" class="flex-grow  bg-white relative" style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
-             v-if="columns.length > 1">
-        <thead class="bg-gray-700 text-gray-200">
-        <tr class="font-normal">
-          <th class="sticky top-0 z-20 bg-gray-700 text-gray-200 px-2 py-3" v-for="(column_header) in Object.keys(columns[0])">{{ column_header }}
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="column_fields in columns">
-          <td class="whitespace-pre px-1 py-1" v-for="column_field in column_fields">{{ column_field }}</td>
-        </tr>
-        </tbody>
-      </table>
+        <table cellspacing="0" class="flex-grow  bg-white relative" style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
+               v-if="columns.length > 1">
+          <thead class="bg-gray-700 text-gray-200">
+          <tr class="font-normal">
+            <th class="sticky top-0 z-20 bg-gray-700 text-gray-200 px-2 py-3"
+                v-for="(column_header) in Object.keys(columns[0])">{{ column_header }}
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="column_fields in columns">
+            <td class="whitespace-pre px-1 py-1" v-for="column_field in column_fields">{{ column_field }}</td>
+          </tr>
+          </tbody>
+        </table>
 
 
       </div>
@@ -64,9 +65,7 @@
       this.getAllPosts();
     },
 
-    computed: {
-
-    },
+    computed: {},
 
     watch: {
       // force update on route change
@@ -76,7 +75,7 @@
     },
 
     filters: {
-      lowercase: function(string) {
+      lowercase: function (string) {
         return string.toLowerCase();
       }
     },
@@ -94,7 +93,7 @@
         let vue_instance = this;
 
         axios.get(api_url).then(response => {
-          this.columns   = response.data;
+          this.columns = response.data;
 
         }).catch(error => {
           console.log('-----error-------');
@@ -129,6 +128,7 @@
     @apply flex w-full;
     border-bottom: 1px solid #edf2f7;
   }
+
   .row-data-field:hover {
     background: #e2e8f0;
   }

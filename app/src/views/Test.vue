@@ -6,7 +6,7 @@
     <br>
     <table id="table" cellspacing="0" class="nowrap checkable">
 
-      <thead >
+      <thead>
       <tr style="position:sticky;">
         <td><input type="checkbox" id="all-page" class="jsonly">
 
