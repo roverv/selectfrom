@@ -75,7 +75,7 @@
             <td class="sticky bg-white left-0 z-10 w-12 text-center"><input type='checkbox' name='check[]' value=''>
             </td>
             <td class="whitespace-pre px-1 py-1" v-for="(column_name, index) in columns" :class="{ ' bg-white sticky id-field-offset z-10' : (index == 0)}">
-              <span v-if="column_name.Collation" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
+              <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
               <span v-else>{{ row[column_name.Field] }}</span>
             </td>
           </tr>
@@ -210,6 +210,14 @@
     },
 
     methods: {
+
+      shouldTruncateField(column_type) {
+        if(column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
+          return true;
+        }
+        return false;
+      },
+
       getAllPosts() {
 
         let api_url = '';
