@@ -14,8 +14,13 @@
         } else {
             $query .= "WHERE `".$_GET['column']."` LIKE '%".$_GET['value']."%' ";
         }
+    }
 
-    } else {
+    if (!empty($_GET['orderby']) && !empty($_GET['orderdirection'])) {
+        $query .= "ORDER BY `".$_GET['orderby']."` ".$_GET['orderdirection']." ";
+    }
+
+    if(empty($_GET['column']) || $_GET['column'] != 'id') {
         $query .= " LIMIT 90 ";
     }
 

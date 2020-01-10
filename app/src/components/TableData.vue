@@ -52,7 +52,21 @@
             <th :name="column_header.Field" :id="column_header.Field | lowercase"
                 class="sticky top-0 z-20 bg-gray-700 text-gray-200 px-2" v-for="column_header in columns"
                 :class="{ ' highlight' : (column_header.Field.toLowerCase() == column)}">
-              {{ column_header.Field }}
+              <a @click="orderByColumn(column_header.Field)" class="flex items-center">
+                <span>{{ column_header.Field }}</span>
+                <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current" v-if="order_by == column_header.Field && order_direction == 'asc'">
+                  <path class="text-orange-300"
+                        d="M6 11V4a1 1 0 1 1 2 0v7h3a1 1 0 0 1 .7 1.7l-4 4a1 1 0 0 1-1.4 0l-4-4A1 1 0 0 1 3 11h3z"></path>
+                  <path class="text-orange-500"
+                        d="M21 21H8a1 1 0 0 1 0-2h13a1 1 0 0 1 0 2zm0-4h-9a1 1 0 0 1 0-2h9a1 1 0 0 1 0 2zm0-4h-5a1 1 0 0 1 0-2h5a1 1 0 0 1 0 2z"></path>
+                </svg>
+                <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current" v-if="order_by == column_header.Field && order_direction == 'desc'">
+                  <path class="text-orange-300"
+                        d="M18 13v7a1 1 0 0 1-2 0v-7h-3a1 1 0 0 1-.7-1.7l4-4a1 1 0 0 1 1.4 0l4 4A1 1 0 0 1 21 13h-3z"></path>
+                  <path class="text-orange-500"
+                        d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
+                </svg>
+              </a>
             </th>
           </tr>
           </thead>
@@ -60,9 +74,9 @@
           <tr v-for="row in tabledata">
             <td class="sticky bg-white left-0 z-10 w-12 text-center"><input type='checkbox' name='check[]' value=''>
             </td>
-            <td class="whitespace-pre px-1 py-1" v-for="(column_name, index) in columns"
-                :class="{ ' bg-white sticky id-field-offset z-10' : (index == 0)}"
-            >{{ row[column_name.Field] }}
+            <td class="whitespace-pre px-1 py-1" v-for="(column_name, index) in columns" :class="{ ' bg-white sticky id-field-offset z-10' : (index == 0)}">
+              <span v-if="column_name.Collation" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
+              <span v-else>{{ row[column_name.Field] }}</span>
             </td>
           </tr>
           </tbody>
@@ -151,7 +165,9 @@
         tabledata: [],
         columns: [],
         endpoint: 'http://localhost/rove/api/tabledata.php?db=',
-        table_display_rotated: false
+        table_display_rotated: false,
+        order_by: '',
+        order_direction: '',
       }
     },
 
@@ -180,6 +196,16 @@
     filters: {
       lowercase: function (string) {
         return string.toLowerCase();
+      },
+
+      truncate: function(value, limit) {
+        if(!value) return value;
+        if (value.length > limit) {
+          value = value.replace(/(\r\n|\n|\r)/gm,""); // remove line breaks
+          value = value.substring(0, limit) + '...';
+        }
+
+        return value
       }
     },
 
@@ -193,8 +219,9 @@
         if (this.column && this.value) {
           api_url += '&column=' + this.column + '&value=' + this.value;
         }
-
-        console.log(api_url);
+        if(this.order_by && this.order_direction) {
+          api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
+        }
 
         let vue_instance = this;
 
@@ -242,6 +269,12 @@
 
       swapTableDisplay() {
         this.table_display_rotated = !this.table_display_rotated;
+      },
+
+      orderByColumn(column) {
+        this.order_by = column;
+        this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
+        this.getAllPosts();
       }
 
     }
