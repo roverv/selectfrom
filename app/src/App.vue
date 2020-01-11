@@ -7,13 +7,13 @@
     <!--    <RecentTables :modalisopen="recenttablesopen" v-on:closerecenttables="closeRecentTables()" />-->
 
     <header class="bg-gray-500 text-gray-200 py-5 px-10 mb-4">
-      <h3>Rove</h3>
+      <h3>{{ active_database }}</h3>
       <router-link to="/test">Test</router-link>
 
       <router-link to="/">Home</router-link> &gt;
       <router-link to="/database">Rove</router-link> &gt;
 
-      <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase" :databases="databases"></SwitchDatabase>
+      <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase" :active_database="active_database" :databases="databases"></SwitchDatabase>
     </header>
 
     <div class="flex pr-8 w-full justify-between mb-4">
@@ -73,9 +73,9 @@
       } else {
         this.databases = JSON.parse(localStorage.getItem('databases'));
         this.tables    = Object.keys(this.databases);
-      }
-      if (localStorage.getItem('active_database')) {
-        this.active_database = localStorage.getItem('active_database');
+        if (localStorage.getItem('active_database')) {
+          this.active_database = localStorage.getItem('active_database');
+        }
       }
     },
 
@@ -101,6 +101,9 @@
         axios.get(this.endpoint + 'databases.php').then(response => {
           this.databases = response.data;
           localStorage.setItem('databases', JSON.stringify(response.data));
+          if (localStorage.getItem('active_database')) {
+            this.active_database = localStorage.getItem('active_database');
+          }
         }).catch(error => {
           console.log('-----error-------');
           console.log(error);

@@ -76,6 +76,10 @@
       TableListSettingDropdown
     },
 
+    created() {
+      if(this.active_database) this.getAllTables();
+    },
+
     watch: {
       active_database: function (value) {
         if (value) {

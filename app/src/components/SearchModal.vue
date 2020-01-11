@@ -53,6 +53,9 @@
       }
     },
 
+    created() {
+      if(this.active_database) this.getTablesWithColumns();
+    },
 
     watch: {
 

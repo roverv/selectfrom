@@ -1,6 +1,6 @@
 <template>
   <div>
-    <select name="" id="" @change="switchDatabase" v-model="active_database">
+    <select name="" id="" @change="switchDatabase" v-bind:value="active_database">
       <option value="">Choose a database</option>
       <option v-for="database in databases" :value="database">
         {{ database }}
@@ -13,15 +13,9 @@
 
   export default {
     name: 'SwitchDatabase',
-    props: ['databases'],
-    data() {
-      return {
-        active_database: '',
-      }
-    },
+    props: ['databases', 'active_database'],
 
     methods: {
-
       switchDatabase(event) {
         this.$emit('setActiveDatabase', event.target.value);
       }
