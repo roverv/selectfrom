@@ -1,26 +1,18 @@
 <template>
 
   <div class="modal-container" :class="{ 'open' : modalisopen }"
-       @keyup.esc="$emit('closesearchmodal')"
        style="background-color: rgba(0,0,0,0.5); transition: opacity 0.2s ease-in;">
     <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-2xl">
       <div class="px-8 py-4">
-        <form method="post" @submit.prevent="submitSearch">
-          <!--          <input type="text" name="searchany" id="searchany" v-model="search_value" ref="searchany"-->
-          <!--                 class="block w-full my-3 px-4 py-3 text-xl border-8 border-gray-800 focus:outline-none"-->
-          <!--                 style="box-shadow: 0 15px 35px hsla(0,0%,0%,.2);" placeholder="Go to table, column or row">-->
+        <form method="post" @submit.prevent="submitSearch" ref="searchform">
 
           <input v-model="search_value"
                  type="text" name="searchany" id="searchany" ref="searchany"
                  class="block w-full mt-3 px-4 py-3 text-xl border-8 border-gray-800 focus:outline-none"
                  style="box-shadow: 0 15px 35px hsla(0,0%,0%,.2);" placeholder="Go to table, column or row"
-                 @keydown.down='down'
-                 @keydown.up='up'
-                 @keydown.right='fillautocomplete(current)'
                  autocomplete="off"
           >
           <div class="relative" v-if="openAutocomplete">
-            <!--            :value="search_value" @input="updateValue($event.target.value)"-->
             <ul class="bg-gray-200 absolute w-full border-8 border-gray-800 border-t-0 h-64 overflow-y-scroll">
               <li v-for="(table_name, index) in matches" :id="'match-' + index"
                   v-bind:class="{'active': isActive(index)}"
@@ -49,12 +41,21 @@
         tables_with_columns: [],
         tables: [],
         endpoint: 'http://localhost/rove/api/tables_with_columns.php?db=',
-        current: 0
+        current: -1
       }
     },
 
     created() {
       if(this.active_database) this.getTablesWithColumns();
+      document.addEventListener('keydown', this.triggerKeyDown);
+    },
+
+    mounted() {
+      this.$refs.searchany.focus();
+    },
+
+    beforeDestroy() {
+      document.removeEventListener('keydown', this.triggerKeyDown);
     },
 
     watch: {
@@ -70,18 +71,9 @@
         }
       },
 
-      modalisopen: function () {
-        if (this.modalisopen) {
-          this.$nextTick(() => this.$refs.searchany.focus())
-        } else {
-          this.search_value = '';
-        }
-      },
-
       matches: function () {
         // an autocomplete item should alway be active
         if (this.current > this.matches.length) {
-          console.log(this.current, this.matches.length);
           this.current = 0;
         }
       }
@@ -120,6 +112,38 @@
     },
 
     methods: {
+
+      triggerKeyDown: function(evt) {
+        if (evt.key === 'Escape') {
+          this.close();
+          evt.preventDefault();
+        }
+        else if (evt.key === 'ArrowUp') {
+          this.up();
+          evt.preventDefault();
+        }
+        else if (evt.key === 'ArrowDown') {
+          this.down();
+          evt.preventDefault();
+        }
+        else if (evt.key === 'ArrowRight') {
+          this.fillautocomplete(this.current);
+          evt.preventDefault();
+        }
+        else if (evt.key === 'Enter') {
+          this.fillautocomplete(this.current);
+          let vue = this;
+          // set a tiny timeout, this way the user will see the value change from fillautocomplete
+          setTimeout(function () {
+            vue.submitSearch();
+          }, 100);
+          evt.preventDefault();
+        }
+      },
+
+      close() {
+        this.$emit('closesearchmodal');
+      },
 
       getTablesWithColumns() {
         axios.get(this.endpoint + this.active_database).then(response => {
@@ -175,8 +199,13 @@
 
       // When up pressed while autocomplete is open
       up() {
-        if (this.current > 0) {
+        if (this.current >= 0) {
           this.current--;
+        }
+        else if (this.current == -1) {
+          this.current = this.matches.length - 1;
+        }
+        if(this.current >= 0) {
           var element = document.getElementById('match-' + this.current);
           element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
@@ -184,14 +213,20 @@
 
       // When up pressed while autocomplete is open
       down() {
-        if (this.current < this.matches.length - 1) {
+        if (this.current == this.matches.length -1) {
+          this.current = -1;
+        }
+        else if (this.current <= this.matches.length - 1) {
           this.current++;
+        }
+        if(this.current >= 0) {
           var element = document.getElementById('match-' + this.current);
           element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
       },
 
       fillautocomplete(index) {
+        if(this.current == -1) return; // do nothing when we are not on a autocomplete item
         // if(this.matches[index] === 'undefined' || this.matches[index] == '') return;
         if (this.can_autocomplete_column) {
           let search_values = this.search_value.split(".");
