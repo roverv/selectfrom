@@ -1,10 +1,10 @@
 <template>
   <div id="app" v-on:keyup.f="openSearchModal" v-on:keyup.e="openRecentTables" tabindex="0">
 
-    <SearchModal v-if="active_database" :modalisopen="searchmodalopen" v-on:closesearchmodal="closeSearchModal()"
+    <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen" v-on:closesearchmodal="closeSearchModal()"
                  :active_database="active_database" />
 
-    <!--    <RecentTables :modalisopen="recenttablesopen" v-on:closerecenttables="closeRecentTables()" />-->
+    <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen" :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0" @keydown.esc="recenttablesopen = false" />
 
     <header class="bg-gray-500 text-gray-200 py-5 px-10 mb-4">
       <h3>{{ active_database }}</h3>
@@ -20,7 +20,7 @@
 
       <TableList :active_database="active_database" />
 
-      <router-view :key="$route.fullPath" :active_database="active_database" />
+      <router-view :key="$route.fullPath" :active_database="active_database" v-on:addrecenttable="addRecentTable" />
 
     </div>
   </div>
@@ -63,6 +63,7 @@
         recenttablesopen: false,
         databases: [],
         active_database: '',
+        recent_tables: [],
         tables: [],
       }
     },
@@ -76,6 +77,10 @@
         if (localStorage.getItem('active_database')) {
           this.active_database = localStorage.getItem('active_database');
         }
+      }
+
+      if(sessionStorage.getItem('recent_tables')) {
+        this.recent_tables = JSON.parse(sessionStorage.getItem('recent_tables'));
       }
     },
 
@@ -141,7 +146,21 @@
 
       forceupdate() {
         this.$forceUpdate();
-      }
+      },
+
+      addRecentTable: function(tableid) {
+        // remove duplicates
+        if (this.recent_tables.indexOf(tableid) >= 0) {
+          this.recent_tables.splice(this.recent_tables.indexOf(tableid), 1);
+        }
+        // limit to 8
+        while(this.recent_tables.length > 7) {
+          this.recent_tables.splice(7, 1);
+        }
+        // add new table to the beginning of the array
+        this.recent_tables.unshift(tableid);
+        sessionStorage.setItem('recent_tables', JSON.stringify(this.recent_tables));
+      },
 
     }
   }

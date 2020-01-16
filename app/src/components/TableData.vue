@@ -174,7 +174,6 @@
     mounted() {
       console.log(this.tableid);
       this.getAllPosts();
-      this.saveRecentTable();
     },
 
     computed: {
@@ -255,24 +254,6 @@
         if (element) {
           element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
-      },
-
-      saveRecentTable() {
-        console.log(' tot hier ');
-
-        let recent_tables = [];
-        if (sessionStorage.getItem('recent_tables')) {
-          recent_tables = JSON.parse(sessionStorage.getItem('recent_tables'));
-        }
-
-        console.log(recent_tables.indexOf(this.tableid));
-
-        if (recent_tables.indexOf(this.tableid)) {
-          recent_tables.splice(recent_tables.indexOf(this.tableid), 1);
-        }
-
-        recent_tables.unshift(this.tableid);
-        sessionStorage.setItem('recent_tables', JSON.stringify(recent_tables));
       },
 
       swapTableDisplay() {

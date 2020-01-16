@@ -12,7 +12,7 @@
       TableData,
     },
     created() {
-      console.log(' tabledata.vue');
+      this.$emit('addrecenttable', this.tableid);
     },
   }
 </script>

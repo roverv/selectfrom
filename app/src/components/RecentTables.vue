@@ -1,23 +1,17 @@
 <template>
 
-  <div class="modal-container" :class="{ 'open' : modalisopen }"
-       @keyup.esc="$emit('closerecenttables')"
-       style="background-color: rgba(0,0,0,0.5); transition: opacity 0.2s ease-in;">
+  <div class="modal-container" :class="{ 'open' : modalisopen }" style="background-color: rgba(0,0,0,0.5); transition: opacity 0.2s ease-in;">
 
-    <!--    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-md border-8 border-gray-800 bg-white"-->
-    <!---->
-    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-md border-8 border-gray-800 bg-white"
-    >
+    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-md border-8 border-gray-800 bg-white" id="recent-tables">
       <div class="text-lg">
-        <h3 class="bg-gray-800 text-gray-200 pt-1 pb-2 px-3 text-xl mb-4">Recent tables</h3>
-        <ul class="mx-3 my-4">
-          <li v-for="table in tables" class="border-b border-t border-orange-400">
-            <router-link :to="{ name: 'table', params: { tableid: table } }" class="block py-1 bg-orange-100 px-2">
-              {{ table }}
+        <h3 class="bg-gray-800 text-gray-200 pt-1 pb-2 px-3 text-xl mb-4">
+          Recent tables
+        </h3>
+        <ul class="mx-3 my-4" id="recent-tables-list" autocomplete="off">
+          <li v-for="(table_name, index) in recent_tables" class="list-item" v-bind:class="{'active': isActive(index)}" :ref="table_name">
+            <router-link :to="{ name: 'table', params: { tableid: table_name } }" class="block py-1 bg-orange-100 px-2">
+              {{ table_name }}
             </router-link>
-          </li>
-          <li class="border-b border-gray-300">
-            <a href="" class="block py-1 px-2">organisation</a>
           </li>
         </ul>
       </div>
@@ -30,10 +24,11 @@
 
   export default {
     name: 'RecentTables',
-    props: ['modalisopen'],
+    props: ['modalisopen', 'recent_tables'],
     data() {
       return {
         tables: [],
+        current: 0
       }
     },
 
@@ -41,6 +36,11 @@
       if (localStorage.getItem('recent_tables')) {
         this.tables = JSON.parse(localStorage.getItem('recent_tables'));
       }
+      document.addEventListener('keydown', this.triggerKeyDown);
+    },
+
+    beforeDestroy() {
+      document.removeEventListener('keydown', this.triggerKeyDown);
     },
 
     methods: {
@@ -49,17 +49,33 @@
       up() {
         if (this.current > 0) {
           this.current--;
-          var element = document.getElementById('match-' + this.current);
-          element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
+        }
+      },
+
+      triggerKeyDown: function(evt) {
+        if (evt.key === 'Escape') {
+          this.close();
+          evt.preventDefault();
+        }
+        if (evt.key === 'ArrowUp') {
+          this.up();
+          evt.preventDefault();
+        }
+        if (evt.key === 'ArrowDown') {
+          this.down();
+          evt.preventDefault();
+        }
+        if (evt.key === 'Enter') {
+          let element = this.recent_tables[this.current];
+          this.$refs[element][0].childNodes[0].click(); // click the link => go to table
+          evt.preventDefault();
         }
       },
 
       // When up pressed while autocomplete is open
       down() {
-        if (this.current < this.matches.length - 1) {
+        if (this.current < this.recent_tables.length - 1) {
           this.current++;
-          var element = document.getElementById('match-' + this.current);
-          element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
       },
 
@@ -77,6 +93,10 @@
       isActive(index) {
         return index === this.current
       },
+
+      close() {
+        this.$emit('closerecenttables');
+      }
 
     },
 
@@ -105,15 +125,15 @@
     transition: opacity .2s ease-in;
   }
 
-  .autocomplete-row {
-    @apply px-3;
+  .list-item {
+    @apply px-1;
   }
 
-  .autocomplete-row a {
-    @apply block py-1 px-2 border-b border-gray-300;
+  .list-item a {
+    @apply block py-1 px-1 border-b border-gray-300;
   }
 
-  .autocomplete-row.active a {
+  .list-item.active a {
     @apply bg-orange-100 border-t border-orange-400;
   }
 
