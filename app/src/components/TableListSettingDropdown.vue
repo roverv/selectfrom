@@ -30,10 +30,16 @@
         <div class="w-auto bg-gray-700 text-gray-200 rounded-lg shadow-lg">
           <div class="w-64 border-t-2 border-gray-200 py-1">
             <a class="block px-6 py-3 leading-tight">Create new table</a>
-            <a class="block px-6 py-3 leading-tight" @click="$emit('toggleTablesWithoutRows'), isOpen=false">Hide tables
-              without data</a>
-            <a class="block px-6 py-3 leading-tight" @click="$emit('toggleTableList'),  isOpen=false">Hide table list
-              sidebar</a>
+            <a class="block px-6 py-3 leading-tight" @click="$emit('toggleTablesWithoutRows'), isOpen=false">
+              <span v-if="only_show_tables_with_rows">Show</span>
+              <span v-else>Hide</span>
+              tables without data
+            </a>
+            <a class="block px-6 py-3 leading-tight" @click="$emit('toggleTableList'),  isOpen=false">
+              <span v-if="tables_list_is_open">Hide</span>
+              <span v-else>Show</span>
+              table list sidebar
+            </a>
           </div>
 
         </div>
@@ -45,6 +51,11 @@
 <script>
   export default {
     name: "TableListSettingDropdown",
+
+    props: [
+      'only_show_tables_with_rows',
+      'tables_list_is_open'
+    ],
 
     data() {
       return {

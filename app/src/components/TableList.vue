@@ -1,12 +1,14 @@
 <template>
-  <div class="sidebar flex-shrink-0 pr-1 relative" :class="[tableListIsOpen ? 'w-56 mr-4 ml-8 my-6' : 'w-8']">
+  <div class="sidebar flex-shrink-0 pr-1 relative" :class="[tables_list_is_open ? 'w-56 mr-4 ml-8 my-6' : 'w-8']">
 
-    <div class="absolute top-0" :class="[tableListIsOpen ? 'right-0 mr-2' : 'left-0 ml-1']">
-      <TableListSettingDropdown :isOpen="false" v-on:toggleTablesWithoutRows="toggleTablesWithoutRows()"
+    <div class="absolute top-0" :class="[tables_list_is_open ? 'right-0 mr-2' : 'left-0 ml-1']">
+      <TableListSettingDropdown :isOpen="false" :only_show_tables_with_rows="only_show_tables_with_rows"
+                                :tables_list_is_open="tables_list_is_open"
+                                v-on:toggleTablesWithoutRows="toggleTablesWithoutRows()"
                                 v-on:toggleTableList="toggleTableList()"></TableListSettingDropdown>
     </div>
 
-    <div v-if="tableListIsOpen">
+    <div v-if="tables_list_is_open">
 
       <div class="hidden">
         <h2 class="mb-2 text-gray-700 text-xl">Favorites</h2>
@@ -36,7 +38,7 @@
              placeholder="Filter tables">
       <div class="">
         <ul class="text-gray-800">
-          <li v-for="(table_data) in tables_filtered" v-if="!only_show_tables_with_rows || table_data.Rows > 0"
+          <li v-for="(table_data) in tables_filtered"
               :class="{active: table_data.Name == $route.params.tableid}">
             <router-link :to="{ name: 'table', params: { tableid: table_data.Name } }">
               {{ table_data.Name }}
@@ -65,8 +67,7 @@
     data() {
       return {
         tables_all: null,
-        tableListIsOpen: true,
-        tables_filtered: [],
+        tables_list_is_open: true,
         only_show_tables_with_rows: false,
         endpoint: 'http://localhost/rove/api/tables.php?db=',
       }
@@ -80,6 +81,15 @@
       if(this.active_database) this.getAllTables();
     },
 
+    mounted() {
+      if(localStorage.getItem('only_show_tables_with_rows')) {
+        this.only_show_tables_with_rows = (localStorage.getItem('only_show_tables_with_rows') === 'true');
+      }
+      if(localStorage.getItem('tables_list_is_open')) {
+        this.tables_list_is_open = (localStorage.getItem('tables_list_is_open') === 'true');
+      }
+    },
+
     watch: {
       active_database: function (value) {
         if (value) {
@@ -88,11 +98,20 @@
       }
     },
 
+    computed : {
+      tables_filtered() {
+        if(!this.tables_all) return [];
+        var vue = this;
+        return this.tables_all.filter(function(table_data) {
+          return !vue.only_show_tables_with_rows || table_data.Rows > 0;
+        })
+      }
+    },
+
     methods: {
       getAllTables() {
         axios.get(this.endpoint + this.active_database).then(response => {
           this.tables_all      = response.data;
-          this.tables_filtered = response.data;
 
           let tables_names = [];
           this.tables_all.forEach(function (table_data) {
@@ -107,10 +126,12 @@
 
       toggleTablesWithoutRows: function () {
         this.only_show_tables_with_rows = !this.only_show_tables_with_rows;
+        localStorage.setItem('only_show_tables_with_rows', this.only_show_tables_with_rows)
       },
 
       toggleTableList: function () {
-        this.tableListIsOpen = !this.tableListIsOpen;
+        this.tables_list_is_open = !this.tables_list_is_open;
+        localStorage.setItem('tables_list_is_open', this.tables_list_is_open)
       }
     },
   }
