@@ -72,9 +72,9 @@
       },
 
       matches: function () {
-        // an autocomplete item should alway be active
-        if (this.current > this.matches.length) {
-          this.current = 0;
+        // when there are no matches, set the current back on the input (-1), this way fillautocomplete wont return undefined
+        if (this.matches.length <= 0) {
+          this.current = -1;
         }
       }
     },
@@ -85,11 +85,11 @@
         if (this.can_autocomplete_column) {
           let search_values = this.search_value.split(".");
           return this.tables_with_columns[search_values[0]].filter((column_name) => {
-            return column_name.includes(search_values[1]);
+            return this.fussySearchMatch(search_values[1], column_name);
           });
         } else {
           return this.tables.filter((table_name) => {
-            return table_name.includes(this.search_value);
+            return this.fussySearchMatch(this.search_value, table_name);
           });
         }
       },
@@ -112,6 +112,23 @@
     },
 
     methods: {
+
+      fussySearchMatch: function (search, text) {
+        search = search.toUpperCase();
+        text   = text.toUpperCase();
+
+        let j = -1; // remembers position of last found character
+
+        // consider each search character one at a time
+        for (let i = 0; i < search.length; i++) {
+          let l = search[i];
+          if (l == ' ') continue;     // ignore spaces
+
+          j = text.indexOf(l, j + 1);     // search for character & update position
+          if (j == -1) return false;  // if it's not found, exclude this item
+        }
+        return true;
+      },
 
       triggerKeyDown: function(evt) {
         if (evt.key === 'Escape') {
@@ -206,7 +223,7 @@
           this.current = this.matches.length - 1;
         }
         if(this.current >= 0) {
-          var element = document.getElementById('match-' + this.current);
+          let element = document.getElementById('match-' + this.current);
           element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
       },
@@ -220,7 +237,7 @@
           this.current++;
         }
         if(this.current >= 0) {
-          var element = document.getElementById('match-' + this.current);
+          let element = document.getElementById('match-' + this.current);
           element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
       },
