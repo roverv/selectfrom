@@ -2,9 +2,9 @@
 
   <div class="modal-container" :class="{ 'open' : modalisopen }" style="background-color: rgba(0,0,0,0.5); transition: opacity 0.2s ease-in;">
 
-    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-md border-8 border-gray-800 bg-white" id="recent-tables">
+    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-md border-8 border-dark-600 bg-white" id="recent-tables">
       <div class="text-lg">
-        <h3 class="bg-gray-800 text-gray-200 pt-1 pb-2 px-3 text-xl mb-4">
+        <h3 class="bg-dark-600 text-gray-200 pt-1 pb-2 px-3 text-xl mb-4">
           Recent tables
         </h3>
         <ul class="mx-3 my-4" id="recent-tables-list" autocomplete="off">
@@ -126,7 +126,7 @@
   }
 
   .list-item {
-    @apply px-1;
+    @apply px-1 text-on-bg-light;
   }
 
   .list-item a {
@@ -134,7 +134,7 @@
   }
 
   .list-item.active a {
-    @apply bg-orange-100 border-t border-orange-400;
+    @apply bg-highlight-100 border-t border-highlight-700;
   }
 
 </style>

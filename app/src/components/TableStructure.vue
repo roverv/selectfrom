@@ -1,7 +1,7 @@
 <template>
   <div class="flex-grow py-6 relative">
     <div class="flex justify-between items-center mb-2">
-      <h2 class=" text-gray-700 text-xl">{{ tableid }}</h2>
+      <h2 class=" text-xl">{{ tableid }}</h2>
       <a href="">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="w-6 fill-current text-gray-400">
           <path class="secondary"
@@ -21,11 +21,11 @@
     <div class="w-full flex items-start">
 
       <div class="relative w-full">
-        <table cellspacing="0" class="flex-grow  bg-white relative" style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
+        <table cellspacing="0" class="flex-grow  bg-light-100 relative" style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
                v-if="columns.length > 1">
-          <thead class="bg-gray-700 text-gray-200">
+          <thead class="bg-dark-500 text-gray-200">
           <tr class="font-normal">
-            <th class="sticky top-0 z-20 bg-gray-700 text-gray-200 px-2 py-3"
+            <th class="sticky top-0 z-20 bg-dark-500 text-gray-200 px-2 py-3"
                 v-for="(column_header) in Object.keys(columns[0])">{{ column_header }}
             </th>
           </tr>
@@ -112,7 +112,11 @@
   }
 
   tbody tr:hover td {
-    background: #e2e8f0;
+    @apply bg-light-200;
+  }
+
+  tbody td:hover {
+    @apply bg-highlight-400 !important;
   }
 
   tbody td:first-child {
@@ -130,7 +134,7 @@
   }
 
   .row-data-field:hover {
-    background: #e2e8f0;
+    @apply bg-light-200;
   }
 
 

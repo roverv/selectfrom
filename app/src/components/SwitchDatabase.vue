@@ -1,6 +1,6 @@
 <template>
   <div>
-    <select name="" id="" @change="switchDatabase" v-bind:value="active_database">
+    <select name="" @change="switchDatabase" v-bind:value="active_database">
       <option value="">Choose a database</option>
       <option v-for="database in databases" :value="database">
         {{ database }}
@@ -26,6 +26,6 @@
 <style scoped>
 
   select {
-    @apply bg-gray-600 text-gray-200 py-1 px-2 mb-4;
+    @apply bg-gray-600 text-gray-200 py-1 px-2;
   }
 </style>

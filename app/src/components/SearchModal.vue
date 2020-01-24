@@ -1,19 +1,19 @@
 <template>
 
   <div class="modal-container" :class="{ 'open' : modalisopen }"
-       style="background-color: rgba(0,0,0,0.5); transition: opacity 0.2s ease-in;">
-    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-2xl">
+       style="background: radial-gradient(circle, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.7) 80%); transition: opacity 0.2s ease-in;">
+    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-2xl text-on-bg-light">
       <div class="px-8 py-4">
         <form method="post" @submit.prevent="submitSearch" ref="searchform">
 
           <input v-model="search_value"
                  type="text" name="searchany" id="searchany" ref="searchany"
-                 class="block w-full mt-3 px-4 py-3 text-xl border-8 border-gray-800 focus:outline-none"
+                 class="block w-full mt-3 px-4 py-3 text-xl border-8 border-dark-600 focus:outline-none"
                  style="box-shadow: 0 15px 35px hsla(0,0%,0%,.2);" placeholder="Go to table, column or row"
                  autocomplete="off"
           >
           <div class="relative" v-if="openAutocomplete">
-            <ul class="bg-gray-200 absolute w-full border-8 border-gray-800 border-t-0 h-64 overflow-y-scroll">
+            <ul class="bg-gray-200 absolute w-full border-8 border-dark-600 border-t-0 h-64 overflow-y-scroll">
               <li v-for="(table_name, index) in matches" :id="'match-' + index"
                   v-bind:class="{'active': isActive(index)}"
                   class="autocomplete-row"
@@ -294,7 +294,7 @@
   }
 
   .autocomplete-row.active a {
-    @apply bg-orange-100 border-t border-orange-400;
+    @apply bg-highlight-100 border-t border-highlight-700;
   }
 
 </style>

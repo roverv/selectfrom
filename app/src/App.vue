@@ -6,17 +6,20 @@
 
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen" :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0" @keydown.esc="recenttablesopen = false" />
 
-    <header class="bg-gray-500 text-gray-200 py-5 px-10 mb-4">
-      <h3>{{ active_database }}</h3>
+    <header class="bg-gray-500 text-gray-200 py-3 px-10 mb-4 flex">
+      <h3 class="mb-0">{{ active_database }}</h3>
       <router-link to="/test">Test</router-link>
 
       <router-link to="/">Home</router-link> &gt;
       <router-link to="/database">Rove</router-link> &gt;
 
       <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase" :active_database="active_database" :databases="databases"></SwitchDatabase>
+
+      <a @click="SwitchTheme('light')">Theme light</a>
+      <a @click="SwitchTheme('color')">Theme color</a>
     </header>
 
-    <div class="flex pr-8 w-full justify-between mb-4">
+    <div class="flex pr-8 w-full justify-between mb-4 text-default">
 
       <TableList :active_database="active_database" />
 
@@ -29,7 +32,11 @@
 <style>
 
   body {
-    @apply bg-gray-200 font-sans;
+    background: var(--background-body);
+    background-attachment: fixed;
+    @apply text-primary;
+    min-height: 100vh;
+    @apply font-sans;
     -webkit-font-smoothing:  antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -161,6 +168,11 @@
         this.recent_tables.unshift(tableid);
         sessionStorage.setItem('recent_tables', JSON.stringify(this.recent_tables));
       },
+
+      SwitchTheme(theme_name) {
+        document.documentElement.removeAttribute("class");
+        document.documentElement.classList.add("theme-" + theme_name);
+      }
 
     }
   }

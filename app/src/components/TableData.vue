@@ -1,7 +1,7 @@
 <template>
   <div class="flex-grow py-6 relative">
     <div class="flex justify-between items-center mb-2">
-      <h2 class=" text-gray-700 text-xl">{{ tableid }}</h2>
+      <h2 class=" text-xl">{{ tableid }}</h2>
       <a href="">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="w-6 fill-current text-gray-400">
           <path class="secondary"
@@ -25,12 +25,12 @@
 
       <div class="relative w-full">
 
-        <table cellspacing="0" class="flex-grow w-full bg-white relative swap-table"
+        <table cellspacing="0" class="flex-grow w-full bg-light-100 relative swap-table"
                style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
                v-if="tabledata.length > 1 && table_display_rotated">
           <tr v-for="column_header in columns">
             <th :name="column_header.Field" :id="column_header.Field | lowercase"
-                class="sticky left-0 z-20 bg-gray-700 text-gray-200 px-2"
+                class="sticky left-0 z-20 bg-dark-400 text-gray-200 px-2"
                 :class="{ ' highlight' : (column_header.Field.toLowerCase() == column)}">
               {{ column_header.Field }}
             </th>
@@ -41,29 +41,29 @@
         </table>
         <br>
 
-        <table cellspacing="0" class="flex-grow w-full bg-white relative"
+        <table cellspacing="0" class="flex-grow w-full bg-light-100 relative"
                style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
                v-if="tabledata.length > 1" v-show="!table_display_rotated">
-          <thead class="bg-gray-700 text-gray-200 text-left">
+          <thead class="bg-dark-400 text-gray-200 text-left">
           <tr class="font-normal">
-            <th class="sticky top-0 z-20 bg-gray-700 text-gray-200 py-3">
+            <th class="sticky top-0 bg-dark-400 z-20 text-gray-200 py-3">
               <input type='checkbox' id='all-page' class="mx-3" />
             </th>
             <th :name="column_header.Field" :id="column_header.Field | lowercase"
-                class="sticky top-0 z-20 bg-gray-700 text-gray-200 px-2" v-for="column_header in columns"
+                class="sticky top-0 bg-dark-400 z-20 text-gray-200 px-2" v-for="column_header in columns"
                 :class="{ ' highlight' : (column_header.Field.toLowerCase() == column)}">
               <a @click="orderByColumn(column_header.Field)" class="flex items-center">
                 <span>{{ column_header.Field }}</span>
                 <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current" v-if="order_by == column_header.Field && order_direction == 'asc'">
-                  <path class="text-orange-300"
+                  <path class="text-highlight-400"
                         d="M6 11V4a1 1 0 1 1 2 0v7h3a1 1 0 0 1 .7 1.7l-4 4a1 1 0 0 1-1.4 0l-4-4A1 1 0 0 1 3 11h3z"></path>
-                  <path class="text-orange-500"
+                  <path class="text-highlight-700"
                         d="M21 21H8a1 1 0 0 1 0-2h13a1 1 0 0 1 0 2zm0-4h-9a1 1 0 0 1 0-2h9a1 1 0 0 1 0 2zm0-4h-5a1 1 0 0 1 0-2h5a1 1 0 0 1 0 2z"></path>
                 </svg>
                 <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current" v-if="order_by == column_header.Field && order_direction == 'desc'">
-                  <path class="text-orange-300"
+                  <path class="text-highlight-400"
                         d="M18 13v7a1 1 0 0 1-2 0v-7h-3a1 1 0 0 1-.7-1.7l4-4a1 1 0 0 1 1.4 0l4 4A1 1 0 0 1 21 13h-3z"></path>
-                  <path class="text-orange-500"
+                  <path class="text-highlight-700"
                         d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
                 </svg>
               </a>
@@ -72,9 +72,9 @@
           </thead>
           <tbody>
           <tr v-for="row in tabledata">
-            <td class="sticky bg-white left-0 z-10 w-12 text-center"><input type='checkbox' name='check[]' value=''>
+            <td class="sticky left-0 z-10 w-12 text-center"><input type='checkbox' name='check[]' value=''>
             </td>
-            <td class="whitespace-pre px-1 py-1" v-for="(column_name, index) in columns" :class="{ ' bg-white sticky id-field-offset z-10' : (index == 0)}">
+            <td class="table-data-row" v-for="(column_name, index) in columns" :class="{ ' sticky id-field-offset z-10' : (index == 0)}">
               <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
               <span v-else>{{ row[column_name.Field] }}</span>
             </td>
@@ -90,7 +90,7 @@
             </div>
 
             <a
-              class="border-2 border-gray-600 bg-gray-300 text-gray-800 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
+              class="border-2 border-gray-600 bg-gray-300 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
               href="">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
                 <path class="primary"
@@ -101,7 +101,7 @@
             </a>
 
             <a
-              class="border-2 border-gray-600 bg-gray-300 text-gray-800 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
+              class="border-2 border-gray-600 bg-gray-300 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
               href="">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
                 <rect width="14" height="14" x="3" y="3" class="secondary" rx="2" />
@@ -111,7 +111,7 @@
             </a>
 
             <a
-              class="border-2 border-gray-600 bg-gray-300 text-gray-800 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
+              class="border-2 border-gray-600 bg-gray-300 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
               href="">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
                 <path class="primary"
@@ -123,7 +123,7 @@
             </a>
 
             <a
-              class="border-2 border-gray-600 bg-gray-300 text-gray-800 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
+              class="border-2 border-gray-600 bg-gray-300 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
               href="">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
                 <path class="primary"
@@ -278,11 +278,11 @@
   }
 
   tbody tr:hover td {
-    @apply bg-gray-200;
+    @apply bg-light-200;
   }
 
   tbody td:hover {
-    @apply bg-orange-200 !important;
+    @apply bg-highlight-400 !important;
   }
 
   tbody td:first-child {
@@ -300,11 +300,17 @@
   }
 
   .row-data-field:hover {
-    background: #e2e8f0;
+    @apply bg-light-200;
   }
 
   .highlight {
-    @apply bg-orange-300 text-white;
+    @apply bg-highlight-700 text-white;
+  }
+
+  .table-data-row {
+    @apply whitespace-pre px-1;
+    padding-top:    1px;
+    padding-bottom: 1px;
   }
 
 

@@ -1,0 +1,23 @@
+.theme-color {
+  --background-body:        linear-gradient(45deg, #49a09d, #5f2c82);
+  --color-text-primary:     #edf2f7;
+  --color-text-on-bg-light: #2d3748;
+
+  /** GENERAL COLORS **/
+  --color-highlight-100:    rgba(104, 211, 145, 0.1);
+  /*--color-highlight-200: #feebc8;*/
+  /*--color-highlight-300: #fbd38d;*/
+  --color-highlight-400:    rgba(104, 211, 145, 0.4);
+  /*--color-highlight-500: #ed8936;*/
+  /*--color-highlight-600: #dd6b20;*/
+  --color-highlight-700:    #68d391;
+  /*--color-highlight-800: #9c4221;*/
+  /*--color-highlight-900: #7b341e;*/
+
+  --color-light-100:        rgba(255, 255, 255, 0.2);
+  --color-light-200:        rgba(255, 255, 255, 0.25);
+
+  --color-dark-400:         hsl(242, 25%, 30%);
+  --color-dark-500:         hsl(242, 30%, 20%);
+  --color-dark-600:         hsl(242, 27%, 25%);
+}

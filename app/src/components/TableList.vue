@@ -10,34 +10,15 @@
 
     <div v-if="tables_list_is_open">
 
-      <div class="hidden">
-        <h2 class="mb-2 text-gray-700 text-xl">Favorites</h2>
-        <ul class="text-gray-800 mb-6">
-          <li>
-            <a>organisation</a>
-          </li>
-          <li>
-            <a>site</a>
-          </li>
-          <li>
-            <a>site_host</a>generatepdf
-          </li>
-          <li>
-            <a>user</a>
-          </li>
-        </ul>
-
-      </div>
-
-      <h2 class="mb-2 text-gray-700 text-xl">
+      <h2 class="mb-2 text-xl">
         <span class="text-gray-500 text-lg">{{ tables_filtered.length }}</span>
         Tables
       </h2>
 
-      <input type="search" name="filter_table" class="border border-gray-300 mb-4 py-1 px-2"
+      <input type="search" name="filter_table" class="bg-light-100 border border-light-200 mb-4 py-1 px-2"
              placeholder="Filter tables">
       <div class="">
-        <ul class="text-gray-800">
+        <ul class="">
           <li v-for="(table_data) in tables_filtered"
               :class="{active: table_data.Name == $route.params.tableid}">
             <router-link :to="{ name: 'table', params: { tableid: table_data.Name } }">
@@ -141,7 +122,7 @@
 <style scoped>
 
   li.active {
-    @apply border-l-2 border-orange-400 bg-orange-100 pl-2;
+    @apply border-l-2 border-highlight-700 bg-light-100 pl-2;
   }
 
 </style>
