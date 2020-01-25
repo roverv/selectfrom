@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-grow py-6 relative">
+  <div>
 
     <table-nav :tableid="tableid"></table-nav>
 

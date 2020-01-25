@@ -51,9 +51,6 @@
 
 <script>
 
-  import axios from 'axios'
-  import TableNav from '@/components/TableNav.vue'
-
   export default {
     name: 'TableNav',
     props: ['tableid'],

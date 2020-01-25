@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-grow py-6 relative">
+  <div >
 
     <table-nav :tableid="tableid"></table-nav>
 
@@ -65,7 +65,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="row in tabledata">
+          <tr v-for="(row, row_index) in tabledata">
             <td class="sticky left-0 z-10 w-12 text-center ">
               <label>
                 <input type="checkbox" class="hidden" />
@@ -76,7 +76,8 @@
                 </svg>
               </label>
             </td>
-            <td class="table-data-row" v-for="(column_name, index) in columns" :class="{ ' sticky id-field-offset z-10' : (index == 0)}">
+            <td class="table-data-row" v-for="(column_name, index) in columns" @dblclick="toggleRowSidebar(row_index)"
+                :class="{ ' sticky id-field-offset z-10' : (index == 0)}">
               <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
               <span v-else>{{ row[column_name.Field] }}</span>
             </td>
@@ -144,6 +145,9 @@
       </div>
     </div>
     <br>
+
+    <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar" :rowdata="sidebar_row_data"></row-sidebar>
+
   </div>
 
 </template>
@@ -152,6 +156,7 @@
 
   import axios from 'axios'
   import TableNav from '@/components/TableNav.vue'
+  import RowSidebar from "./RowSidebar";
 
   export default {
     name: 'TableData',
@@ -164,10 +169,13 @@
         table_display_rotated: false,
         order_by: '',
         order_direction: '',
+        sidebarisopen: false,
+        sidebar_row_data: {},
       }
     },
 
     components: {
+      RowSidebar,
       TableNav
     },
 
@@ -264,6 +272,15 @@
         this.order_by        = column;
         this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
         this.getAllPosts();
+      },
+
+      closeRowSidebar() {
+        this.sidebarisopen = false;
+      },
+
+      toggleRowSidebar(row_index) {
+        this.sidebar_row_data = this.tabledata[row_index];
+        this.sidebarisopen = true;
       }
 
     }
@@ -337,6 +354,7 @@
   .rows-action {
     @apply mx-2 inline-flex rounded-lg py-1 px-2 items-center;
   }
+
   .rows-action:hover {
     @apply bg-light-100;
   }

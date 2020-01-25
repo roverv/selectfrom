@@ -6,7 +6,7 @@
 
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen" :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0" @keydown.esc="recenttablesopen = false" />
 
-    <header class="bg-gray-500 py-3 px-10 mb-3 bg-light-100">
+    <header class="bg-gray-500 py-3 px-10 mb-3 bg-light-100 absolute w-full top-0">
       <div class="flex justify-between">
 
         <div class="flex items-center">
@@ -45,7 +45,9 @@
 
       <TableList :active_database="active_database" />
 
-      <router-view :key="$route.fullPath" :active_database="active_database" v-on:addrecenttable="addRecentTable" />
+      <div class="flex-grow py-6 relative pt-20 mb-4">
+        <router-view :key="$route.fullPath" :active_database="active_database" v-on:addrecenttable="addRecentTable" />
+      </div>
 
     </div>
   </div>
@@ -61,6 +63,31 @@
     @apply font-sans;
     -webkit-font-smoothing:  antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    --scrollbarBG: white;
+    --thumbBG:     #90A4AE;
+  }
+
+  html::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  html {
+    scrollbar-width: 14px;
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+  }
+
+  html::-webkit-scrollbar-track {
+    background: var(--scrollbarBG);
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border-radius:    5px;
+    border:           2px solid var(--scrollbarBG);
   }
 
   a {
