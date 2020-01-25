@@ -1,24 +1,9 @@
 <template>
   <div class="flex-grow py-6 relative">
-    <div class="flex justify-between items-center mb-2">
-      <h2 class=" text-xl">{{ tableid }}</h2>
-      <a href="">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="w-6 fill-current text-gray-400">
-          <path class="secondary"
-                d="M9.53 16.93a1 1 0 0 1-1.45-1.05l.47-2.76-2-1.95a1 1 0 0 1 .55-1.7l2.77-.4 1.23-2.51a1 1 0 0 1 1.8 0l1.23 2.5 2.77.4a1 1 0 0 1 .55 1.71l-2 1.95.47 2.76a1 1 0 0 1-1.45 1.05L12 15.63l-2.47 1.3z" />
-        </svg>
-      </a>
-    </div>
+
+    <table-nav :tableid="tableid"></table-nav>
 
     <a @click="swapTableDisplay">Toggle</a>
-
-    <router-link :to="{ name: 'structure', params: { tableid: tableid } }">
-      structure
-    </router-link>
-
-    <router-link :to="{ name: 'table', params: { tableid: tableid } }">
-      data
-    </router-link>
 
     <div class="w-full flex items-start">
 
@@ -47,20 +32,29 @@
           <thead class="bg-dark-400 text-gray-200 text-left">
           <tr class="font-normal">
             <th class="sticky top-0 bg-dark-400 z-20 text-gray-200 py-3">
-              <input type='checkbox' id='all-page' class="mx-3" />
+              <label for="all-page">
+                <input type="checkbox" id='all-page' class="hidden" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path
+                    d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
+                </svg>
+              </label>
             </th>
             <th :name="column_header.Field" :id="column_header.Field | lowercase"
                 class="sticky top-0 bg-dark-400 z-20 text-gray-200 px-2" v-for="column_header in columns"
                 :class="{ ' highlight' : (column_header.Field.toLowerCase() == column)}">
               <a @click="orderByColumn(column_header.Field)" class="flex items-center">
                 <span>{{ column_header.Field }}</span>
-                <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current" v-if="order_by == column_header.Field && order_direction == 'asc'">
+                <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
+                     v-if="order_by == column_header.Field && order_direction == 'asc'">
                   <path class="text-highlight-400"
                         d="M6 11V4a1 1 0 1 1 2 0v7h3a1 1 0 0 1 .7 1.7l-4 4a1 1 0 0 1-1.4 0l-4-4A1 1 0 0 1 3 11h3z"></path>
                   <path class="text-highlight-700"
                         d="M21 21H8a1 1 0 0 1 0-2h13a1 1 0 0 1 0 2zm0-4h-9a1 1 0 0 1 0-2h9a1 1 0 0 1 0 2zm0-4h-5a1 1 0 0 1 0-2h5a1 1 0 0 1 0 2z"></path>
                 </svg>
-                <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current" v-if="order_by == column_header.Field && order_direction == 'desc'">
+                <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
+                     v-if="order_by == column_header.Field && order_direction == 'desc'">
                   <path class="text-highlight-400"
                         d="M18 13v7a1 1 0 0 1-2 0v-7h-3a1 1 0 0 1-.7-1.7l4-4a1 1 0 0 1 1.4 0l4 4A1 1 0 0 1 21 13h-3z"></path>
                   <path class="text-highlight-700"
@@ -72,7 +66,15 @@
           </thead>
           <tbody>
           <tr v-for="row in tabledata">
-            <td class="sticky left-0 z-10 w-12 text-center"><input type='checkbox' name='check[]' value=''>
+            <td class="sticky left-0 z-10 w-12 text-center ">
+              <label>
+                <input type="checkbox" class="hidden" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path
+                    d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
+                </svg>
+              </label>
             </td>
             <td class="table-data-row" v-for="(column_name, index) in columns" :class="{ ' sticky id-field-offset z-10' : (index == 0)}">
               <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
@@ -82,53 +84,46 @@
           </tbody>
         </table>
 
-        <div class="row-actions sticky bottom-0 left-0  z-30 w-full hidden" v-if="tabledata.length > 1">
-          <div class="py-5 px-4 border-t-2 border-b-2 border-orange-400 bg-orange-100 flex items-center">
+        <div class="row-actions sticky bottom-0 left-0 z-30 w-full" v-if="tabledata.length > 1">
+
+          <div class="py-3 px-2  flex items-center bg-dark-600 text-white">
 
             <div class="font-bold mr-6">
               5 rows
             </div>
 
-            <a
-              class="border-2 border-gray-600 bg-gray-300 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
-              href="">
+            <a class="rows-action" href="">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
-                <path class="primary"
+                <path class="text-gray-600"
                       d="M4 14a1 1 0 0 1 .3-.7l11-11a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-.7.3H5a1 1 0 0 1-1-1v-3z" />
-                <rect width="20" height="2" x="2" y="20" class="secondary" rx="1" />
+                <rect width="20" height="2" x="2" y="20" class="text-gray-500" rx="1" />
               </svg>
               <span>Edit</span>
             </a>
 
-            <a
-              class="border-2 border-gray-600 bg-gray-300 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
-              href="">
+            <a class="rows-action" href="">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
-                <rect width="14" height="14" x="3" y="3" class="secondary" rx="2" />
-                <rect width="14" height="14" x="7" y="7" class="primary" rx="2" />
+                <rect width="14" height="14" x="3" y="3" class="text-gray-500" rx="2" />
+                <rect width="14" height="14" x="7" y="7" class="text-gray-600" rx="2" />
               </svg>
               <span>Duplicate</span>
             </a>
 
-            <a
-              class="border-2 border-gray-600 bg-gray-300 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
-              href="">
+            <a class="rows-action" href="">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
-                <path class="primary"
+                <path class="text-gray-600"
                       d="M5 5h14l-.89 15.12a2 2 0 0 1-2 1.88H7.9a2 2 0 0 1-2-1.88L5 5zm5 5a1 1 0 0 0-1 1v6a1 1 0 0 0 2 0v-6a1 1 0 0 0-1-1zm4 0a1 1 0 0 0-1 1v6a1 1 0 0 0 2 0v-6a1 1 0 0 0-1-1z" />
-                <path class="secondary"
+                <path class="text-gray-500"
                       d="M8.59 4l1.7-1.7A1 1 0 0 1 11 2h2a1 1 0 0 1 .7.3L15.42 4H19a1 1 0 0 1 0 2H5a1 1 0 1 1 0-2h3.59z" />
               </svg>
               <span>Delete</span>
             </a>
 
-            <a
-              class="border-2 border-gray-600 bg-gray-300 px-4 rounded-full py-2 font-semibold mr-3 inline-flex items-center"
-              href="">
+            <a class="rows-action" href="">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
-                <path class="primary"
+                <path class="text-gray-600"
                       d="M6 2h6v6c0 1.1.9 2 2 2h6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4c0-1.1.9-2 2-2zm2 11a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2H8zm0 4a1 1 0 0 0 0 2h4a1 1 0 0 0 0-2H8z" />
-                <polygon class="secondary" points="14 2 20 8 14 8" />
+                <polygon class="text-gray-500" points="14 2 20 8 14 8" />
               </svg>
               <span>Export</span>
             </a>
@@ -156,6 +151,7 @@
 <script>
 
   import axios from 'axios'
+  import TableNav from '@/components/TableNav.vue'
 
   export default {
     name: 'TableData',
@@ -169,6 +165,10 @@
         order_by: '',
         order_direction: '',
       }
+    },
+
+    components: {
+      TableNav
     },
 
     mounted() {
@@ -197,10 +197,10 @@
         return string.toLowerCase();
       },
 
-      truncate: function(value, limit) {
-        if(!value) return value;
+      truncate: function (value, limit) {
+        if (!value) return value;
         if (value.length > limit) {
-          value = value.replace(/(\r\n|\n|\r)/gm,""); // remove line breaks
+          value = value.replace(/(\r\n|\n|\r)/gm, ""); // remove line breaks
           value = value.substring(0, limit) + '...';
         }
 
@@ -211,7 +211,7 @@
     methods: {
 
       shouldTruncateField(column_type) {
-        if(column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
+        if (column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
           return true;
         }
         return false;
@@ -226,7 +226,7 @@
         if (this.column && this.value) {
           api_url += '&column=' + this.column + '&value=' + this.value;
         }
-        if(this.order_by && this.order_direction) {
+        if (this.order_by && this.order_direction) {
           api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
         }
 
@@ -261,7 +261,7 @@
       },
 
       orderByColumn(column) {
-        this.order_by = column;
+        this.order_by        = column;
         this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
         this.getAllPosts();
       }
@@ -311,6 +311,34 @@
     @apply whitespace-pre px-1;
     padding-top:    1px;
     padding-bottom: 1px;
+  }
+
+  input[type="checkbox"] + svg circle {
+    @apply hidden;
+  }
+
+  input[type="checkbox"] + svg path {
+    @apply text-gray-400;
+  }
+
+  input[type="checkbox"]:checked + svg circle {
+    @apply inline-block text-highlight-700;
+  }
+
+  input[type="checkbox"]:checked + svg path {
+    @apply text-gray-100;
+  }
+
+  tbody td:first-child {
+    width:      2rem;
+    text-align: center;
+  }
+
+  .rows-action {
+    @apply mx-2 inline-flex rounded-lg py-1 px-2 items-center;
+  }
+  .rows-action:hover {
+    @apply bg-light-100;
   }
 
 
