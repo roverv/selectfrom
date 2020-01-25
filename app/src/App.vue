@@ -6,17 +6,39 @@
 
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen" :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0" @keydown.esc="recenttablesopen = false" />
 
-    <header class="bg-gray-500 text-gray-200 py-3 px-10 mb-4 flex">
-      <h3 class="mb-0">{{ active_database }}</h3>
-      <router-link to="/test">Test</router-link>
+    <header class="bg-gray-500 py-3 px-10 mb-3 bg-light-100">
+      <div class="flex justify-between">
 
-      <router-link to="/">Home</router-link> &gt;
-      <router-link to="/database">Rove</router-link> &gt;
+        <div class="flex items-center">
+          <a class="text-gray-300">MySQL</a>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
+               style="transform: rotate(90deg);">
+            <path
+              d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
+          </svg>
+          <a class="text-gray-300">Server</a>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
+               style="transform: rotate(90deg);">
+            <path
+              d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
+          </svg>
 
-      <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase" :active_database="active_database" :databases="databases"></SwitchDatabase>
+          <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase" :active_database="active_database"
+                          :databases="databases"></SwitchDatabase>
 
-      <a @click="SwitchTheme('light')">Theme light</a>
-      <a @click="SwitchTheme('color')">Theme color</a>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
+               style="transform: rotate(90deg);">
+            <path
+              d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
+          </svg>
+          <a class="">user</a>
+        </div>
+
+        <div>
+          <a @click="SwitchTheme('light')" class="mx-2">Theme light</a>
+          <a @click="SwitchTheme('color')" class="mx-2">Theme color</a>
+        </div>
+      </div>
     </header>
 
     <div class="flex pr-8 w-full justify-between mb-4 text-default">

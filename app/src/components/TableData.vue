@@ -84,7 +84,7 @@
           </tbody>
         </table>
 
-        <div class="row-actions sticky bottom-0 left-0 z-30 w-full" v-if="tabledata.length > 1">
+        <div class="row-actions sticky bottom-0 left-0 z-30 w-full hidden" v-if="tabledata.length > 1">
 
           <div class="py-3 px-2  flex items-center bg-dark-600 text-white">
 
@@ -274,7 +274,7 @@
 <style scoped>
 
   table tbody td {
-    border-bottom: 1px solid #edf2f7;
+    @apply border-b border-light-300;
   }
 
   tbody tr:hover td {
