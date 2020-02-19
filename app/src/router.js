@@ -56,6 +56,12 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/TableStructure.vue'),
       props: true,
     },
+    {
+      path: '/query',
+      name: 'query',
+      component: () => import(/* webpackChunkName: "about" */ './views/Query.vue'),
+      props: true,
+    },
   ]
 });
 

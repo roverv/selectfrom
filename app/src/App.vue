@@ -1,13 +1,13 @@
 <template>
-  <div id="app" v-on:keyup.f="openSearchModal" v-on:keyup.e="openRecentTables" tabindex="0">
+  <div id="app" v-on:keyup.self.f="openSearchModal" v-on:keyup.self.e="openRecentTables" tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen" v-on:closesearchmodal="closeSearchModal()"
                  :active_database="active_database" />
 
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen" :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0" @keydown.esc="recenttablesopen = false" />
 
-    <header class="bg-gray-500 py-3 px-10 mb-3 bg-light-100 absolute w-full top-0">
-      <div class="flex justify-between">
+    <header class="bg-gray-500 py-3 px-10 mb-3 bg-light-100 absolute w-full top-0 z-20">
+      <div class="flex justify-between items-center">
 
         <div class="flex items-center">
           <a class="text-gray-300">MySQL</a>
@@ -32,6 +32,13 @@
               d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
           <a class="">user</a>
+        </div>
+
+        <div>
+          <router-link :to="{ name: 'query' }">
+            Query
+          </router-link>
+
         </div>
 
         <div>
@@ -176,6 +183,7 @@
         sessionStorage.clear();
         localStorage.setItem('active_database', active_database);
         this.active_database = active_database;
+        this.$router.push({name: 'home'});
       },
 
       openSearchModal() {

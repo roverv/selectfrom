@@ -136,7 +136,7 @@
 
     </div>
 
-    <div class="flex w-full bg-white p-3" v-if="tabledata.length == 1">
+    <div class="flex w-full bg-light-100 p-3" v-if="tabledata.length == 1">
       <div class="w-1/2" v-for="columns_half in columns_halved">
         <div class="row-data-field" v-for="column in columns_half">
           <div class="w-48 text-right"><strong>{{ column.Field }}</strong></div>
