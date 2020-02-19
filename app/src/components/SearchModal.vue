@@ -187,38 +187,81 @@
       submitSearch() {
         if (this.search_value == '') return false;
 
-        let has_id     = this.search_value.includes("#");
-        let has_column = this.search_value.includes(".") || this.search_value.includes("^");
+        let has_id           = this.search_value.includes("#");
+        let has_column       = this.search_value.includes(".") || this.search_value.includes("^");
+        let has_column_value = false;
+        let column_value     = '';
+
+        let table_id = '';
+        let column   = '';
 
         if (has_id) {
           let search_values = this.search_value.split("#");
-          let table_id      = this.normalizeValue(search_values[0]);
+          table_id          = this.normalizeValue(search_values[0]);
+          column            = 'id';
+          let value         = search_values[1];
+        } else if (has_column) {
+          has_column_value = this.search_value.includes("%");
+          if (has_column_value) {
+            let search_values = this.search_value.split(".");
+            let data_values   = search_values[1].split("%");
+            table_id          = this.normalizeValue(search_values[0]);
+            column            = this.normalizeValue(data_values[0]);
+            column_value      = data_values[1];
+
+          } else if (this.column_split_value == '.') {
+            let search_values = this.search_value.split(".");
+            table_id          = this.normalizeValue(search_values[0]);
+            column            = this.normalizeValue(search_values[1]);
+          } else if (this.column_split_value == '^') {
+            let search_values = this.search_value.split("^");
+            table_id          = this.normalizeValue(search_values[0]);
+            column            = this.normalizeValue(search_values[1]);
+          }
+        } else {
+          table_id = this.search_value;
+        }
+
+        // cannot go to a table that does not exists, skip
+        if (this.tables.includes(table_id) === false) {
+          // briefly highlight the text red, to show the user the input is false
+          this.$refs.searchany.classList.add('text-red-700');
+          let vue = this;
+          setTimeout(function() {
+            vue.$refs.searchany.classList.remove('text-red-700');
+          }, 300);
+          return false;
+        }
+
+        // cannot go to a column that does not exists, skip
+        if (column != '' && this.tables_with_columns[table_id].includes(column) === false) {
+          // briefly highlight the text red, to show the user the input is false
+          this.$refs.searchany.classList.add('text-red-700');
+          let vue = this;
+          setTimeout(function() {
+            vue.$refs.searchany.classList.remove('text-red-700');
+          }, 300);
+          return false;
+        }
+
+        if (has_id) {
           this.$router.push({
             name: 'tablewithcolumnvalue',
             params: {tableid: table_id, column: 'id', value: search_values[1]}
           });
         } else if (has_column) {
-          let has_column_value = this.search_value.includes("%");
           if (has_column_value) {
-            let search_values = this.search_value.split(".");
-            let data_values   = search_values[1].split("%");
-            let table_id      = this.normalizeValue(search_values[0]);
-            let column        = this.normalizeValue(data_values[0]);
             this.$router.push({
               name: 'tablewithcolumnvalue',
-              params: {tableid: table_id, column: column, value: data_values[1]}
+              params: {tableid: table_id, column: column, value: column_value}
             });
-          } else if(this.column_split_value == '.') {
-            let search_values = this.search_value.split(".");
-            let table_id      = this.normalizeValue(search_values[0]);
-            let column        = this.normalizeValue(search_values[1]);
+          } else if (this.column_split_value == '.') {
             this.$router.push({name: 'tablewithcolumn', params: {tableid: table_id, column: column}});
-          }
-          else if(this.column_split_value == '^') {
-            let search_values = this.search_value.split("^");
-            let table_id      = this.normalizeValue(search_values[0]);
-            let column        = this.normalizeValue(search_values[1]);
-            this.$router.push({name: 'tablegroupbycolumn', params: {tableid: table_id, querytype: 'groupby', column: column}});
+          } else if (this.column_split_value == '^') {
+            this.$router.push({
+              name: 'tablegroupbycolumn',
+              params: {tableid: table_id, querytype: 'groupby', column: column}
+            });
           }
         } else {
           this.$router.push({name: 'table', params: {tableid: this.search_value}});
