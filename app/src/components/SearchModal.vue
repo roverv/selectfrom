@@ -16,9 +16,8 @@
             <ul class="bg-gray-200 absolute w-full border-8 border-dark-600 border-t-0 h-64 overflow-y-scroll">
               <li v-for="(table_name, index) in matches" :id="'match-' + index"
                   v-bind:class="{'active': isActive(index)}"
-                  class="autocomplete-row"
-                  @click="fillautocomplete(index)">
-                <a href="#">{{ table_name }}</a>
+                  class="autocomplete-row">
+                <a @click="clickedOnAutocomplete(index)">{{ table_name }}</a>
               </li>
             </ul>
           </div>
@@ -83,7 +82,7 @@
       // Filtering the suggestion based on the input
       matches() {
         if (this.can_autocomplete_column) {
-          let search_values = this.search_value.split(".");
+          let search_values = this.search_value.split(this.column_split_value);
           return this.tables_with_columns[search_values[0]].filter((column_name) => {
             return this.fussySearchMatch(search_values[1], column_name);
           });
@@ -99,13 +98,23 @@
       },
 
       entering_column() {
-        return this.search_value.includes(".");
+        return this.search_value.includes(".") || this.search_value.includes("^");
+      },
+
+      column_split_value() {
+        if(this.search_value.includes(".")) {
+          return '.';
+        }
+        else if(this.search_value.includes("^")) {
+          return '^';
+        }
+        return '';
       },
 
       can_autocomplete_column() {
         if (!this.entering_column) return false;
 
-        let search_values = this.search_value.split(".");
+        let search_values = this.search_value.split(this.column_split_value);
         if (this.tables_with_columns[search_values[0]] !== 'undefined') return true;
         return false;
       }
@@ -144,10 +153,12 @@
           evt.preventDefault();
         }
         else if (evt.key === 'ArrowRight') {
+          if(this.current == -1) return; // do nothing when we are not on a autocomplete item
           this.fillautocomplete(this.current);
           evt.preventDefault();
         }
         else if (evt.key === 'Enter') {
+          if(this.current == -1) return; // do nothing when we are not on a autocomplete item
           this.fillautocomplete(this.current);
           let vue = this;
           // set a tiny timeout, this way the user will see the value change from fillautocomplete
@@ -177,7 +188,7 @@
         if (this.search_value == '') return false;
 
         let has_id     = this.search_value.includes("#");
-        let has_column = this.search_value.includes(".");
+        let has_column = this.search_value.includes(".") || this.search_value.includes("^");
 
         if (has_id) {
           let search_values = this.search_value.split("#");
@@ -197,11 +208,17 @@
               name: 'tablewithcolumnvalue',
               params: {tableid: table_id, column: column, value: data_values[1]}
             });
-          } else {
+          } else if(this.column_split_value == '.') {
             let search_values = this.search_value.split(".");
             let table_id      = this.normalizeValue(search_values[0]);
             let column        = this.normalizeValue(search_values[1]);
             this.$router.push({name: 'tablewithcolumn', params: {tableid: table_id, column: column}});
+          }
+          else if(this.column_split_value == '^') {
+            let search_values = this.search_value.split("^");
+            let table_id      = this.normalizeValue(search_values[0]);
+            let column        = this.normalizeValue(search_values[1]);
+            this.$router.push({name: 'tablegroupbycolumn', params: {tableid: table_id, querytype: 'groupby', column: column}});
           }
         } else {
           this.$router.push({name: 'table', params: {tableid: this.search_value}});
@@ -243,14 +260,23 @@
       },
 
       fillautocomplete(index) {
-        if(this.current == -1) return; // do nothing when we are not on a autocomplete item
         // if(this.matches[index] === 'undefined' || this.matches[index] == '') return;
+        this.current = -1; // when we fill the autocomplete, set the pointer back to the input (-1)
         if (this.can_autocomplete_column) {
-          let search_values = this.search_value.split(".");
-          this.search_value = search_values[0] + '.' + this.matches[index];
+          let search_values = this.search_value.split(this.column_split_value);
+          this.search_value = search_values[0] + this.column_split_value + this.matches[index];
         } else {
           this.search_value = this.matches[index];
         }
+      },
+
+      clickedOnAutocomplete(index) {
+        this.fillautocomplete(index);
+        let vue = this;
+        // set a tiny timeout, this way the user will see the value change from fillautocomplete
+        setTimeout(function () {
+          vue.submitSearch();
+        }, 100);
       },
 
       // For highlighting element

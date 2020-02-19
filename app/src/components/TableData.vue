@@ -160,7 +160,7 @@
 
   export default {
     name: 'TableData',
-    props: ['tableid', 'column', 'value', 'active_database'],
+    props: ['tableid', 'column', 'value', 'querytype', 'active_database'],
     data() {
       return {
         tabledata: [],
@@ -233,6 +233,9 @@
         }
         if (this.column && this.value) {
           api_url += '&column=' + this.column + '&value=' + this.value;
+        }
+        else if (this.column && this.querytype) {
+          api_url += '&column=' + this.column + '&type=' + this.querytype;
         }
         if (this.order_by && this.order_direction) {
           api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;

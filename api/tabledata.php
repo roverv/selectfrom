@@ -7,7 +7,11 @@
     $rows                  = $pdo->query("SHOW FULL COLUMNS FROM ".$_GET['tablename'])->fetchAll();
     $table_data['columns'] = $rows;
     $query                 = "SELECT * FROM ".$_GET['tablename']." ";
-    if (!empty($_GET['column']) && !empty($_GET['value'])) {
+
+    if(!empty($_GET['type']) && $_GET['type'] == 'groupby') {
+        $query .= "GROUP BY `".$_GET['column']."` ";
+    }
+    else if (!empty($_GET['column']) && !empty($_GET['value'])) {
         //todo: escape, duh
         if ($_GET['column'] == 'id') {
             $query .= "WHERE `".$_GET['column']."` = '".$_GET['value']."' ";

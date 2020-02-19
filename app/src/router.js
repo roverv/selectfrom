@@ -45,6 +45,12 @@ export default new Router({
       props: true,
     },
     {
+      path: '/table/:tableid/:querytype/:column',
+      name: 'tablegroupbycolumn',
+      component: () => import(/* webpackChunkName: "about" */ './views/TableData.vue'),
+      props: true,
+    },
+    {
       path: '/table/:tableid/:column/:value',
       name: 'tablewithcolumnvalue',
       component: () => import(/* webpackChunkName: "about" */ './views/TableData.vue'),
