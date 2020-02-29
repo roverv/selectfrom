@@ -1,6 +1,6 @@
 <template>
 
-  <div class="modal-container" :class="{ 'open' : modalisopen }" style="background-color: rgba(0,0,0,0.5); transition: opacity 0.2s ease-in;">
+  <div class="modal-container" :class="{ 'open' : modalisopen }" style="background: radial-gradient(circle, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.7) 80%); transition: opacity 0.2s ease-in;">
 
     <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-md border-8 border-dark-600 bg-white" id="recent-tables">
       <div class="text-lg">

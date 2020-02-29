@@ -1,10 +1,17 @@
 <template>
-  <div id="app" v-on:keyup.self.f="openSearchModal" v-on:keyup.self.e="openRecentTables" tabindex="0">
+  <div id="app" v-on:keyup.self.f="openSearchModal" v-on:keyup.self.e="openRecentTables" v-on:keyup.self.d="openDatabasesModal" tabindex="0">
 
-    <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen" v-on:closesearchmodal="closeSearchModal()"
+    <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
+                 v-on:closesearchmodal="closeSearchModal()"
                  :active_database="active_database" />
 
-    <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen" :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0" @keydown.esc="recenttablesopen = false" />
+    <DatabasesModal v-if="active_database && databasemodalopen" :modalisopen="databasemodalopen"
+                    v-on:closedatabasesmodal="closeDatabasesModal()" v-on:setActiveDatabase="setActiveDatabase"
+                    :databases="databases" />
+
+    <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen"
+                  :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0"
+                  @keydown.esc="recenttablesopen = false" />
 
     <header class="bg-gray-500 py-3 px-10 mb-3 bg-light-100 absolute w-full top-0 z-20">
       <div class="flex justify-between items-center">
@@ -63,10 +70,10 @@
 <style>
 
   body {
-    background: var(--background-body);
-    background-attachment: fixed;
+    background:              var(--background-body);
+    background-attachment:   fixed;
     @apply text-primary;
-    min-height: 100vh;
+    min-height:              100vh;
     @apply font-sans;
     -webkit-font-smoothing:  antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -78,7 +85,7 @@
   }
 
   html::-webkit-scrollbar {
-    width: 14px;
+    width:  14px;
     height: 14px;
   }
 
@@ -112,6 +119,7 @@
 
 <script>
   import SearchModal from "./components/SearchModal";
+  import DatabasesModal from "./components/DatabasesModal";
   import TableList from '@/components/TableList.vue'
   import RecentTables from "./components/RecentTables";
   import SwitchDatabase from "./components/SwitchDatabase";
@@ -123,6 +131,7 @@
       return {
         endpoint: 'http://localhost/rove/api/',
         searchmodalopen: false,
+        databasemodalopen: false,
         recenttablesopen: false,
         databases: [],
         active_database: '',
@@ -142,15 +151,16 @@
         }
       }
 
-      if(sessionStorage.getItem('recent_tables')) {
+      if (sessionStorage.getItem('recent_tables')) {
         this.recent_tables = JSON.parse(sessionStorage.getItem('recent_tables'));
       }
     },
 
     watch: {
       $route(to, from) {
-        this.searchmodalopen  = false;
-        this.recenttablesopen = false;
+        this.searchmodalopen   = false;
+        this.recenttablesopen  = false;
+        this.databasemodalopen = false;
         this.$nextTick();
         document.getElementById('app').focus();
       }
@@ -159,6 +169,7 @@
     components: {
       RecentTables,
       SearchModal,
+      DatabasesModal,
       TableList,
       SwitchDatabase
     },
@@ -187,17 +198,28 @@
       },
 
       openSearchModal() {
-        if (this.searchmodalopen || this.recenttablesopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen) return;
         this.searchmodalopen = true;
       },
 
+      openDatabasesModal() {
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen) return;
+        this.databasemodalopen = true;
+      },
+
       openRecentTables() {
-        if (this.searchmodalopen || this.recenttablesopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen) return;
         this.recenttablesopen = true;
       },
 
       closeSearchModal() {
         this.searchmodalopen = false;
+        // when the modal is closed, we need to set the focus back on the app
+        document.getElementById('app').focus();
+      },
+
+      closeDatabasesModal() {
+        this.databasemodalopen = false;
         // when the modal is closed, we need to set the focus back on the app
         document.getElementById('app').focus();
       },
@@ -212,13 +234,13 @@
         this.$forceUpdate();
       },
 
-      addRecentTable: function(tableid) {
+      addRecentTable: function (tableid) {
         // remove duplicates
         if (this.recent_tables.indexOf(tableid) >= 0) {
           this.recent_tables.splice(this.recent_tables.indexOf(tableid), 1);
         }
         // limit to 8
-        while(this.recent_tables.length > 7) {
+        while (this.recent_tables.length > 7) {
           this.recent_tables.splice(7, 1);
         }
         // add new table to the beginning of the array
