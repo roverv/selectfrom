@@ -3,32 +3,13 @@
 
     <table-nav :tableid="tableid"></table-nav>
 
-    <a @click="swapTableDisplay">Toggle</a>
-
     <div class="w-full flex items-start">
-
 
       <div class="relative w-full">
 
-        <table cellspacing="0" class="flex-grow w-full bg-light-100 relative swap-table"
-               style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
-               v-if="tabledata.length > 1 && table_display_rotated">
-          <tr v-for="column_header in columns">
-            <th :name="column_header.Field" :id="column_header.Field | lowercase"
-                class="sticky left-0 z-20 bg-dark-400 text-gray-200 px-2"
-                :class="{ ' highlight' : (column_header.Field.toLowerCase() == column)}">
-              {{ column_header.Field }}
-            </th>
-            <td class="whitespace-pre px-1 py-1" v-for="row in tabledata"
-            >{{ row[column_header.Field] }}
-            </td>
-          </tr>
-        </table>
-        <br>
-
         <table cellspacing="0" class="flex-grow w-full bg-light-100 relative"
                style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
-               v-if="tabledata.length > 1" v-show="!table_display_rotated">
+               v-if="tabledata.length > 1">
           <thead class="bg-dark-400 text-gray-200 text-left">
           <tr class="font-normal">
             <th class="sticky top-0 bg-dark-400 z-20 text-gray-200 py-3">
@@ -166,7 +147,6 @@
         tabledata: [],
         columns: [],
         endpoint: 'http://localhost/rove/api/tabledata.php?db=',
-        table_display_rotated: false,
         order_by: '',
         order_direction: '',
         sidebarisopen: false,
@@ -265,10 +245,6 @@
         if (element) {
           element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
-      },
-
-      swapTableDisplay() {
-        this.table_display_rotated = !this.table_display_rotated;
       },
 
       orderByColumn(column) {
