@@ -2,5 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./tabledata.css";
+
 @import 'theme.light.css';
 @import 'theme.color.css';

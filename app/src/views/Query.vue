@@ -3,9 +3,9 @@
     <h1 class="text-xl mb-4">Execute query</h1>
 
     <form method="post" @submit.prevent="runQuery()" ref="queryform">
-      <textarea v-model="query" class="w-full h-64 bg-light-200 p-3 outline-none border border-light-300"></textarea>
+      <textarea v-model="query" class="w-full h-64 bg-light-200 p-3 outline-none border border-light-300" ref="query" v-on:keydown.ctrl.enter="runQuery()"></textarea>
 
-      <button>Run</button>
+      <button class="btn mt-2">Run</button>
 
       <hr class="border-light-200 my-4">
 
@@ -20,9 +20,26 @@
 
 
       <div v-if="query_result.result == 'success'">
-        <pre>
-          {{ query_result.data }}
-        </pre>
+
+        <table cellspacing="0" class="table-data" v-if="tabledata.length > 0">
+          <thead>
+          <tr>
+            <th v-for="column_header in columns">
+                <span>{{ column_header }}</span>
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(row, row_index) in tabledata">
+            <td class="table-data-row" v-for="(column_name, index) in columns" @dblclick="toggleRowSidebar(row_index)"
+                :class="{ ' sticky-first-row-cell' : (index == 0)}">
+              <span>{{ row[column_name] }}</span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar" :rowdata="sidebar_row_data"></row-sidebar>
       </div>
 
     </form>
@@ -32,7 +49,8 @@
 
 <script>
 
-  import axios from 'axios'
+  import axios from 'axios';
+  import RowSidebar from "@/components/RowSidebar";
 
   export default {
     name: 'query',
@@ -41,7 +59,31 @@
       return {
         endpoint: 'http://localhost/rove/api/query.php?db=',
         query: '',
-        query_result: {}
+        query_result: {},
+        tabledata: [],
+        sidebarisopen: false,
+        sidebar_row_data: {},
+      }
+    },
+
+    components: {
+      RowSidebar
+    },
+
+    created() {
+      document.addEventListener('keydown', this.triggerKeyDown);
+    },
+
+    mounted() {
+      this.$refs.query.focus();
+    },
+
+    computed: {
+      columns() {
+        if(this.tabledata.length > 0) {
+          return Object.keys(this.tabledata[0]);
+        }
+        return [];
       }
     },
 
@@ -55,11 +97,21 @@
         const querystring = require('querystring');
         axios.post(api_url, querystring.stringify({ query: this.query }) ).then(response => {
           this.query_result = response.data;
+          this.tabledata = this.query_result.data;
         }).catch(error => {
           console.log('-----error-------');
           console.log(error);
         })
       },
+
+      closeRowSidebar() {
+        this.sidebarisopen = false;
+      },
+
+      toggleRowSidebar(row_index) {
+        this.sidebar_row_data = this.tabledata[row_index];
+        this.sidebarisopen = true;
+      }
 
     }
   }
@@ -67,5 +119,11 @@
 
 <style>
 
+  .btn {
+    @apply inline-flex rounded-lg py-1 px-2 items-center px-3 border-2 border-light-300 bg-light-100;
+  }
+  .btn:hover {
+    @apply bg-light-100;
+  }
 </style>
 

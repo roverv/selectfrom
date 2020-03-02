@@ -1,0 +1,64 @@
+.table-data {
+  @apply bg-light-100 relative flex-grow w-full;
+  box-shadow: 0 2px 3px 2px rgba(0, 0, 0, .03);
+}
+
+.table-data thead {
+  @apply bg-dark-400 text-gray-200 text-left;
+}
+
+.table-data thead th {
+  @apply sticky top-0 bg-dark-400 z-20 text-gray-200 py-3 px-2;
+}
+
+.table-data thead th.highlight-column {
+  @apply bg-highlight-700 text-white;
+}
+
+.table-data thead th a.column-order-link {
+  @apply flex items-center;
+}
+
+.table-data tbody td {
+  @apply border-b border-light-300 px-2;
+}
+
+.table-data tbody td.toggle-row {
+  @apply sticky left-0 z-10 w-12 text-center;
+}
+
+.toggle-row input[type="checkbox"] + svg circle {
+  @apply hidden;
+}
+
+.toggle-row input[type="checkbox"] + svg path {
+  @apply text-gray-400;
+}
+
+.toggle-row input[type="checkbox"]:checked + svg circle {
+  @apply inline-block text-highlight-700;
+}
+
+.toggle-row input[type="checkbox"]:checked + svg path {
+  @apply text-gray-100;
+}
+
+.table-data tbody td.sticky-first-row-cell {
+  @apply sticky z-10;
+  left: 24px;
+}
+
+.table-data tbody tr:hover td {
+  @apply bg-light-200;
+}
+
+.table-data tbody td:hover {
+  @apply bg-highlight-400 !important;
+}
+
+.table-data .table-data-row {
+  @apply whitespace-pre;
+  padding-top:    1px;
+  padding-bottom: 1px;
+}
+

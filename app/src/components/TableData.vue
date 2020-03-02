@@ -7,12 +7,10 @@
 
       <div class="relative w-full">
 
-        <table cellspacing="0" class="flex-grow w-full bg-light-100 relative"
-               style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
-               v-if="tabledata.length > 1">
-          <thead class="bg-dark-400 text-gray-200 text-left">
-          <tr class="font-normal">
-            <th class="sticky top-0 bg-dark-400 z-20 text-gray-200 py-3">
+        <table cellspacing="0" class="table-data" v-if="tabledata.length > 1">
+          <thead>
+          <tr>
+            <th class="toggle-row">
               <label for="all-page">
                 <input type="checkbox" id='all-page' class="hidden" />
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
@@ -22,10 +20,9 @@
                 </svg>
               </label>
             </th>
-            <th :name="column_header.Field" :id="column_header.Field | lowercase"
-                class="sticky top-0 bg-dark-400 z-20 text-gray-200 px-2" v-for="column_header in columns"
-                :class="{ ' highlight' : (column_header.Field.toLowerCase() == column)}">
-              <a @click="orderByColumn(column_header.Field)" class="flex items-center">
+            <th :name="column_header.Field" :id="column_header.Field | lowercase" v-for="column_header in columns"
+                :class="{ ' highlight-column' : (column_header.Field.toLowerCase() == column)}">
+              <a @click="orderByColumn(column_header.Field)" class="column-order-link">
                 <span>{{ column_header.Field }}</span>
                 <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
                      v-if="order_by == column_header.Field && order_direction == 'asc'">
@@ -47,7 +44,7 @@
           </thead>
           <tbody>
           <tr v-for="(row, row_index) in tabledata">
-            <td class="sticky left-0 z-10 w-12 text-center ">
+            <td class="toggle-row">
               <label>
                 <input type="checkbox" class="hidden" />
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
@@ -58,7 +55,7 @@
               </label>
             </td>
             <td class="table-data-row" v-for="(column_name, index) in columns" @dblclick="toggleRowSidebar(row_index)"
-                :class="{ ' sticky id-field-offset z-10' : (index == 0)}">
+                :class="{ ' sticky-first-row-cell' : (index == 0)}">
               <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
               <span v-else>{{ row[column_name.Field] }}</span>
             </td>
@@ -269,27 +266,6 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  table tbody td {
-    @apply border-b border-light-300;
-  }
-
-  tbody tr:hover td {
-    @apply bg-light-200;
-  }
-
-  tbody td:hover {
-    @apply bg-highlight-400 !important;
-  }
-
-  tbody td:first-child {
-    width:      2rem;
-    text-align: center;
-  }
-
-  .id-field-offset {
-    left: 24px;
-  }
-
   .row-data-field {
     @apply flex w-full;
     border-bottom: 1px solid #edf2f7;
@@ -299,37 +275,6 @@
     @apply bg-light-200;
   }
 
-  .highlight {
-    @apply bg-highlight-700 text-white;
-  }
-
-  .table-data-row {
-    @apply whitespace-pre px-1;
-    padding-top:    1px;
-    padding-bottom: 1px;
-  }
-
-  input[type="checkbox"] + svg circle {
-    @apply hidden;
-  }
-
-  input[type="checkbox"] + svg path {
-    @apply text-gray-400;
-  }
-
-  input[type="checkbox"]:checked + svg circle {
-    @apply inline-block text-highlight-700;
-  }
-
-  input[type="checkbox"]:checked + svg path {
-    @apply text-gray-100;
-  }
-
-  tbody td:first-child {
-    width:      2rem;
-    text-align: center;
-  }
-
   .rows-action {
     @apply mx-2 inline-flex rounded-lg py-1 px-2 items-center;
   }
@@ -337,6 +282,5 @@
   .rows-action:hover {
     @apply bg-light-100;
   }
-
 
 </style>
