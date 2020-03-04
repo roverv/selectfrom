@@ -194,12 +194,13 @@
 
         let table_id = '';
         let column   = '';
+        let row_id = '';
 
         if (has_id) {
           let search_values = this.search_value.split("#");
           table_id          = this.normalizeValue(search_values[0]);
           column            = 'id';
-          let value         = search_values[1];
+          row_id         = search_values[1];
         } else if (has_column) {
           has_column_value = this.search_value.includes("%");
           if (has_column_value) {
@@ -247,7 +248,7 @@
         if (has_id) {
           this.$router.push({
             name: 'tablewithcolumnvalue',
-            params: {tableid: table_id, column: 'id', value: search_values[1]}
+            params: {tableid: table_id, column: 'id', value: row_id}
           });
         } else if (has_column) {
           if (has_column_value) {
