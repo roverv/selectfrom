@@ -1,7 +1,8 @@
 <template>
-  <div class="sidebar fixed right-0 top-0 bg-white h-screen z-50 bg-dark-600 p-4 pt-12 pb-8 flex flex-col border-l border-light-100 "
-       :class="{ 'hidden' : !sidebarisopen }"
-       style="width: 500px; box-shadow: -3px 0px 10px 0px rgba(0,0,0,0.2);">
+  <div
+    class="sidebar fixed right-0 top-0 bg-white h-screen z-50 bg-dark-600 p-4 pt-12 pb-8 flex flex-col border-l border-light-100 "
+    :class="{ 'hidden' : !sidebarisopen }"
+    style="width: 500px; box-shadow: -3px 0px 10px 0px rgba(0,0,0,0.2);">
 
     <a @click="$emit('closeRowSidebar')" class="absolute left-0 top-0 ml-2 mt-2">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 fill-current text-gray-600">
@@ -12,7 +13,7 @@
 
     <h2 class="font-semibold text-xl mb-4">Row</h2>
 
-    <div class="row-data h-full overflow-y-scroll overflow-x-hidden pl-2 -ml-2 flex-grow">
+    <div class="row-data overflow-y-scroll overflow-x-hidden pl-2 -ml-2">
       <div>
 
         <div class="flex w-full border-b border-gray-600" v-for="(row) in Object.keys(rowdata)">
@@ -47,6 +48,22 @@
       return {}
     },
 
+    created() {
+      document.addEventListener('keydown', this.triggerKeyDown);
+    },
+
+    beforeDestroy() {
+      document.removeEventListener('keydown', this.triggerKeyDown);
+    },
+
+    methods: {
+      triggerKeyDown: function (evt) {
+        if (evt.key === 'Escape') {
+          this.$emit('closeRowSidebar')
+          evt.preventDefault();
+        }
+      }
+    }
   }
 </script>
 

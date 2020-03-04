@@ -57,6 +57,7 @@
             <td class="table-data-row" v-for="(column_name, index) in columns" @dblclick="toggleRowSidebar(row_index)"
                 :class="{ ' sticky-first-row-cell' : (index == 0)}">
               <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
+              <span v-else-if="row[column_name.Field] === null" class="null-value"><i>NULL</i></span>
               <span v-else>{{ row[column_name.Field] }}</span>
             </td>
           </tr>
@@ -121,16 +122,15 @@
 
           <div class=" header bg-dark-400 flex items-center w-2/5 pl-3 flex-shrink-0" style="padding-top: 2px; padding-bottom: 2px;">
           <div class="text-gray-300 mr-6">{{ column.Field }}</div>
-          <div class="w-16 flex-grow">
-            <hr class="border-light-300">
-          </div>
+
           </div>
 
-          <div class="data bg-light-100 flex-grow flex items-center pr-3 py-1" style="padding-top: 2px; padding-bottom: 2px;">
-          <div class=" w-16 flex-grow">
-            <hr class=" border-light-300">
+          <div class="data bg-light-100 border-b border-light-300 flex-grow flex items-center pr-3 py-1 justify-end" style="padding-top: 2px; padding-bottom: 2px;">
+
+          <div class=" ml-6">
+            <span v-if="tabledata[0][column.Field] === null" class="null-value"><i>NULL</i></span>
+            <span v-else>{{ tabledata[0][column.Field] }}</span>
           </div>
-          <div class=" ml-6">{{ tabledata[0][column.Field] }}</div>
           </div>
 
         </div>

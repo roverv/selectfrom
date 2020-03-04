@@ -33,7 +33,8 @@
           <tr v-for="(row, row_index) in tabledata">
             <td class="table-data-row" v-for="(column_name, index) in columns" @dblclick="toggleRowSidebar(row_index)"
                 :class="{ ' sticky-first-row-cell' : (index == 0)}">
-              <span>{{ row[column_name] }}</span>
+              <span v-if="row[column_name] === null" class="null-value"><i>NULL</i></span>
+              <span v-else>{{ row[column_name] }}</span>
             </td>
           </tr>
           </tbody>

@@ -62,3 +62,6 @@
   padding-bottom: 1px;
 }
 
+.null-value {
+  @apply tracking-wide text-sm text-gray-400;
+}
