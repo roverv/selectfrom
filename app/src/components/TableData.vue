@@ -114,12 +114,27 @@
 
     </div>
 
-    <div class="flex w-full bg-light-100 p-3" v-if="tabledata.length == 1">
-      <div class="w-1/2" v-for="columns_half in columns_halved">
-        <div class="row-data-field" v-for="column in columns_half">
-          <div class="w-48 text-right"><strong>{{ column.Field }}</strong></div>
-          <div class="ml-4">{{ tabledata[0][column.Field] }}</div>
+    <div class="flex w-full" v-if="tabledata.length == 1">
+      <div class="w-1/2 px-2" v-for="columns_half in columns_halved">
+
+        <div class="row-data-field w-full" v-for="column in columns_half">
+
+          <div class=" header bg-dark-400 flex items-center w-2/5 pl-3 flex-shrink-0" style="padding-top: 2px; padding-bottom: 2px;">
+          <div class="text-gray-300 mr-6">{{ column.Field }}</div>
+          <div class="w-16 flex-grow">
+            <hr class="border-light-300">
+          </div>
+          </div>
+
+          <div class="data bg-light-100 flex-grow flex items-center pr-3 py-1" style="padding-top: 2px; padding-bottom: 2px;">
+          <div class=" w-16 flex-grow">
+            <hr class=" border-light-300">
+          </div>
+          <div class=" ml-6">{{ tabledata[0][column.Field] }}</div>
+          </div>
+
         </div>
+
       </div>
     </div>
     <br>
@@ -268,11 +283,13 @@
 
   .row-data-field {
     @apply flex w-full;
-    border-bottom: 1px solid #edf2f7;
   }
 
-  .row-data-field:hover {
+  .row-data-field:hover .data {
     @apply bg-light-200;
+  }
+  .row-data-field:hover .header {
+    @apply bg-dark-600;
   }
 
   .rows-action {
