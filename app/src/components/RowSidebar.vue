@@ -11,14 +11,29 @@
       </svg>
     </a>
 
-    <h2 class="font-semibold text-xl mb-4">Row</h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-semibold text-xl">Row</h2>
+
+      <a @click="toggleColumnOrder()" class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current">
+          <path class="text-gray-600"
+                d="M7 18.59V9a1 1 0 0 1 2 0v9.59l2.3-2.3a1 1 0 0 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42L7 18.6z"></path>
+          <path class="primary"
+                d="M17 5.41V15a1 1 0 1 1-2 0V5.41l-2.3 2.3a1 1 0 1 1-1.4-1.42l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.42L17 5.4z"></path>
+        </svg>
+        Sort&nbsp;
+        <span v-if="column_order == 'default'">alphabetical</span>
+        <span v-else>default</span>
+      </a>
+    </div>
+
 
     <div class="row-data overflow-y-scroll overflow-x-hidden pl-2 -ml-2">
       <div>
 
-        <div class="flex w-full border-b border-gray-600" v-for="(row) in Object.keys(rowdata)">
-          <div class="w-1/2 px-1 py-1">{{ row }}</div>
-          <div class="w-1/2 px-1 py-1 font-semibold">{{ rowdata[row] }}</div>
+        <div class="flex w-full border-b border-gray-600" v-for="(row) in row_data">
+          <div class="w-1/2 px-1 py-1">{{ row.field }}</div>
+          <div class="w-1/2 px-1 py-1 font-semibold">{{ row.data }}</div>
         </div>
 
       </div>
@@ -45,7 +60,9 @@
     name: 'RowSidebar',
     props: ['sidebarisopen', 'rowdata'],
     data() {
-      return {}
+      return {
+        'column_order': 'default',
+      }
     },
 
     created() {
@@ -56,13 +73,42 @@
       document.removeEventListener('keydown', this.triggerKeyDown);
     },
 
+    computed: {
+      row_data: function() {
+        let row_data_keys;
+        if(this.column_order == 'default') {
+          row_data_keys = Object.keys(this.rowdata);
+        }
+        else {
+          row_data_keys = Object.keys(this.rowdata).sort();
+        }
+
+        let row_data_order = [];
+        let vue_instance = this;
+        row_data_keys.forEach(function (column) {
+          row_data_order.push({'field': column, 'data': vue_instance.rowdata[column]});
+        });
+        return row_data_order;
+      }
+    },
+
     methods: {
       triggerKeyDown: function (evt) {
         if (evt.key === 'Escape') {
           this.$emit('closeRowSidebar')
           evt.preventDefault();
         }
+      },
+
+      toggleColumnOrder: function() {
+        if(this.column_order == 'default') {
+          this.column_order = 'alphabetical';
+        }
+        else {
+          this.column_order = 'default';
+        }
       }
+
     }
   }
 </script>
