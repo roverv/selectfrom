@@ -21,6 +21,7 @@ module.exports = {
         "dark-600": "var(--color-dark-600)",
 
         "highlight-100": "var(--color-highlight-100)",
+        "highlight-200": "var(--color-highlight-200)",
         "highlight-400": "var(--color-highlight-400)",
         "highlight-700": "var(--color-highlight-700)",
 

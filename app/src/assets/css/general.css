@@ -1,0 +1,6 @@
+.btn {
+  @apply inline-flex rounded py-1 px-2 items-center px-4 border-2 border-light-100 bg-highlight-200 text-white;
+}
+.btn:hover {
+  @apply bg-light-100;
+}

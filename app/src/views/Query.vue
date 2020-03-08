@@ -118,13 +118,4 @@
   }
 </script>
 
-<style>
-
-  .btn {
-    @apply inline-flex rounded-lg py-1 px-2 items-center px-3 border-2 border-light-300 bg-light-100;
-  }
-  .btn:hover {
-    @apply bg-light-100;
-  }
-</style>
 

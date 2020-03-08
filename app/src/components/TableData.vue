@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
 
     <table-nav :tableid="tableid"></table-nav>
 
@@ -120,17 +120,19 @@
 
         <div class="row-data-field w-full" v-for="column in columns_half">
 
-          <div class=" header bg-dark-400 flex items-center w-2/5 pl-3 flex-shrink-0" style="padding-top: 2px; padding-bottom: 2px;">
-          <div class="text-gray-300 mr-6">{{ column.Field }}</div>
+          <div class=" header bg-dark-400 flex items-center w-2/5 pl-3 flex-shrink-0"
+               style="padding-top: 2px; padding-bottom: 2px;">
+            <div class="text-gray-300 mr-6">{{ column.Field }}</div>
 
           </div>
 
-          <div class="data bg-light-100 border-b border-light-300 flex-grow flex items-center pr-3 py-1 justify-end" style="padding-top: 2px; padding-bottom: 2px;">
+          <div class="data bg-light-100 border-b border-light-300 flex-grow flex items-center pr-3 py-1 justify-end"
+               style="padding-top: 2px; padding-bottom: 2px;">
 
-          <div class=" ml-6">
-            <span v-if="tabledata[0][column.Field] === null" class="null-value"><i>NULL</i></span>
-            <span v-else>{{ tabledata[0][column.Field] }}</span>
-          </div>
+            <div class=" ml-6">
+              <span v-if="tabledata[0][column.Field] === null" class="null-value"><i>NULL</i></span>
+              <span v-else>{{ tabledata[0][column.Field] }}</span>
+            </div>
           </div>
 
         </div>
@@ -139,7 +141,15 @@
     </div>
     <br>
 
-    <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar" :rowdata="sidebar_row_data"></row-sidebar>
+    <div class="flex" v-if="showLoadMoreDataButtons()">
+      <button class="btn mr-3" @click="loadMoreRows()">Load 90 more rows</button>
+      <button class="btn mr-3" @click="loadAllRows()">
+        Load all rows ({{ total_amount_rows }})
+      </button>
+    </div>
+
+    <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
+                 :rowdata="sidebar_row_data"></row-sidebar>
 
   </div>
 
@@ -158,7 +168,10 @@
       return {
         tabledata: [],
         columns: [],
-        endpoint: 'http://localhost/rove/api/tabledata.php?db=',
+        total_amount_rows: 0,
+        offset_rows: 0,
+        endpoint_table_data: 'http://localhost/rove/api/tabledata.php?db=',
+        endpoint_count_rows: 'http://localhost/rove/api/countrows.php?db=',
         order_by: '',
         order_direction: '',
         sidebarisopen: false,
@@ -172,8 +185,8 @@
     },
 
     mounted() {
-      console.log(this.tableid);
-      this.getAllPosts();
+      this.getTableData();
+      this.getAmountRows();
     },
 
     computed: {
@@ -217,16 +230,15 @@
         return false;
       },
 
-      getAllPosts() {
+      getTableData() {
 
         let api_url = '';
         if (this.tableid) {
-          api_url = this.endpoint + this.active_database + '&tablename=' + this.tableid;
+          api_url = this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
         }
         if (this.column && this.value) {
           api_url += '&column=' + this.column + '&value=' + this.value;
-        }
-        else if (this.column && this.querytype) {
+        } else if (this.column && this.querytype) {
           api_url += '&column=' + this.column + '&type=' + this.querytype;
         }
         if (this.order_by && this.order_direction) {
@@ -262,7 +274,7 @@
       orderByColumn(column) {
         this.order_by        = column;
         this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
-        this.getAllPosts();
+        this.getTableData();
       },
 
       closeRowSidebar() {
@@ -271,10 +283,95 @@
 
       toggleRowSidebar(row_index) {
         this.sidebar_row_data = this.tabledata[row_index];
-        this.sidebarisopen = true;
+        this.sidebarisopen    = true;
+      },
+
+      getAmountRows() {
+
+        let api_url = '';
+        if (this.tableid) {
+          api_url = this.endpoint_count_rows + this.active_database + '&tablename=' + this.tableid;
+        }
+
+        let vue_instance = this;
+
+        axios.get(api_url).then(response => {
+          vue_instance.total_amount_rows = response.data.amount_rows;
+        }).catch(error => {
+          console.log('-----error-------');
+          console.log(error);
+        })
+      },
+
+      showLoadMoreDataButtons() {
+        return (this.tabledata.length > 1 && this.total_amount_rows > this.tabledata.length);
+      },
+
+      loadMoreRows() {
+
+        this.offset_rows += 1;
+
+        let api_url = '';
+        if (this.tableid) {
+          api_url = this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
+        }
+        if (this.column && this.value) {
+          api_url += '&column=' + this.column + '&value=' + this.value;
+        } else if (this.column && this.querytype) {
+          api_url += '&column=' + this.column + '&type=' + this.querytype;
+        }
+        if (this.order_by && this.order_direction) {
+          api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
+        }
+        if (this.offset_rows > 0) {
+          api_url += '&offset=' + this.offset_rows;
+        }
+
+        let vue_instance = this;
+
+        axios.get(api_url).then(response => {
+          let extended_tabledata = this.tabledata.concat(response.data.data)
+          this.tabledata         = extended_tabledata;
+
+        }).catch(error => {
+          console.log('-----error-------');
+          console.log(error);
+        })
+      },
+
+      loadAllRows() {
+        let ask_confirm = true;
+        if (this.total_amount_rows > 1000) {
+          ask_confirm = confirm('Are you sure you want to load all rows?');
+        }
+        if (ask_confirm) {
+          let api_url = '';
+          if (this.tableid) {
+            api_url = this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
+          }
+          if (this.column && this.value) {
+            api_url += '&column=' + this.column + '&value=' + this.value;
+          } else if (this.column && this.querytype) {
+            api_url += '&column=' + this.column + '&type=' + this.querytype;
+          }
+          if (this.order_by && this.order_direction) {
+            api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
+          }
+          api_url += '&limit=none';
+
+          let vue_instance = this;
+
+          axios.get(api_url).then(response => {
+            this.tabledata = response.data.data;
+          }).catch(error => {
+            console.log('-----error-------');
+            console.log(error);
+          })
+        }
       }
 
-    }
+    },
+
   }
 </script>
 
@@ -288,6 +385,7 @@
   .row-data-field:hover .data {
     @apply bg-light-200;
   }
+
   .row-data-field:hover .header {
     @apply bg-dark-600;
   }

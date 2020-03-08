@@ -33,7 +33,10 @@
 
         <div class="flex w-full border-b border-gray-600" v-for="(row) in row_data">
           <div class="w-1/2 px-1 py-1">{{ row.field }}</div>
-          <div class="w-1/2 px-1 py-1 font-semibold">{{ row.data }}</div>
+          <div class="w-1/2 px-1 py-1 ">
+            <span v-if="row.data === null" class="null-value"><i>NULL</i></span>
+            <span v-else class="font-semibold">{{ row.data }}</span>
+          </div>
         </div>
 
       </div>
