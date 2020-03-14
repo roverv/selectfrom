@@ -149,7 +149,7 @@
     </div>
 
     <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
-                 :rowdata="sidebar_row_data"></row-sidebar>
+                 :rowdata="sidebar_row_data" :columndata="sidebar_column_data"></row-sidebar>
 
   </div>
 
@@ -175,7 +175,8 @@
         order_by: '',
         order_direction: '',
         sidebarisopen: false,
-        sidebar_row_data: {},
+        sidebar_row_data: [],
+        sidebar_column_data: [],
       }
     },
 
@@ -282,8 +283,15 @@
       },
 
       toggleRowSidebar(row_index) {
-        this.sidebar_row_data = this.tabledata[row_index];
-        this.sidebarisopen    = true;
+        let row_num_keys = [];
+        let column_num_keys = [];
+        for (var key in this.tabledata[row_index]) {
+          row_num_keys.push(this.tabledata[row_index][key]);
+          column_num_keys.push(key);
+        }
+        this.sidebar_row_data    = row_num_keys;
+        this.sidebar_column_data = column_num_keys;
+        this.sidebarisopen       = true;
       },
 
       getAmountRows() {

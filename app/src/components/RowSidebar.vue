@@ -2,7 +2,7 @@
   <div
     class="sidebar fixed right-0 top-0 bg-white h-screen z-50 bg-dark-600 p-4 pt-12 pb-8 flex flex-col border-l border-light-100 "
     :class="{ 'hidden' : !sidebarisopen }"
-    style="width: 500px; box-shadow: -3px 0px 10px 0px rgba(0,0,0,0.2);">
+    style="width: 550px; box-shadow: -3px 0px 10px 0px rgba(0,0,0,0.2);">
 
     <a @click="$emit('closeRowSidebar')" class="absolute left-0 top-0 ml-2 mt-2">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 fill-current text-gray-600">
@@ -31,8 +31,11 @@
     <div class="row-data overflow-y-scroll overflow-x-hidden pl-2 -ml-2">
       <div>
 
-        <div class="flex w-full border-b border-gray-600" v-for="(row) in row_data">
-          <div class="w-1/2 px-1 py-1">{{ row.field }}</div>
+        <div class="flex w-full border-b border-gray-600" v-for="row in row_data">
+          <div class="w-1/2 px-1 py-1 relative">
+            {{ row.field }}
+            <div v-if="row.table" class="absolute right-0 top-0 text-xs text-light-200 mr-1">{{ row.table }}</div>
+          </div>
           <div class="w-1/2 px-1 py-1 ">
             <span v-if="row.data === null" class="null-value"><i>NULL</i></span>
             <span v-else class="font-semibold">{{ row.data }}</span>
@@ -61,7 +64,7 @@
 
   export default {
     name: 'RowSidebar',
-    props: ['sidebarisopen', 'rowdata'],
+    props: ['sidebarisopen', 'rowdata', 'columndata', 'columntabledata'],
     data() {
       return {
         'column_order': 'default',
@@ -77,20 +80,26 @@
     },
 
     computed: {
-      row_data: function() {
-        let row_data_keys;
-        if(this.column_order == 'default') {
-          row_data_keys = Object.keys(this.rowdata);
-        }
-        else {
-          row_data_keys = Object.keys(this.rowdata).sort();
+      row_data: function () {
+        let row_data_order = [];
+        let vue_instance   = this;
+        this.columndata.forEach(function (column, index) {
+          if(typeof vue_instance.columntabledata !== "undefined") {
+            row_data_order.push({'field': column, 'data': vue_instance.rowdata[index], 'table': vue_instance.columntabledata[index]});
+          }
+          else {
+            row_data_order.push({'field': column, 'data': vue_instance.rowdata[index]});
+          }
+        });
+
+        if (this.column_order == 'alphabetical') {
+          row_data_order.sort(function (a, b) {
+            if (a.field < b.field) return -1;
+            else if (a.field > b.field) return 1;
+            else return 0;
+          });
         }
 
-        let row_data_order = [];
-        let vue_instance = this;
-        row_data_keys.forEach(function (column) {
-          row_data_order.push({'field': column, 'data': vue_instance.rowdata[column]});
-        });
         return row_data_order;
       }
     },
@@ -103,11 +112,10 @@
         }
       },
 
-      toggleColumnOrder: function() {
-        if(this.column_order == 'default') {
+      toggleColumnOrder: function () {
+        if (this.column_order == 'default') {
           this.column_order = 'alphabetical';
-        }
-        else {
+        } else {
           this.column_order = 'default';
         }
       }
