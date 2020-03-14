@@ -7,7 +7,13 @@
 
       <div class="relative w-full">
 
-        <table cellspacing="0" class="table-data" v-if="tabledata.length > 1">
+        <table cellspacing="0" class="table-data" v-if="tabledata.length > 1" ref="datatable"
+               @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"
+               @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+               @keydown.shift.right.prevent="focusCellNext($event,5)"
+               @keydown.shift.left.prevent="focusCellPrevious($event,5)"
+               @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
+               @keydown.esc="unfocusDatatable()">
           <thead>
           <tr>
             <th class="toggle-row">
@@ -55,6 +61,7 @@
               </label>
             </td>
             <td class="table-data-row" v-for="(column_name, index) in columns" @dblclick="toggleRowSidebar(row_index)"
+                @click="$event.target.focus()" tabindex="1"
                 :class="{ ' sticky-first-row-cell' : (index == 0)}">
               <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
               <span v-else-if="row[column_name.Field] === null" class="null-value"><i>NULL</i></span>
@@ -177,6 +184,7 @@
         sidebarisopen: false,
         sidebar_row_data: [],
         sidebar_column_data: [],
+        is_fetching_data: false, // true when fetching data through ajax
       }
     },
 
@@ -224,6 +232,56 @@
 
     methods: {
 
+      focusCellNext($event, step) {
+        let cell_index = Array.from($event.target.parentNode.children).indexOf($event.target);
+        let element = $event.target.parentElement.getElementsByTagName('td')[cell_index + step];
+        if (element) {
+          element.focus();
+          element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
+        }
+      },
+
+      focusCellPrevious($event, step) {
+        let cell_index = Array.from($event.target.parentNode.children).indexOf($event.target);
+        let cell_offset = (cell_index - step <= 0) ? 0 : cell_index - step;
+        let element = $event.target.parentElement.getElementsByTagName('td')[cell_offset];
+        if (element) {
+          element.focus();
+          element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
+        }
+      },
+
+      focusRowUp($event, step) {
+        let cell_index = Array.from($event.target.parentNode.children).indexOf($event.target);
+        let row_index = Array.from($event.target.parentNode.parentNode.children).indexOf($event.target.parentNode);
+        let row_offset = (row_index - step <= 0) ? 0 : row_index - step;
+        console.log(row_offset);
+        let element = $event.target.parentElement.parentElement.getElementsByTagName('tr')[row_offset].getElementsByTagName('td')[cell_index];
+        if (element) {
+          element.focus();
+          element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
+        }
+      },
+
+      focusRowDown($event, step) {
+        let cell_index = Array.from($event.target.parentNode.children).indexOf($event.target);
+        let row_index = Array.from($event.target.parentNode.parentNode.children).indexOf($event.target.parentNode);
+        let row_offset = row_index + step;
+        if(row_offset >= $event.target.parentNode.parentNode.children.length -1) {
+          row_offset = $event.target.parentNode.parentNode.children.length -1;
+          // retrieve the next batch of rows, but only if not already fetching (prevents doing multiple ajax requests at the same time)
+          if(this.showLoadMoreDataButtons() && this.is_fetching_data === false) {
+            this.loadMoreRows();
+          }
+        }
+        let element = $event.target.parentElement.parentElement.getElementsByTagName('tr')[row_offset].getElementsByTagName('td')[cell_index];
+        if (element) {
+          element.focus();
+          element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
+        }
+      },
+
+
       shouldTruncateField(column_type) {
         if (column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
           return true;
@@ -248,6 +306,8 @@
 
         let vue_instance = this;
 
+        this.is_fetching_data = true;
+
         axios.get(api_url).then(response => {
           this.tabledata = response.data.data;
           this.columns   = response.data.columns;
@@ -257,6 +317,11 @@
               console.log(vue_instance.column);
               vue_instance.gotocolumn(vue_instance.column);
             }
+
+            // set focus on first cell, for cell navigation with keyboard
+            vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[1].focus();
+
+            vue_instance.is_fetching_data = false;
           });
 
         }).catch(error => {
@@ -283,7 +348,7 @@
       },
 
       toggleRowSidebar(row_index) {
-        let row_num_keys = [];
+        let row_num_keys    = [];
         let column_num_keys = [];
         for (var key in this.tabledata[row_index]) {
           row_num_keys.push(this.tabledata[row_index][key]);
@@ -303,8 +368,10 @@
 
         let vue_instance = this;
 
+        this.is_fetching_data = true;
         axios.get(api_url).then(response => {
           vue_instance.total_amount_rows = response.data.amount_rows;
+          vue_instance.is_fetching_data = false;
         }).catch(error => {
           console.log('-----error-------');
           console.log(error);
@@ -336,11 +403,11 @@
         }
 
         let vue_instance = this;
-
+        vue_instance.is_fetching_data = true;
         axios.get(api_url).then(response => {
           let extended_tabledata = this.tabledata.concat(response.data.data)
-          this.tabledata         = extended_tabledata;
-
+          vue_instance.tabledata         = extended_tabledata;
+          vue_instance.is_fetching_data = false;
         }).catch(error => {
           console.log('-----error-------');
           console.log(error);
@@ -369,14 +436,22 @@
 
           let vue_instance = this;
 
+          vue_instance.is_fetching_data = true;
           axios.get(api_url).then(response => {
-            this.tabledata = response.data.data;
+            vue_instance.tabledata = response.data.data;
+            vue_instance.is_fetching_data = false;
           }).catch(error => {
             console.log('-----error-------');
             console.log(error);
           })
         }
-      }
+      },
+
+      // remove focus from table cell, so user can use dialog shortcuts again
+      unfocusDatatable() {
+        document.activeElement.blur();
+        document.getElementById('app').focus();
+      },
 
     },
 
@@ -404,6 +479,10 @@
 
   .rows-action:hover {
     @apply bg-light-100;
+  }
+
+  .table-data tbody td:focus {
+    @apply bg-highlight-700 outline-none;
   }
 
 </style>
