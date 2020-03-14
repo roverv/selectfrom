@@ -4,7 +4,7 @@
 
     <form method="post" @submit.prevent="runQuery()" ref="queryform">
       <textarea v-model="query" class="w-full h-64 bg-light-200 p-3 outline-none border border-light-300" ref="query"
-                v-on:keydown.ctrl.enter="runQuery()"></textarea>
+                v-on:keydown.esc="unfocusElement($event)" v-on:keydown.ctrl.enter="runQuery()"></textarea>
 
       <button class="btn mt-2">Run</button>
 
@@ -123,7 +123,12 @@
         this.sidebar_column_data       = column_num_keys;
         this.sidebar_column_table_data = table_num_keys;
         this.sidebarisopen             = true;
-      }
+      },
+
+      unfocusElement($event) {
+        $event.target.blur();
+        document.getElementById('app').focus();
+      },
 
     }
   }

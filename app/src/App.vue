@@ -1,5 +1,6 @@
 <template>
-  <div id="app" v-on:keyup.self.f="openSearchModal" v-on:keyup.self.e="openRecentTables" v-on:keyup.self.d="openDatabasesModal" tabindex="0">
+  <div id="app" v-on:keyup.self.f="openSearchModal" v-on:keyup.self.e="openRecentTables"
+       v-on:keyup.self.q="goToQuery" v-on:keyup.self.d="openDatabasesModal" tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
                  v-on:closesearchmodal="closeSearchModal()"
@@ -251,6 +252,10 @@
       SwitchTheme(theme_name) {
         document.documentElement.removeAttribute("class");
         document.documentElement.classList.add("theme-" + theme_name);
+      },
+
+      goToQuery() {
+        this.$router.push({name: 'query'});
       }
 
     }
