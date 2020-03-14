@@ -148,11 +148,11 @@
           this.up();
           evt.preventDefault();
         }
-        else if (evt.key === 'ArrowDown') {
+        else if (evt.key === 'ArrowDown' || evt.key === "`") {
           this.down();
           evt.preventDefault();
         }
-        else if (evt.key === 'ArrowRight') {
+        else if (evt.key === 'ArrowRight' || evt.key === 'Tab') {
           if(this.current == -1) return; // do nothing when we are not on a autocomplete item
           this.fillautocomplete(this.current);
           evt.preventDefault();
