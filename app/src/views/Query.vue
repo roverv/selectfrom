@@ -22,7 +22,14 @@
 
       <div v-if="query_result.result == 'success'">
 
-        <table cellspacing="0" class="table-data" v-if="tabledata.length > 0">
+        <table cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
+               @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"
+               @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+               @keydown.shift.right.prevent="focusCellNext($event,5)"
+               @keydown.shift.left.prevent="focusCellPrevious($event,5)"
+               @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
+               @keyup.q="$refs['query'].focus()"
+               @keydown.esc="unfocusDatatable()">
           <thead>
           <tr>
             <th v-for="column_meta in columns_meta">
@@ -33,7 +40,7 @@
           <tbody>
           <tr v-for="(row, row_index) in tabledata">
             <td class="table-data-row" v-for="(cell, index) in row" @dblclick="toggleRowSidebar(row_index)"
-                :class="{ ' sticky-first-row-cell' : (index == 0)}">
+                :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
               <span v-if="cell === null" class="null-value"><i>NULL</i></span>
               <span v-else>{{ cell }}</span>
             </td>
@@ -54,6 +61,7 @@
 
   import axios from 'axios';
   import RowSidebar from "@/components/RowSidebar";
+  import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
 
   export default {
     name: 'query',
@@ -75,6 +83,10 @@
     components: {
       RowSidebar
     },
+
+    mixins: [
+      TableKeyNavigation
+    ],
 
     mounted() {
       this.$refs.query.focus();
@@ -101,6 +113,9 @@
           this.query_result = response.data;
           this.tabledata    = this.query_result.rows;
           this.columns_meta = this.query_result.columns_meta;
+            this.$nextTick().then(function () {
+              vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
+            });
         }).catch(error => {
           console.log('-----error-------');
           console.log(error);
