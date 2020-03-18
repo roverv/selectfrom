@@ -17,8 +17,8 @@
           <thead>
           <tr>
             <th class="toggle-row">
-              <label for="all-page">
-                <input type="checkbox" id='all-page' class="hidden" />
+              <label for="check-all-rows">
+                <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event)" />
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                   <circle cx="12" cy="12" r="10"></circle>
                   <path
@@ -52,7 +52,7 @@
           <tr v-for="(row, row_index) in tabledata">
             <td class="toggle-row">
               <label>
-                <input type="checkbox" class="hidden" />
+                <input type="checkbox" class="hidden" :value="row_index" v-model="selected_rows" />
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                   <circle cx="12" cy="12" r="10"></circle>
                   <path
@@ -71,15 +71,16 @@
           </tbody>
         </table>
 
-        <div class="row-actions sticky bottom-0 left-0 z-30 w-full hidden" v-if="tabledata.length > 1">
+        <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
+             v-if="tabledata.length > 1 && selected_rows.length > 0">
 
-          <div class="py-3 px-2  flex items-center bg-dark-600 text-white">
+          <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
 
             <div class="font-bold mr-6">
-              5 rows
+              {{ selected_rows.length }} rows
             </div>
 
-            <a class="rows-action" href="">
+            <a class="rows-action" href="" v-if="selected_rows.length == 1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
                 <path class="text-gray-600"
                       d="M4 14a1 1 0 0 1 .3-.7l11-11a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-.7.3H5a1 1 0 0 1-1-1v-3z" />
@@ -96,7 +97,7 @@
               <span>Duplicate</span>
             </a>
 
-            <a class="rows-action" href="">
+            <a class="rows-action" @click="deleteRows()">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
                 <path class="text-gray-600"
                       d="M5 5h14l-.89 15.12a2 2 0 0 1-2 1.88H7.9a2 2 0 0 1-2-1.88L5 5zm5 5a1 1 0 0 0-1 1v6a1 1 0 0 0 2 0v-6a1 1 0 0 0-1-1zm4 0a1 1 0 0 0-1 1v6a1 1 0 0 0 2 0v-6a1 1 0 0 0-1-1z" />
@@ -180,11 +181,13 @@
         offset_rows: 0,
         endpoint_table_data: 'http://localhost/rove/api/tabledata.php?db=',
         endpoint_count_rows: 'http://localhost/rove/api/countrows.php?db=',
+        endpoint_delete_rows: 'http://localhost/rove/api/delete_rows.php?db=',
         order_by: '',
         order_direction: '',
         sidebarisopen: false,
         sidebar_row_data: [],
         sidebar_column_data: [],
+        selected_rows: [],
         is_fetching_data: false, // true when fetching data through ajax
       }
     },
@@ -269,7 +272,6 @@
           this.$nextTick().then(function () {
             // DOM updated
             if (vue_instance.column) {
-              console.log(vue_instance.column);
               vue_instance.gotocolumn(vue_instance.column);
             }
 
@@ -326,7 +328,7 @@
         this.is_fetching_data = true;
         axios.get(api_url).then(response => {
           vue_instance.total_amount_rows = response.data.amount_rows;
-          vue_instance.is_fetching_data = false;
+          vue_instance.is_fetching_data  = false;
         }).catch(error => {
           console.log('-----error-------');
           console.log(error);
@@ -357,11 +359,11 @@
           api_url += '&offset=' + this.offset_rows;
         }
 
-        let vue_instance = this;
+        let vue_instance              = this;
         vue_instance.is_fetching_data = true;
         axios.get(api_url).then(response => {
-          let extended_tabledata = this.tabledata.concat(response.data.data)
-          vue_instance.tabledata         = extended_tabledata;
+          let extended_tabledata        = this.tabledata.concat(response.data.data)
+          vue_instance.tabledata        = extended_tabledata;
           vue_instance.is_fetching_data = false;
         }).catch(error => {
           console.log('-----error-------');
@@ -393,13 +395,83 @@
 
           vue_instance.is_fetching_data = true;
           axios.get(api_url).then(response => {
-            vue_instance.tabledata = response.data.data;
+            vue_instance.tabledata        = response.data.data;
             vue_instance.is_fetching_data = false;
           }).catch(error => {
             console.log('-----error-------');
             console.log(error);
           })
         }
+      },
+
+      toggleAllRows($event) {
+        if ($event.target.checked) {
+          this.selected_rows = [];
+          for (let row_index in Object.keys(this.tabledata)) {
+            this.selected_rows.push(row_index);
+          }
+        } else {
+          this.selected_rows = [];
+        }
+      },
+
+      deleteRows() {
+        let unique_columns = this.getUniqueColumns();
+
+        if (unique_columns.length == 0) {
+          alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
+          return;
+        }
+
+        let ask_confirm = confirm('Are you sure you want to delete the selected rows?');
+        if (!ask_confirm) return;
+
+        let delete_by_column = unique_columns[0].Field;
+
+        let vue_instance = this;
+        let delete_by_rows   = this.selected_rows.map(function(row_index) {
+          return vue_instance.tabledata[row_index][delete_by_column];
+        });
+
+        let params = new URLSearchParams();
+        params.append('delete_by_column', delete_by_column);
+        for(let row_index in delete_by_rows) {
+          params.append('delete_by_rows[]', delete_by_rows[row_index]);
+        }
+
+        let api_url = this.endpoint_delete_rows + this.active_database + '&tablename=' + this.tableid;
+        axios.post(api_url, params).then(response => {
+          // remove the selected rows from the data, sort by highest number first, else we will remove the wrong rows because of numerical order
+          let selected_rows_sorted = this.selected_rows.sort(function(a, b){return b-a});
+          for(let row_index in selected_rows_sorted) {
+            this.tabledata.splice(selected_rows_sorted[row_index], 1);
+          }
+          this.selected_rows = [];
+        }).catch(error => {
+          console.log('-----error-------');
+          console.log(error);
+        })
+
+      },
+
+      // get the column(s) of a table by which it is identifiable
+      getUniqueColumns() {
+        let key_of_primary_column = this.columns.filter(function (column_index) {
+          if (column_index.Key === 'PRI') {
+            return column_index;
+          }
+        });
+        if (key_of_primary_column.length > 0) return key_of_primary_column;
+
+        let key_of_unique_column = this.columns.filter(function (column_index) {
+          if (column_index.Key === 'UNI') {
+            return column_index;
+          }
+        });
+        if (key_of_unique_column.length > 0) return key_of_unique_column;
+
+        // todo: unique columns ophalen op basis van alle kolommen, grote text kolommen (json, TEXT) via MD5 doen, zie adminer: select.inc.php:381
+        return [];
       },
 
     },
