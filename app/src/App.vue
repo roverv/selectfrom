@@ -61,7 +61,7 @@
       <TableList :active_database="active_database" />
 
       <div class="flex-grow py-6 relative pt-20 mb-4">
-        <router-view :key="$route.fullPath" :active_database="active_database" v-on:addrecenttable="addRecentTable" />
+        <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" :active_database="active_database" v-on:addrecenttable="addRecentTable" />
       </div>
 
     </div>
@@ -125,6 +125,9 @@
   import RecentTables from "./components/RecentTables";
   import SwitchDatabase from "./components/SwitchDatabase";
   import axios from 'axios';
+
+  // use this to reload the main component
+  // this.$store.state.reloadMainComponentKey += 1;
 
   export default {
 
