@@ -1,5 +1,6 @@
 <template>
-  <div id="app" tabindex="0">
+  <div id="app" v-on:keyup.self.f="openSearchModal" v-on:keyup.self.e="openRecentTables"
+       v-on:keyup.self.q="goToQuery" v-on:keyup.self.d="openDatabasesModal" v-on:keyup.self.r="refreshPage" tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
                  v-on:closesearchmodal="closeSearchModal()"
@@ -157,12 +158,6 @@
       if (sessionStorage.getItem('recent_tables')) {
         this.recent_tables = JSON.parse(sessionStorage.getItem('recent_tables'));
       }
-
-      window.addEventListener('keyup', this.triggerKeyUp);
-    },
-
-    beforeDestroy() {
-      window.removeEventListener('keyup', this.triggerKeyUp);
     },
 
     watch: {
@@ -184,22 +179,6 @@
     },
 
     methods: {
-
-      triggerKeyUp: function(evt) {
-        if (evt.key === 'f') {
-          this.openSearchModal();
-        }
-        else if (evt.key === 'e') {
-          this.openRecentTables();
-        }
-        else if (evt.key === 'q') {
-          this.goToQuery();
-        }
-        else if (evt.key === 'd') {
-          this.openDatabasesModal();
-
-        }
-      },
 
       getDatabases() {
         axios.get(this.endpoint + 'databases.php').then(response => {
@@ -280,7 +259,11 @@
 
       goToQuery() {
         this.$router.push({name: 'query'});
-      }
+      },
+
+      refreshPage() {
+        this.$store.state.reloadMainComponentKey += 1;
+      },
 
     }
   }
