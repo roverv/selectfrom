@@ -81,16 +81,22 @@
     computed: {
       // Filtering the suggestion based on the input
       matches() {
+        let search_results = [];
         if (this.can_autocomplete_column) {
           let search_values = this.search_value.split(this.column_split_value);
-          return this.tables_with_columns[search_values[0]].filter((column_name) => {
+          search_results = this.tables_with_columns[search_values[0]].filter((column_name) => {
             return this.fussySearchMatch(search_values[1], column_name);
           });
         } else {
-          return this.tables.filter((table_name) => {
+          search_results =  this.tables.filter((table_name) => {
             return this.fussySearchMatch(this.search_value, table_name);
           });
         }
+
+        // sort on length, shortest first, because most of the time the shortest table name is the one you want
+        return search_results.sort((value_1, value_2) => {
+          return value_1.length - value_2.length;
+        });
       },
 
       openAutocomplete() {
@@ -268,7 +274,7 @@
           this.$router.push({name: 'table', params: {tableid: this.search_value}});
         }
         // when on the same route, router wont change component, so close the modal
-        this.$emit('closemodal');
+        this.close();
       },
 
       normalizeValue(value) {
