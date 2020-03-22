@@ -13,7 +13,11 @@
                @keydown.shift.right.prevent="focusCellNext($event,5)"
                @keydown.shift.left.prevent="focusCellPrevious($event,5)"
                @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
-               @keydown.esc="unfocusDatatable()">
+               @keydown.esc="unfocusDatatable()"
+               @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
+               @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
+               @keydown.open-database-list="unfocusDatatable()"
+        >
           <thead>
           <tr>
             <th class="toggle-row">

@@ -7,6 +7,15 @@ import '@/assets/css/main.css'
 
 Vue.config.productionTip = false
 
+// use: https://keycode.info/
+Vue.config.keyCodes = {
+  "open-search": 70, // f
+  "open-recent-tables": 69, // e
+  "open-database-list": 68, // d
+  "refresh-page": 82, // r
+  "to-query": 81, // q
+}
+
 new Vue({
   router,
   store,

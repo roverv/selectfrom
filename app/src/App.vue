@@ -1,6 +1,7 @@
-<template>
-  <div id="app" v-on:keyup.self.f="openSearchModal" v-on:keyup.self.e="openRecentTables"
-       v-on:keyup.self.q="goToQuery" v-on:keyup.self.d="openDatabasesModal" v-on:keyup.self.r="refreshPage" tabindex="0">
+s<template>
+  <div id="app" v-on:keyup.self.open-search="openSearchModal" v-on:keyup.self.open-recent-tables="openRecentTables"
+       v-on:keyup.self.to-query="goToQuery" v-on:keyup.self.open-database-list="openDatabasesModal"
+       v-on:keyup.self.refresh-page="refreshPage" tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
                  v-on:closesearchmodal="closeSearchModal()"
