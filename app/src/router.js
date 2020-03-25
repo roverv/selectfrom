@@ -25,7 +25,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
     },
     {
-      path: '/database',
+      path: '/database/:database',
       name: 'database',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route

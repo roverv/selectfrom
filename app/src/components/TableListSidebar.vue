@@ -47,7 +47,7 @@
   import TableListSettingDropdown from '@/components/TableListSettingDropdown.vue'
 
   export default {
-    name: 'TableList',
+    name: 'TableListSidebar',
     props: ['active_database'],
 
     data() {

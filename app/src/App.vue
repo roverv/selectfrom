@@ -35,6 +35,14 @@ s<template>
           <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase" :active_database="active_database"
                           :databases="databases"></SwitchDatabase>
 
+          <router-link :to="{ name: 'database', params: {database: active_database }}" class="mx-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 fill-current">
+              <path class="text-gray-300"
+                    d="M17.56 17.66a8 8 0 0 1-11.32 0L1.3 12.7a1 1 0 0 1 0-1.42l4.95-4.95a8 8 0 0 1 11.32 0l4.95 4.95a1 1 0 0 1 0 1.42l-4.95 4.95zM11.9 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"></path>
+              <circle cx="12" cy="12" r="3" class="text-gray-400"></circle>
+            </svg>
+          </router-link>
+
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
                style="transform: rotate(90deg);">
             <path
@@ -59,7 +67,7 @@ s<template>
 
     <div class="flex pr-8 w-full justify-between mb-4 text-default">
 
-      <TableList :active_database="active_database" />
+      <TableListSidebar :active_database="active_database" />
 
       <div class="flex-grow py-6 relative pt-20 mb-4">
         <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" :active_database="active_database" v-on:addrecenttable="addRecentTable" />
@@ -122,7 +130,7 @@ s<template>
 <script>
   import SearchModal from "./components/SearchModal";
   import DatabasesModal from "./components/DatabasesModal";
-  import TableList from '@/components/TableList.vue'
+  import TableListSidebar from "./components/TableListSidebar";
   import RecentTables from "./components/RecentTables";
   import SwitchDatabase from "./components/SwitchDatabase";
   import axios from 'axios';
@@ -172,10 +180,10 @@ s<template>
     },
 
     components: {
+      TableListSidebar,
       RecentTables,
       SearchModal,
       DatabasesModal,
-      TableList,
       SwitchDatabase
     },
 

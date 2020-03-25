@@ -8,7 +8,7 @@
       <div class="relative w-full">
 
         <div v-cloak v-if="is_fetching_data === false && tabledata.length == 0">
-          <p class="bg-light-100 border border-light-200 text-gray-400 px-2 py-2 inline-block">No rows found</p>
+          <p class="bg-light-100 text-gray-400 px-2 py-2 inline-block">No rows found</p>
         </div>
 
         <table cellspacing="0" class="table-data" v-if="tabledata.length > 1" ref="datatable"

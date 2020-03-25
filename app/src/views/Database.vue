@@ -1,15 +1,16 @@
 <template>
   <div class="database">
     <br>
-    <TableList />
+<!--    <TableList :active_database="active_database" />-->
   </div>
 </template>
 
 <script>
-  import TableList from '@/components/TableList.vue'
+  // import TableList from '@/components/TableList.vue'
 
   export default {
     name: 'database',
+    props: ['active_database'],
     components: {
       TableList,
     },
