@@ -61,12 +61,7 @@
 
       active_database: function (value) {
         if (value) {
-          if (!localStorage.getItem('tables_with_columns')) {
-            this.getTablesWithColumns();
-          } else {
-            this.tables_with_columns = JSON.parse(localStorage.getItem('tables_with_columns'));
-            this.tables              = Object.keys(this.tables_with_columns);
-          }
+          this.getTablesWithColumns();
         }
       },
 
@@ -154,11 +149,11 @@
           this.up();
           evt.preventDefault();
         }
-        else if (evt.key === 'ArrowDown') {
+        else if (evt.key === 'ArrowDown' || evt.key === 'Tab') {
           this.down();
           evt.preventDefault();
         }
-        else if (evt.key === 'ArrowRight' || evt.key === 'Tab') {
+        else if (evt.key === 'ArrowRight') {
           if(this.current == -1) return; // do nothing when we are not on a autocomplete item
           this.fillautocomplete(this.current);
           evt.preventDefault();
@@ -180,6 +175,13 @@
       },
 
       getTablesWithColumns() {
+
+        if (localStorage.getItem('tables_with_columns')) {
+          this.tables_with_columns = JSON.parse(localStorage.getItem('tables_with_columns'));
+          this.tables              = Object.keys(this.tables_with_columns);
+          return;
+        }
+
         axios.get(this.endpoint + this.active_database).then(response => {
           this.tables_with_columns = response.data;
           this.tables              = Object.keys(this.tables_with_columns);
@@ -247,7 +249,7 @@
         }
 
         // cannot go to a column that does not exists, skip
-        if (column != '' && this.tables_with_columns[table_id].includes(column) === false) {
+        if (has_id == '' && column != '' && this.tables_with_columns[table_id].includes(column) === false) {
           // if the table is not found, but there are autocomplete items, just replace the value with the first matching autocomplete table item
           // very handy when doing fuzzy search: orgadd > ENTER > organisation_address
           if(this.matches.length > 0) {
@@ -281,8 +283,8 @@
             this.$router.push({name: 'tablewithcolumn', params: {tableid: table_id, column: column}});
           } else if (this.column_split_value == '|') {
             this.$router.push({
-              name: 'tablegroupbycolumn',
-              params: {tableid: table_id, querytype: 'groupby', column: column}
+              name: 'tablewithcolumnvalue',
+              params: {tableid: table_id, column: column, value: 'groupby',}
             });
           }
         } else {
