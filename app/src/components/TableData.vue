@@ -7,6 +7,10 @@
 
       <div class="relative w-full">
 
+        <div v-cloak v-if="is_fetching_data === false && tabledata.length == 0">
+          <p class="bg-light-100 border border-light-200 text-gray-400 px-2 py-2 inline-block">No rows found</p>
+        </div>
+
         <table cellspacing="0" class="table-data" v-if="tabledata.length > 1" ref="datatable"
                @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"
                @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
@@ -192,6 +196,7 @@
 
     computed: {
       columns_halved: function () {
+        if(this.columns.length == 0) return [];
         let halfwayThrough  = Math.floor(this.columns.length / 2)
         let arrayFirstHalf  = this.columns.slice(0, halfwayThrough);
         let arraySecondHalf = this.columns.slice(halfwayThrough, this.columns.length);
@@ -255,12 +260,14 @@
           this.columns   = response.data.columns;
           this.$nextTick().then(function () {
             // DOM updated
-            if (vue_instance.column) {
+            if (vue_instance.column && vue_instance.tabledata.length > 0) {
               vue_instance.gotocolumn(vue_instance.column);
             }
 
             // set focus on first cell, for cell navigation with keyboard
-            vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[1].focus();
+            if (vue_instance.tabledata.length > 0) {
+              vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[1].focus();
+            }
 
             vue_instance.is_fetching_data = false;
           });
@@ -412,22 +419,24 @@
 
         let delete_by_column = unique_columns[0].Field;
 
-        let vue_instance = this;
-        let delete_by_rows   = this.selected_rows.map(function(row_index) {
+        let vue_instance   = this;
+        let delete_by_rows = this.selected_rows.map(function (row_index) {
           return vue_instance.tabledata[row_index][delete_by_column];
         });
 
         let params = new URLSearchParams();
         params.append('delete_by_column', delete_by_column);
-        for(let row_index in delete_by_rows) {
+        for (let row_index in delete_by_rows) {
           params.append('delete_by_rows[]', delete_by_rows[row_index]);
         }
 
         let api_url = this.endpoint_delete_rows + this.active_database + '&tablename=' + this.tableid;
         axios.post(api_url, params).then(response => {
           // remove the selected rows from the data, sort by highest number first, else we will remove the wrong rows because of numerical order
-          let selected_rows_sorted = this.selected_rows.sort(function(a, b){return b-a});
-          for(let row_index in selected_rows_sorted) {
+          let selected_rows_sorted = this.selected_rows.sort(function (a, b) {
+            return b - a
+          });
+          for (let row_index in selected_rows_sorted) {
             this.tabledata.splice(selected_rows_sorted[row_index], 1);
           }
           this.selected_rows = [];
@@ -479,11 +488,13 @@
   }
 
   .rows-action {
-    @apply  inline-flex px-6 leading-tight items-center text-light-300 border-r border-light-100;
+    @apply inline-flex px-6 leading-tight items-center text-light-300 border-r border-light-100;
   }
+
   .rows-action:last-child {
     @apply border-0;
   }
+
   .rows-action:hover {
     @apply underline;
   }
