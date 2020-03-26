@@ -1,0 +1,229 @@
+<template>
+  <div>
+
+    <div>
+
+      <h2 class="mb-2 text-xl">
+        <span class="text-gray-500 text-lg">{{ tables.length }}</span>
+        Tables
+      </h2>
+
+      <table cellspacing="0" class="table-data" v-if="tables.length > 1">
+        <thead>
+        <tr>
+          <th class="toggle-row">
+            <label for="check-all-rows">
+              <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event)" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path
+                  d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
+              </svg>
+            </label>
+          </th>
+          <th v-for="table_list_header in table_list_headers">
+            <a @click="orderByColumn(table_list_header)" class="column-order-link">
+              <span>{{ table_list_header }}</span>
+              <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
+                   v-if="order_by == table_list_header && order_direction == 'asc'">
+                <path class="text-highlight-400"
+                      d="M6 11V4a1 1 0 1 1 2 0v7h3a1 1 0 0 1 .7 1.7l-4 4a1 1 0 0 1-1.4 0l-4-4A1 1 0 0 1 3 11h3z"></path>
+                <path class="text-highlight-700"
+                      d="M21 21H8a1 1 0 0 1 0-2h13a1 1 0 0 1 0 2zm0-4h-9a1 1 0 0 1 0-2h9a1 1 0 0 1 0 2zm0-4h-5a1 1 0 0 1 0-2h5a1 1 0 0 1 0 2z"></path>
+              </svg>
+              <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
+                   v-if="order_by == table_list_header && order_direction == 'desc'">
+                <path class="text-highlight-400"
+                      d="M18 13v7a1 1 0 0 1-2 0v-7h-3a1 1 0 0 1-.7-1.7l4-4a1 1 0 0 1 1.4 0l4 4A1 1 0 0 1 21 13h-3z"></path>
+                <path class="text-highlight-700"
+                      d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
+              </svg>
+            </a>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(table, table_index) in tables">
+          <td class="toggle-row">
+            <label>
+              <input type="checkbox" class="hidden" :value="table_index" v-model="selected_rows" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path
+                  d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
+              </svg>
+            </label>
+          </td>
+          <td class="table-data-row" v-for="(table_list_header, index) in table_list_headers"
+              @click="$event.target.focus()" tabindex="1"
+              :class="{ ' sticky-first-row-cell' : (index == 0)}">
+            <router-link v-if="table_list_header == 'Name'" :to="{ name: 'table', params: { tableid: table[table_list_header] } }">{{ table[table_list_header] }}</router-link>
+            <span v-else-if="table_list_header == 'Size'" v-html="showTableSize(table)"></span>
+            <span v-else-if="table_list_header == 'Rows' || table_list_header == 'Auto_increment'">{{ table[table_list_header] | formatNumber }}</span>
+            <span v-else>{{ table[table_list_header] }}</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
+           v-if="tables.length > 1 && selected_rows.length > 0">
+
+        <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
+
+          <div class="font-bold mr-6">
+            {{ selected_rows.length }} tables
+          </div>
+
+          <a class="rows-action">
+            <span>Truncate</span>
+          </a>
+
+          <a class="rows-action">
+            <span>Drop</span>
+          </a>
+
+        </div>
+      </div>
+
+
+    </div>
+
+  </div>
+</template>
+
+<script>
+
+  import axios from 'axios'
+  import {number_format} from '../util'
+
+  export default {
+    name: 'TableList',
+    props: ['active_database'],
+
+    data() {
+      return {
+        tables: null,
+        endpoint: 'http://localhost/rove/api/tables.php?db=',
+        selected_rows: [],
+        order_by: '',
+        order_direction: '',
+      }
+    },
+
+    components: {},
+
+    created() {
+      if (this.active_database) this.getAllTables();
+    },
+
+    filters : {
+      formatNumber(number) {
+        return number_format(number, 0, ',', '.');
+      }
+    },
+
+    computed: {
+      table_list_headers: function() {
+        return ["Name", "Engine", "Collation", "Size", "Rows", "Auto_increment"];
+        // Auto_increment:1
+        // Avg_row_length:0
+        // Check_time:null
+        // Checksum:null
+        // Collation:"utf8_general_ci"
+        // Comment:""
+        // Create_options:""
+        // Create_time:"2020-03-25 15:13:31"
+        // Data_free:0
+        // Data_length:16384
+        // Engine:"InnoDB"
+        // Index_length:32768
+        // Max_data_length:0
+        // Name:"auction_bids"
+        // Row_format:"Dynamic"
+        // Rows:0
+        // Update_time:null
+        // Version:10
+      },
+
+    },
+
+    methods: {
+      getAllTables() {
+        if (localStorage.getItem('tables')) {
+          this.tables = JSON.parse(localStorage.getItem('tables'));
+          return;
+        }
+        axios.get(this.endpoint + this.active_database).then(response => {
+          this.tables = response.data;
+          localStorage.setItem('tables', JSON.stringify(this.tables));
+        }).catch(error => {
+          console.log('-----error-------');
+          console.log(error);
+        })
+      },
+
+      getSize(table_info) {
+        return table_info.Data_length + table_info.Index_length;
+      },
+
+      showTableSize(table_info) {
+        let size = this.getSize(table_info) / 1024;
+        if(size > 1000) {
+          size /= 1024;
+          return number_format(size, 2, ',', '.') + ' <span class="text-gray-400">MB</span>';
+        }
+        return size.toFixed(0) + ' <span class="text-gray-500">KB</span>';
+      },
+
+      toggleAllRows($event) {
+        if ($event.target.checked) {
+          this.selected_rows = [];
+          for (let row_index in Object.keys(this.tables)) {
+            this.selected_rows.push(row_index);
+          }
+        } else {
+          this.selected_rows = [];
+        }
+      },
+
+      orderByColumn(column) {
+        this.order_by        = column;
+        this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
+        let reverse = this.order_direction == 'asc' ? 1 : -1;
+
+        let vue_instance = this;
+
+        // sort numeric
+        if(this.order_by == 'Sort' || this.order_by == 'Auto_increment') {
+          this.tables.sort(function(a, b) {
+            return reverse * (a[column] - b[column]);
+          });
+        }
+        // sort by function
+        else if(this.order_by == 'Size') {
+          this.tables.sort(function(a, b) {
+            return reverse * (vue_instance.getSize(a) - vue_instance.getSize(b));
+          });
+        }
+        // sort by string
+        else {
+          this.tables.sort(function(a, b) {
+            if(a[column] == b[column]) return 0;
+            return reverse * ((a[column] > b[column]) - (b[column] > a[column]));
+          });
+        }
+
+        // undo selection because of indexes
+        this.selected_rows = [];
+      },
+
+    },
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+
+
+</style>

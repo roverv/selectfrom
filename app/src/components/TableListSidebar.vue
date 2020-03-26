@@ -99,11 +99,7 @@
         axios.get(this.endpoint + this.active_database).then(response => {
           this.tables_all = response.data;
 
-          let tables_names = [];
-          this.tables_all.forEach(function (table_data) {
-            tables_names.push(table_data.Name);
-          });
-          localStorage.setItem('tables', JSON.stringify(tables_names));
+          localStorage.setItem('tables', JSON.stringify(this.tables_all));
         }).catch(error => {
           console.log('-----error-------');
           console.log(error);

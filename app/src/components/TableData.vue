@@ -487,16 +487,4 @@
     @apply bg-dark-600;
   }
 
-  .rows-action {
-    @apply inline-flex px-6 leading-tight items-center text-light-300 border-r border-light-100;
-  }
-
-  .rows-action:last-child {
-    @apply border-0;
-  }
-
-  .rows-action:hover {
-    @apply underline;
-  }
-
 </style>
