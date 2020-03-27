@@ -1,6 +1,14 @@
 .btn {
-  @apply inline-flex rounded py-1 px-2 items-center px-4 border-2 border-light-100 bg-highlight-200 text-white;
+  @apply inline-flex rounded py-1 px-2 items-center px-4 border-2 border-light-100 bg-light-100 text-white;
 }
 .btn:hover {
-  @apply bg-light-100;
+  @apply  bg-highlight-200 no-underline;
 }
+
+.btn.highlight {
+  @apply inline-flex rounded py-1 px-2 items-center px-4 border-2 border-light-100 bg-highlight-200 text-white;
+}
+.btn.highlight:hover {
+  @apply bg-light-200 no-underline;
+}
+

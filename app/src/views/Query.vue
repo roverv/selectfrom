@@ -3,10 +3,12 @@
     <h1 class="text-xl mb-4">Execute query</h1>
 
     <form method="post" @submit.prevent="runQuery()" ref="queryform">
-      <textarea v-model="query" class="w-full h-64 bg-light-200 p-3 outline-none border border-light-300" ref="query"
-                v-on:keydown.esc="unfocusElement($event)" v-on:keydown.ctrl.enter="runQuery()"></textarea>
+        <textarea ref="query" id="query"
+                  v-on:keydown.esc="unfocusElement($event)" v-on:keydown.ctrl.enter="runQuery()"></textarea>
 
-      <button class="btn mt-2">Run</button>
+      <button class="btn mt-4 highlight">Run</button>
+
+      <a @click="formatQuery()" class="btn mt-4 ml-6">Format query</a>
 
       <hr class="border-light-200 my-4">
 
@@ -62,6 +64,13 @@
   import axios from 'axios';
   import RowSidebar from "@/components/RowSidebar";
   import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
+  import CodeMirror from 'codemirror/lib/codemirror.js';
+  import 'codemirror/lib/codemirror.css';
+  import "codemirror/mode/sql/sql.js";
+  import "codemirror/addon/hint/show-hint.css";
+  import "codemirror/addon/hint/show-hint";
+  import "codemirror/addon/hint/sql-hint";
+  import sqlFormatter from "sql-formatter";
 
   export default {
     name: 'query',
@@ -69,7 +78,6 @@
     data() {
       return {
         endpoint: 'http://localhost/rove/api/query.php?db=',
-        query: '',
         query_result: {},
         tabledata: [],
         columns_meta: [],
@@ -90,6 +98,29 @@
 
     mounted() {
       this.$refs.query.focus();
+
+      let vue_instance = this;
+
+      window.editor = CodeMirror.fromTextArea(document.getElementById('query'), {
+        mode: "text/x-mysql",
+        indentWithTabs: true,
+        smartIndent: true,
+        lineNumbers: true,
+        matchBrackets: true,
+        autofocus: true,
+        viewportMargin: Infinity,
+        extraKeys: {"Ctrl-Space": "autocomplete", 'Ctrl-Enter' : function() {
+            vue_instance.runQuery();
+        }
+          },
+        hintOptions: {
+          // todo: fill hints
+          tables: {
+            users: ["name", "score", "birthDate"],
+            countries: ["name", "population", "size"]
+          }
+        }
+      });
     },
 
     computed: {
@@ -108,14 +139,15 @@
 
         let vue_instance = this;
 
+        let query = window.editor.getValue();
         const querystring = require('querystring');
-        axios.post(api_url, querystring.stringify({query: this.query})).then(response => {
+        axios.post(api_url, querystring.stringify({query: query})).then(response => {
           this.query_result = response.data;
           this.tabledata    = this.query_result.rows;
           this.columns_meta = this.query_result.columns_meta;
-            this.$nextTick().then(function () {
-              vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
-            });
+          this.$nextTick().then(function () {
+            vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
+          });
         }).catch(error => {
           console.log('-----error-------');
           console.log(error);
@@ -140,6 +172,10 @@
         this.sidebarisopen             = true;
       },
 
+      formatQuery() {
+        window.editor.setValue(sqlFormatter.format(window.editor.getValue()))
+      },
+
       unfocusElement($event) {
         $event.target.blur();
         document.getElementById('app').focus();
@@ -149,4 +185,24 @@
   }
 </script>
 
+
+<style>
+  .cm-s-default.CodeMirror {
+    @apply bg-light-200 outline-none border border-light-300 text-gray-300 text-xl h-auto;
+    /*@apply bg-light-300 outline-none border border-light-300 text-dark-600 text-xl;*/
+  }
+
+  .cm-s-default .CodeMirror-gutters {
+    @apply bg-transparent border-light-300 border-r;
+  }
+
+  .cm-s-default .CodeMirror-linenumber {
+    @apply text-white;
+  }
+
+  .cm-s-default div.CodeMirror-selected {
+    @apply bg-light-100;
+  }
+
+</style>
 
