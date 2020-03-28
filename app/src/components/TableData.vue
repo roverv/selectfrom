@@ -160,7 +160,7 @@
 
   export default {
     name: 'TableData',
-    props: ['tableid', 'column', 'value', 'active_database'],
+    props: ['tableid', 'column', 'value'],
     data() {
       return {
         tabledata: [],
@@ -201,6 +201,10 @@
         let arrayFirstHalf  = this.columns.slice(0, halfwayThrough);
         let arraySecondHalf = this.columns.slice(halfwayThrough, this.columns.length);
         return [arrayFirstHalf, arraySecondHalf];
+      },
+
+      active_database() {
+        return this.$store.state.activeDatabase;
       }
     },
 

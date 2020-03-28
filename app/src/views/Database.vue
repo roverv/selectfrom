@@ -1,7 +1,7 @@
 <template>
   <div class="database">
     <br>
-    <TableList :active_database="active_database" />
+    <TableList />
   </div>
 </template>
 
@@ -10,7 +10,6 @@
 
   export default {
     name: 'database',
-    props: ['active_database'],
     components: {
       TableList,
     },

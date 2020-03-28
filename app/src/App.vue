@@ -8,8 +8,7 @@ s<template>
                  :active_database="active_database" />
 
     <DatabasesModal v-if="active_database && databasemodalopen" :modalisopen="databasemodalopen"
-                    v-on:closedatabasesmodal="closeDatabasesModal()" v-on:setActiveDatabase="setActiveDatabase"
-                    :databases="databases" />
+                    v-on:closedatabasesmodal="closeDatabasesModal()" v-on:setActiveDatabase="setActiveDatabase" />
 
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen"
                   :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0"
@@ -32,8 +31,7 @@ s<template>
               d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
 
-          <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase" :active_database="active_database"
-                          :databases="databases"></SwitchDatabase>
+          <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase"></SwitchDatabase>
 
           <router-link :to="{ name: 'database', params: {database: active_database }}" class="mx-2">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 fill-current">
@@ -67,10 +65,10 @@ s<template>
 
     <div class="flex pr-8 w-full justify-between mb-4 text-default">
 
-      <TableListSidebar :active_database="active_database" />
+      <TableListSidebar />
 
       <div class="flex-grow py-6 relative pt-20 mb-4">
-        <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" :active_database="active_database" v-on:addrecenttable="addRecentTable" />
+        <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" v-on:addrecenttable="addRecentTable" />
       </div>
 
     </div>
@@ -146,23 +144,14 @@ s<template>
         searchmodalopen: false,
         databasemodalopen: false,
         recenttablesopen: false,
-        databases: [],
-        active_database: '',
         recent_tables: [],
         tables: [],
       }
     },
 
     created() {
-      if (!localStorage.getItem('databases')) {
-        this.getDatabases();
-      } else {
-        this.databases = JSON.parse(localStorage.getItem('databases'));
-        this.tables    = Object.keys(this.databases);
-        if (localStorage.getItem('active_database')) {
-          this.active_database = localStorage.getItem('active_database');
-        }
-      }
+
+      this.$store.dispatch("databases/findAll");
 
       if (sessionStorage.getItem('recent_tables')) {
         this.recent_tables = JSON.parse(sessionStorage.getItem('recent_tables'));
@@ -187,26 +176,16 @@ s<template>
       SwitchDatabase
     },
 
+    computed: {
+      active_database() {
+        return this.$store.state.activeDatabase;
+      }
+    },
+
     methods: {
 
-      getDatabases() {
-        axios.get(this.endpoint + 'databases.php').then(response => {
-          this.databases = response.data;
-          localStorage.setItem('databases', JSON.stringify(response.data));
-          if (localStorage.getItem('active_database')) {
-            this.active_database = localStorage.getItem('active_database');
-          }
-        }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
-        })
-      },
-
       setActiveDatabase(active_database) {
-        localStorage.clear();
-        sessionStorage.clear();
-        localStorage.setItem('active_database', active_database);
-        this.active_database = active_database;
+        this.$store.commit("setActiveDatabase", active_database);
         this.$router.push({name: 'home'});
       },
 

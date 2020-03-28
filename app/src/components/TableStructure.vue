@@ -39,7 +39,7 @@
 
   export default {
     name: 'TableStructure',
-    props: ['tableid', 'active_database'],
+    props: ['tableid'],
     data() {
       return {
         columns: [],
@@ -55,7 +55,11 @@
       this.getAllPosts();
     },
 
-    computed: {},
+    computed: {
+      active_database() {
+        return this.$store.state.activeDatabase;
+      }
+    },
 
     watch: {
       // force update on route change

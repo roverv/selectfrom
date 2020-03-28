@@ -48,7 +48,6 @@
 
   export default {
     name: 'TableListSidebar',
-    props: ['active_database'],
 
     data() {
       return {
@@ -91,6 +90,10 @@
         return this.tables_all.filter(function (table_data) {
           return !vue.only_show_tables_with_rows || table_data.Rows > 0;
         })
+      },
+
+      active_database() {
+        return this.$store.state.activeDatabase;
       }
     },
 

@@ -74,7 +74,6 @@
 
   export default {
     name: 'query',
-    props: ['active_database'],
     data() {
       return {
         endpoint: 'http://localhost/rove/api/query.php?db=',
@@ -129,6 +128,10 @@
           return Object.keys(this.tabledata[0]);
         }
         return [];
+      },
+
+      active_database() {
+        return this.$store.state.activeDatabase;
       }
     },
 

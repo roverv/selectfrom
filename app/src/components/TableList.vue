@@ -99,7 +99,6 @@
 
   export default {
     name: 'TableList',
-    props: ['active_database'],
 
     data() {
       return {
@@ -145,6 +144,10 @@
         // Update_time:null
         // Version:10
       },
+
+      active_database() {
+        return this.$store.state.activeDatabase;
+      }
 
     },
 

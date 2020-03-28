@@ -1,5 +1,5 @@
 <template>
-  <TableData :tableid="tableid" :column="column" :value="value" :active_database="active_database" />
+  <TableData :tableid="tableid" :column="column" :value="value" />
 </template>
 
 <script>
@@ -7,7 +7,7 @@
 
   export default {
     name: 'table',
-    props: ['tableid', 'column', 'value', 'active_database'],
+    props: ['tableid', 'column', 'value'],
     components: {
       TableData,
     },

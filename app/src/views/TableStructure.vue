@@ -1,5 +1,5 @@
 <template>
-  <TableStructure :tableid="tableid" :active_database="active_database" />
+  <TableStructure :tableid="tableid" />
 </template>
 
 <script>
@@ -7,7 +7,7 @@
 
   export default {
     name: 'structure',
-    props: ['tableid', 'active_database'],
+    props: ['tableid'],
     components: {
       TableStructure,
     },

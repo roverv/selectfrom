@@ -33,7 +33,7 @@
 
   export default {
     name: 'DatabaseModal',
-    props: ['modalisopen', 'databases'],
+    props: ['modalisopen'],
     data() {
       return {
         search_value: '',
@@ -71,6 +71,10 @@
           return this.list_databases.filter((database_name) => {
             return this.fussySearchMatch(this.search_value, database_name);
           });
+      },
+
+      databases() {
+        return this.$store.getters["databases/databases"];
       },
 
       openAutocomplete() {
