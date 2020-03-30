@@ -4,8 +4,7 @@ s<template>
        v-on:keyup.self.refresh-page="refreshPage" tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
-                 v-on:closesearchmodal="closeSearchModal()"
-                 :active_database="active_database" />
+                 v-on:closesearchmodal="closeSearchModal()" />
 
     <DatabasesModal v-if="active_database && databasemodalopen" :modalisopen="databasemodalopen"
                     v-on:closedatabasesmodal="closeDatabasesModal()" v-on:setActiveDatabase="setActiveDatabase" />

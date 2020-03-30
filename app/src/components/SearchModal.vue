@@ -29,23 +29,18 @@
 
 <script>
 
-  import axios from 'axios'
-
   export default {
     name: 'SearchModal',
-    props: ['modalisopen', 'active_database'],
+    props: ['modalisopen'],
     data() {
       return {
         search_value: '',
-        tables_with_columns: [],
-        tables: [],
         endpoint: 'http://localhost/rove/api/tables_with_columns.php?db=',
         current: -1
       }
     },
 
     created() {
-      if(this.active_database) this.getTablesWithColumns();
       document.addEventListener('keydown', this.triggerKeyDown);
     },
 
@@ -58,13 +53,6 @@
     },
 
     watch: {
-
-      active_database: function (value) {
-        if (value) {
-          this.getTablesWithColumns();
-        }
-      },
-
       matches: function () {
         // when there are no matches, set the current back on the input (-1), this way fillautocomplete wont return undefined
         if (this.matches.length <= 0) {
@@ -118,6 +106,14 @@
         let search_values = this.search_value.split(this.column_split_value);
         if (this.tables_with_columns[search_values[0]] !== 'undefined') return true;
         return false;
+      },
+
+      tables_with_columns() {
+        return this.$store.getters["tables/tablesWithColumns"];
+      },
+
+      tables() {
+        return Object.keys(this.tables_with_columns);
       }
     },
 
@@ -172,24 +168,6 @@
 
       close() {
         this.$emit('closesearchmodal');
-      },
-
-      getTablesWithColumns() {
-
-        if (localStorage.getItem('tables_with_columns')) {
-          this.tables_with_columns = JSON.parse(localStorage.getItem('tables_with_columns'));
-          this.tables              = Object.keys(this.tables_with_columns);
-          return;
-        }
-
-        axios.get(this.endpoint + this.active_database).then(response => {
-          this.tables_with_columns = response.data;
-          this.tables              = Object.keys(this.tables_with_columns);
-          localStorage.setItem('tables_with_columns', JSON.stringify(response.data));
-        }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
-        })
       },
 
       submitSearch() {

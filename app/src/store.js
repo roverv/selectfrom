@@ -23,6 +23,7 @@ export default new Vuex.Store({
       setActiveDatabase(state, database) {
         state.activeDatabase = database;
         this.dispatch("tables/get");
+        this.dispatch("tables/getWithColumns");
       },
   },
   actions: {
