@@ -43,7 +43,6 @@
 
 <script>
 
-  import axios from 'axios'
   import TableListSettingDropdown from '@/components/TableListSettingDropdown.vue'
 
   export default {
@@ -51,19 +50,13 @@
 
     data() {
       return {
-        tables_all: null,
         tables_list_is_open: true,
         only_show_tables_with_rows: false,
-        endpoint: 'http://localhost/rove/api/tables.php?db=',
       }
     },
 
     components: {
       TableListSettingDropdown
-    },
-
-    created() {
-      if (this.active_database) this.getAllTables();
     },
 
     mounted() {
@@ -72,14 +65,6 @@
       }
       if (localStorage.getItem('tables_list_is_open')) {
         this.tables_list_is_open = (localStorage.getItem('tables_list_is_open') === 'true');
-      }
-    },
-
-    watch: {
-      active_database: function (value) {
-        if (value) {
-          this.getAllTables();
-        }
       }
     },
 
@@ -94,20 +79,14 @@
 
       active_database() {
         return this.$store.state.activeDatabase;
-      }
+      },
+
+      tables_all() {
+        return this.$store.getters["tables/tables"];
+      },
     },
 
     methods: {
-      getAllTables() {
-        axios.get(this.endpoint + this.active_database).then(response => {
-          this.tables_all = response.data;
-
-          localStorage.setItem('tables', JSON.stringify(this.tables_all));
-        }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
-        })
-      },
 
       toggleTablesWithoutRows: function () {
         this.only_show_tables_with_rows = !this.only_show_tables_with_rows;

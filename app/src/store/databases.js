@@ -21,7 +21,7 @@ export default {
     error(state) {
       return state.error;
     },
-    hasPosts(state) {
+    hasDatabases(state) {
       return state.databases.length > 0;
     },
     databases(state) {
@@ -46,10 +46,10 @@ export default {
     }
   },
   actions: {
-    async findAll({commit}) {
+    async get({commit}) {
       commit(FETCHING_DATABASES);
       try {
-        let response = await DatabaseAPI.findAll();
+        let response = await DatabaseAPI.get();
         commit(FETCHING_DATABASES_SUCCESS, response.data);
         return response.data;
       } catch (error) {

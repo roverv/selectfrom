@@ -131,7 +131,6 @@ s<template>
   import TableListSidebar from "./components/TableListSidebar";
   import RecentTables from "./components/RecentTables";
   import SwitchDatabase from "./components/SwitchDatabase";
-  import axios from 'axios';
 
   // use this to reload the main component
   // this.$store.state.reloadMainComponentKey += 1;
@@ -151,7 +150,7 @@ s<template>
 
     created() {
 
-      this.$store.dispatch("databases/findAll");
+      this.$store.dispatch("databases/get");
 
       if (sessionStorage.getItem('recent_tables')) {
         this.recent_tables = JSON.parse(sessionStorage.getItem('recent_tables'));
@@ -186,7 +185,7 @@ s<template>
 
       setActiveDatabase(active_database) {
         this.$store.commit("setActiveDatabase", active_database);
-        this.$router.push({name: 'home'});
+        this.$router.push({name: 'database', params: {database: active_database }});
       },
 
       openSearchModal() {

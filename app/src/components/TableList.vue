@@ -43,7 +43,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(table, table_index) in tables">
+        <tr v-for="(table, table_index) in ordered_tables">
           <td class="toggle-row">
             <label>
               <input type="checkbox" class="hidden" :value="table_index" v-model="selected_rows" />
@@ -57,7 +57,9 @@
           <td class="table-data-row" v-for="(table_list_header, index) in table_list_headers"
               @click="$event.target.focus()" tabindex="1"
               :class="{ ' sticky-first-row-cell' : (index == 0)}">
-            <router-link v-if="table_list_header == 'Name'" :to="{ name: 'table', params: { tableid: table[table_list_header] } }">{{ table[table_list_header] }}</router-link>
+            <router-link v-if="table_list_header == 'Name'" :to="{ name: 'table', params: { tableid: table[table_list_header] } }" class="inline-block whitespace-normal">
+              {{ table[table_list_header] }}
+            </router-link>
             <span v-else-if="table_list_header == 'Size'" v-html="showTableSize(table)"></span>
             <span v-else-if="table_list_header == 'Rows' || table_list_header == 'Auto_increment'">{{ table[table_list_header] | formatNumber }}</span>
             <span v-else>{{ table[table_list_header] }}</span>
@@ -94,7 +96,6 @@
 
 <script>
 
-  import axios from 'axios'
   import {number_format} from '../util'
 
   export default {
@@ -102,28 +103,20 @@
 
     data() {
       return {
-        tables: null,
-        endpoint: 'http://localhost/rove/api/tables.php?db=',
         selected_rows: [],
-        order_by: '',
-        order_direction: '',
+        order_by: 'name',
+        order_direction: 'asc',
       }
     },
 
-    components: {},
-
-    created() {
-      if (this.active_database) this.getAllTables();
-    },
-
-    filters : {
+    filters: {
       formatNumber(number) {
         return number_format(number, 0, ',', '.');
       }
     },
 
     computed: {
-      table_list_headers: function() {
+      table_list_headers: function () {
         return ["Name", "Engine", "Collation", "Size", "Rows", "Auto_increment"];
         // Auto_increment:1
         // Avg_row_length:0
@@ -147,24 +140,51 @@
 
       active_database() {
         return this.$store.state.activeDatabase;
+      },
+
+      tables() {
+        return this.$store.getters["tables/tables"];
+      },
+
+      ordered_tables() {
+        if(this.tables.length == 0) return [];
+
+        // create a clone of tables, we dont want to sort the vuex state
+        let ordered_tables = JSON.parse(JSON.stringify(this.tables));
+
+        let reverse          = this.order_direction == 'asc' ? 1 : -1;
+
+        let vue_instance = this;
+
+        // sort numeric
+        if (this.order_by == 'Sort' || this.order_by == 'Auto_increment') {
+          ordered_tables.sort(function (a, b) {
+            return reverse * (a[vue_instance.order_by] - b[vue_instance.order_by]);
+          });
+        }
+        // sort by function
+        else if (this.order_by == 'Size') {
+          ordered_tables.sort(function (a, b) {
+            return reverse * (vue_instance.getSize(a) - vue_instance.getSize(b));
+          });
+        }
+        // sort by string
+        else {
+          ordered_tables.sort(function (a, b) {
+            if (a[vue_instance.order_by] == b[vue_instance.order_by]) return 0;
+            return reverse * ((a[vue_instance.order_by] > b[vue_instance.order_by]) - (b[vue_instance.order_by] > a[vue_instance.order_by]));
+          });
+        }
+
+        // undo selection because of indexes
+        this.selected_rows = [];
+
+        return ordered_tables;
       }
 
     },
 
     methods: {
-      getAllTables() {
-        if (localStorage.getItem('tables')) {
-          this.tables = JSON.parse(localStorage.getItem('tables'));
-          return;
-        }
-        axios.get(this.endpoint + this.active_database).then(response => {
-          this.tables = response.data;
-          localStorage.setItem('tables', JSON.stringify(this.tables));
-        }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
-        })
-      },
 
       getSize(table_info) {
         return table_info.Data_length + table_info.Index_length;
@@ -172,7 +192,7 @@
 
       showTableSize(table_info) {
         let size = this.getSize(table_info) / 1024;
-        if(size > 1000) {
+        if (size > 1000) {
           size /= 1024;
           return number_format(size, 2, ',', '.') + ' <span class="text-gray-400">MB</span>';
         }
@@ -193,32 +213,6 @@
       orderByColumn(column) {
         this.order_by        = column;
         this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
-        let reverse = this.order_direction == 'asc' ? 1 : -1;
-
-        let vue_instance = this;
-
-        // sort numeric
-        if(this.order_by == 'Sort' || this.order_by == 'Auto_increment') {
-          this.tables.sort(function(a, b) {
-            return reverse * (a[column] - b[column]);
-          });
-        }
-        // sort by function
-        else if(this.order_by == 'Size') {
-          this.tables.sort(function(a, b) {
-            return reverse * (vue_instance.getSize(a) - vue_instance.getSize(b));
-          });
-        }
-        // sort by string
-        else {
-          this.tables.sort(function(a, b) {
-            if(a[column] == b[column]) return 0;
-            return reverse * ((a[column] > b[column]) - (b[column] > a[column]));
-          });
-        }
-
-        // undo selection because of indexes
-        this.selected_rows = [];
       },
 
     },
