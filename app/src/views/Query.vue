@@ -6,7 +6,7 @@
         <textarea ref="query" id="query"
                   v-on:keydown.esc="unfocusElement($event)" v-on:keydown.ctrl.enter="runQuery()"></textarea>
 
-      <button class="btn mt-4 highlight">Run</button>
+      <button class="btn mt-4">Run</button>
 
       <a @click="formatQuery()" class="btn mt-4 ml-6">Format query</a>
 

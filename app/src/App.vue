@@ -49,7 +49,7 @@ s<template>
         </div>
 
         <div>
-          <router-link :to="{ name: 'query' }">
+          <router-link :to="{ name: 'query' }" class="btn">
             Query
           </router-link>
 

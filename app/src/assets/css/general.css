@@ -1,14 +1,17 @@
+
 .btn {
-  @apply inline-flex rounded py-1 px-2 items-center px-4 border-2 border-light-100 bg-light-100 text-white;
+  @apply inline-flex py-1 px-5 items-center cursor-pointer relative;
+  background: hsla(215, 27%, 20%, 0.15);
+  border:     1px solid hsla(215, 27%, 20%, 0.7);
+  box-shadow: 1px 1px 1px 0px hsla(215, 27%, 22%, 1);
+  transition: all 0.3s ease;
+  outline: none !important;
 }
 .btn:hover {
-  @apply  bg-highlight-200 no-underline;
+  @apply no-underline;
+  background: hsla(215, 27%, 20%, 0.7);
 }
-
-.btn.highlight {
-  @apply inline-flex rounded py-1 px-2 items-center px-4 border-2 border-light-100 bg-highlight-200 text-white;
-}
-.btn.highlight:hover {
-  @apply bg-light-200 no-underline;
+.btn:active {
+  top: 2px;
 }
 
