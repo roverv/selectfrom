@@ -29,8 +29,6 @@
 
 <script>
 
-  import axios from 'axios'
-
   export default {
     name: 'DatabaseModal',
     props: ['modalisopen'],
@@ -74,7 +72,7 @@
       },
 
       databases() {
-        return this.$store.getters["databases/databases"];
+        return this.$store.getters["databases/databaseNames"];
       },
 
       openAutocomplete() {
@@ -149,7 +147,7 @@
           return false;
         }
 
-        this.$emit('setActiveDatabase', this.search_value);
+        this.$router.push({name: 'database', params: {'database': this.search_value }});
         // when on the same route, router wont change component, so close the modal
         this.close();
       },

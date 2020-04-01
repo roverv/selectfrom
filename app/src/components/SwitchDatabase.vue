@@ -1,6 +1,6 @@
 <template>
   <div>
-    <select name="" @change="switchDatabase">
+    <select name="" @change="switchDatabase" v-model="active_database">
       <option value="">Choose a database</option>
       <option v-for="database in databases" :value="database">
         {{ database }}
@@ -16,13 +16,17 @@
 
     computed: {
       databases() {
-        return this.$store.getters["databases/databases"];
-      }
+        return this.$store.getters["databases/databaseNames"];
+      },
+
+      active_database() {
+        return this.$store.state.activeDatabase;
+      },
     },
 
     methods: {
       switchDatabase(event) {
-        this.$emit('setActiveDatabase', event.target.value);
+        this.$router.push({name: 'database', params: {'database': event.target.value }});
       }
     }
   }

@@ -26,6 +26,9 @@ export default {
     },
     databases(state) {
       return state.databases;
+    },
+    databaseNames(state) {
+      return state.databases.map(database => database.name);
     }
   },
   mutations: {

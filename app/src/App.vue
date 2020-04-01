@@ -7,7 +7,7 @@ s<template>
                  v-on:closesearchmodal="closeSearchModal()" />
 
     <DatabasesModal v-if="active_database && databasemodalopen" :modalisopen="databasemodalopen"
-                    v-on:closedatabasesmodal="closeDatabasesModal()" v-on:setActiveDatabase="setActiveDatabase" />
+                    v-on:closedatabasesmodal="closeDatabasesModal()" />
 
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen"
                   :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0"
@@ -23,14 +23,16 @@ s<template>
             <path
               d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
-          <a class="text-gray-300">Server</a>
+          <router-link :to="{ name: 'server'}" class="text-gray-300">
+            Server
+          </router-link>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
                style="transform: rotate(90deg);">
             <path
               d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
 
-          <SwitchDatabase v-on:setActiveDatabase="setActiveDatabase"></SwitchDatabase>
+          <SwitchDatabase></SwitchDatabase>
 
           <router-link :to="{ name: 'database', params: {database: active_database }}" class="mx-2">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 fill-current">
@@ -64,7 +66,7 @@ s<template>
 
     <div class="flex pr-8 w-full justify-between mb-4 text-default">
 
-      <TableListSidebar />
+      <TableListSidebar v-if="show_table_list_sidebar" />
 
       <div class="flex-grow py-6 relative pt-20 mb-4">
         <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" v-on:addrecenttable="addRecentTable" />
@@ -177,15 +179,14 @@ s<template>
     computed: {
       active_database() {
         return this.$store.state.activeDatabase;
+      },
+
+      show_table_list_sidebar() {
+        return !(this.active_database == '' || this.$route.name == 'server');
       }
     },
 
     methods: {
-
-      setActiveDatabase(active_database) {
-        this.$store.commit("setActiveDatabase", active_database);
-        this.$router.push({name: 'database', params: {database: active_database }});
-      },
 
       openSearchModal() {
         if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen) return;
