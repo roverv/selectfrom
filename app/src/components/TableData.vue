@@ -69,7 +69,7 @@
                 </svg>
               </label>
             </td>
-            <td class="table-data-row" v-for="(column_name, index) in columns" @dblclick="toggleRowSidebar(row_index)"
+            <td class="table-data-row" v-for="(column_name, index) in columns" @click.ctrl="toggleRowSidebar(row_index)"
                 @click="$event.target.focus()" tabindex="1"
                 :class="{ ' sticky-first-row-cell' : (index == 0)}">
               <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
@@ -273,7 +273,13 @@
 
             // set focus on first cell, for cell navigation with keyboard
             if (vue_instance.tabledata.length > 0) {
-              vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[1].focus();
+              let cell_nr = 1;
+              if(vue_instance.gotocolumn) {
+                let obj = vue_instance.columns.find(column_object=> column_object.Field.toLowerCase() == vue_instance.column.toLowerCase());
+                cell_nr = vue_instance.columns.indexOf(obj) + 1; // set the focus on the same column as the column highlight
+              }
+
+              vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[cell_nr].focus();
             }
 
             vue_instance.is_fetching_data = false;

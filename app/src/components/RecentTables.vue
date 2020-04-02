@@ -61,7 +61,7 @@
           this.up();
           evt.preventDefault();
         }
-        if (evt.key === 'ArrowDown') {
+        if (evt.key === 'ArrowDown' || evt.key === 'e') {
           this.down();
           evt.preventDefault();
         }
