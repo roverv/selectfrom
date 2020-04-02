@@ -1,5 +1,5 @@
 <template>
-  <div class="database">
+  <div class="flex justify-center">
     <br>
     <TableList />
   </div>
@@ -25,7 +25,5 @@
 </script>
 
 <style>
-  .database {
-    flex-grow: 1;
-  }
+
 </style>

@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <div v-show="initial_loading === false">
 
-    <table-nav :tableid="tableid"></table-nav>
+    <table-nav :tableid="tableid" v-on:toggleMetaBox="toggleMetaBox"></table-nav>
+
+    <table-data-meta v-if="meta_box_open"></table-data-meta>
 
     <div class="w-full flex items-start">
 
@@ -20,8 +22,7 @@
                @keydown.esc="unfocusDatatable()"
                @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
                @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
-               @keydown.open-database-list="unfocusDatatable()"
-        >
+               @keydown.open-database-list="unfocusDatatable()">
           <thead>
           <tr>
             <th class="toggle-row">
@@ -152,6 +153,7 @@
 
   import axios from 'axios'
   import TableNav from '@/components/TableNav.vue'
+  import TableDataMeta from '@/components/TableDataMeta.vue'
   import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
   import RowSidebar from "./RowSidebar";
 
@@ -174,12 +176,15 @@
         sidebar_column_data: [],
         selected_rows: [],
         is_fetching_data: false, // true when fetching data through ajax
+        meta_box_open: false,
+        initial_loading: true,
       }
     },
 
     components: {
       RowSidebar,
-      TableNav
+      TableNav,
+      TableDataMeta
     },
 
     mixins: [
@@ -259,6 +264,7 @@
         axios.get(api_url).then(response => {
           this.tabledata = response.data.data;
           this.columns   = response.data.columns;
+          this.initial_loading = false;
           this.$nextTick().then(function () {
             // DOM updated
             if (vue_instance.column && vue_instance.tabledata.length > 0) {
@@ -467,6 +473,10 @@
         // todo: unique columns ophalen op basis van alle kolommen, grote text kolommen (json, TEXT) via MD5 doen, zie adminer: select.inc.php:381
         return [];
       },
+
+      toggleMetaBox() {
+        this.meta_box_open = !this.meta_box_open;
+      }
 
     },
 

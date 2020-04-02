@@ -68,7 +68,7 @@ s<template>
 
       <TableListSidebar v-if="show_table_list_sidebar" />
 
-      <div class="flex-grow py-6 relative pt-20 mb-4">
+      <div class="flex-grow py-6 relative pt-20 mb-4 pr-4">
         <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" v-on:addrecenttable="addRecentTable" />
       </div>
 

@@ -1,5 +1,7 @@
 <template>
-  <TableStructure :tableid="tableid" />
+  <div class="flex justify-center">
+    <TableStructure :tableid="tableid" />
+  </div>
 </template>
 
 <script>

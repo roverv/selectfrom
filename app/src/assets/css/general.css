@@ -1,3 +1,6 @@
+[v-cloak] {
+  display: none;
+}
 
 .btn {
   @apply inline-flex py-1 px-5 items-center cursor-pointer relative;

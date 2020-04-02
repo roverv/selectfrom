@@ -1,5 +1,7 @@
 <template>
-  <TableData :tableid="tableid" :column="column" :value="value" />
+  <div class="flex justify-center">
+    <TableData :tableid="tableid" :column="column" :value="value" />
+  </div>
 </template>
 
 <script>
@@ -18,8 +20,6 @@
 </script>
 
 <style>
-  .database {
-    flex-grow: 1;
-  }
+
 </style>
 

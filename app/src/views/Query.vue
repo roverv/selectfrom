@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="flex justify-center">
+  <div style="min-width: 900px;">
     <h1 class="text-xl mb-4">Execute query</h1>
 
     <form method="post" @submit.prevent="runQuery()" ref="queryform">
@@ -56,6 +57,7 @@
 
     </form>
 
+  </div>
   </div>
 </template>
 
