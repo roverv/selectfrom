@@ -4,8 +4,7 @@
     <h1 class="text-xl mb-4">Execute query</h1>
 
     <form method="post" @submit.prevent="runQuery()" ref="queryform">
-        <textarea ref="query" id="query"
-                  v-on:keydown.esc="unfocusElement($event)" v-on:keydown.ctrl.enter="runQuery()"></textarea>
+        <textarea ref="query" id="query"></textarea>
 
       <button class="btn mt-4">Run</button>
 
@@ -110,10 +109,15 @@
         matchBrackets: true,
         autofocus: true,
         viewportMargin: Infinity,
-        extraKeys: {"Ctrl-Space": "autocomplete", 'Ctrl-Enter' : function() {
+        extraKeys: {
+          "Ctrl-Space": "autocomplete",
+          'Ctrl-Enter': function () {
             vue_instance.runQuery();
-        }
           },
+          "Esc": function() {
+            document.getElementById('app').focus();
+          }
+        },
         hintOptions: {
           // todo: fill hints
           tables: {
@@ -179,11 +183,6 @@
 
       formatQuery() {
         window.editor.setValue(sqlFormatter.format(window.editor.getValue()))
-      },
-
-      unfocusElement($event) {
-        $event.target.blur();
-        document.getElementById('app').focus();
       },
 
     }
