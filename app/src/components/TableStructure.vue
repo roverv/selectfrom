@@ -17,7 +17,7 @@
           </thead>
           <tbody>
           <tr v-for="column_fields in columns">
-            <td class="whitespace-pre px-1 py-1" v-for="column_field in column_fields">{{ column_field }}</td>
+            <td class="whitespace-pre px-2 py-1" v-for="column_field in column_fields">{{ column_field }}</td>
           </tr>
           </tbody>
         </table>
@@ -103,6 +103,7 @@
 
   table tbody td {
     border-bottom: 1px solid #edf2f7;
+    @apply text-gray-300;
   }
 
   tbody tr:hover td {
@@ -114,21 +115,7 @@
   }
 
   tbody td:first-child {
-    width:      2rem;
-    text-align: center;
-  }
-
-  .id-field-offset {
-    left: 24px;
-  }
-
-  .row-data-field {
-    @apply flex w-full;
-    border-bottom: 1px solid #edf2f7;
-  }
-
-  .row-data-field:hover {
-    @apply bg-light-200;
+    @apply text-white;
   }
 
 

@@ -6,7 +6,7 @@ s<template>
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
                  v-on:closesearchmodal="closeSearchModal()" />
 
-    <DatabasesModal v-if="active_database && databasemodalopen" :modalisopen="databasemodalopen"
+    <DatabasesModal v-if="databasemodalopen" :modalisopen="databasemodalopen"
                     v-on:closedatabasesmodal="closeDatabasesModal()" />
 
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen"
