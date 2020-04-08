@@ -197,7 +197,7 @@
 
 <style>
   .cm-s-default.CodeMirror {
-    @apply bg-light-200 outline-none border border-light-300 text-gray-300 text-xl h-auto;
+    @apply bg-light-300 outline-none border border-light-300 text-gray-300 text-xl h-auto;
     /*@apply bg-light-300 outline-none border border-light-300 text-dark-600 text-xl;*/
   }
 
@@ -211,6 +211,10 @@
 
   .cm-s-default div.CodeMirror-selected {
     @apply bg-light-100;
+  }
+
+  .cm-s-default .cm-bracket {
+    @apply text-dark-600;
   }
 
 </style>
