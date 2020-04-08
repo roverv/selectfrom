@@ -16,13 +16,18 @@
         {{ query_result.message }}
       </div>
 
-
       <div v-if="query_result.result == 'success'">
-        {{ query_result.affected_rows }} rows
+        {{ query_result.query }}
+      </div>
+
+      <div v-if="query_result.result == 'success' && query_result.type == 'change'">
+        Affected {{ query_result.affected_rows }} rows
       </div>
 
 
-      <div v-if="query_result.result == 'success'">
+      <div v-if="query_result.result == 'success' && query_result.type == 'data'">
+
+        {{ query_result.row_count }} rows
 
         <table cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
                @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"

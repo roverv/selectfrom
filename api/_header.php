@@ -16,7 +16,7 @@
     $options = [
       PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
       PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-      PDO::ATTR_EMULATE_PREPARES   => false,
+      PDO::ATTR_EMULATE_PREPARES   => false, // this must be true if we want to run running multiple queries from one sql text
     ];
     try {
         $pdo = new PDO($dsn, $user, $pass, $options);

@@ -2,19 +2,10 @@
 
     require_once '_header.php';
 
-
     $query = $_POST['query'];
-    //        $query = "SELECT * FROM user JOIN organisation ON user.organisation_id = organisation.id LIMIT 5;";
-    //        $query = "DELETE FROM country;
-    //INSERT INTO country(code, name, name_nl) VALUES ('NL', 'netherlands', 'Nederland');
-    //INSERT INTO country(code, name, name_nl) VALUES ('DE', 'Germany', 'Duitsland');";
-
-    $query   = removeComments($query);
-    $queries = split_sql($query);
-
 
     try {
-        $q = $pdo->query($query);
+        $query_result = $pdo->query($query);
     } catch (Exception $e) {
         echo json_encode([
           'result'  => 'error',
@@ -23,32 +14,68 @@
         exit;
     }
 
-    foreach (range(0, $q->columnCount() - 1) as $column_index) {
-        $columns_meta[] = $q->getColumnMeta($column_index);
-    }
+    $return_data = [
+      'result' => 'success',
+      'query'  => $query,
+    ];
 
-    echo json_encode([
-      'result'        => 'success',
-      'affected_rows' => $q->rowCount(),
-      'rows'          => $q->fetchAll(PDO::FETCH_NUM),
-      'columns_meta'  => $columns_meta,
-    ]);
-    exit;
-
-    print_r($result);
-    print_r($q->rowCount());
-    print_r($q->fetchAll()[0]);
-    exit;
-
-    var_dump($q);
-
-    if ($result) {
-        print_r($q->rowCount());
+    // if the result has columns, it means it has data (eg SELECT or EXPLAIN query)
+    if ($query_result->columnCount()) {
+        foreach (range(0, $query_result->columnCount() - 1) as $column_index) {
+            $columns_meta[] = $query_result->getColumnMeta($column_index);
+        }
+        $return_data['columns_meta'] = $columns_meta;
+        $return_data['rows']         = $query_result->fetchAll(PDO::FETCH_NUM); // fetch as num, because of possible joins with the same column names
+        $return_data['row_count']    = $query_result->rowCount();
+        $return_data['type']         = 'data';
     } else {
-        print_r($pdo->errorInfo());
+        $return_data['affected_rows'] = $query_result->rowCount();
+        $return_data['type']          = 'change';
     }
 
+    echo json_encode($return_data);
     exit;
+
+
+
+
+
+    // ---------------------------------------- TESTING DATA
+
+    //        $query = "SELECT * FROM user JOIN organisation ON user.organisation_id = organisation.id LIMIT 5;";
+    //        $query = "DELETE FROM country;
+    //INSERT INTO country(code, name, name_nl) VALUES ('NL', 'netherlands', 'Nederland');
+    //INSERT INTO country(code, name, name_nl) VALUES ('DE', 'Germany', 'Duitsland');";
+    $query = "INSERT INTO country(code, name, name_nl) VALUES ('NL', 'netherlands', 'Nederland');";
+    $query = "DELETE FROM country;";
+
+    $stmt = $pdo->query('DROP TABLE IF EXISTS test;
+  CREATE TABLE test(id INT); 
+  -- allala kfjds
+  INSERT INTO test(id) VALUES (1); 
+  SELECT * FROM test');
+    do {
+//        var_dump($pdo->info);
+        if($stmt->columnCount()) {
+            var_dump($stmt->fetchAll(PDO::FETCH_ASSOC));
+        }
+
+    } while ($stmt->nextRowset());
+
+
+//    $query   = removeComments($query);
+//    $queries = split_sql($query);
+    $stmt = $pdo->prepare("DELETE FROM country;");
+    $result = $stmt->execute();
+    echo getQueryType("DELETE FROM country;");
+    echo $stmt->rowCount();
+    var_dump($result);
+    $result->columnCount();
+    $stmt = $pdo->prepare("SELECT * FROM country;");
+    $result = $stmt->execute();
+    var_dump($result);
+    exit;
+
 
     /**
      * Taken from: https://stackoverflow.com/questions/4747808/split-mysql-queries-in-array-each-queries-separated-by
@@ -97,3 +124,23 @@
         return $result;
     }
 
+
+    /**
+     * Return the type of the query.
+     * Taken from: https://github.com/jasny/dbquery-mysql/blob/master/src/Jasny/DB/MySQL/QuerySplitter.php
+     *
+     * @param string $sql  SQL query statement (or an array with parts)
+     * @return string
+     */
+     function getQueryType($sql)
+    {
+        if (is_array($sql)) $sql = key($sql);
+
+        $matches = null;
+        if (!preg_match('/^\s*(SELECT|INSERT|REPLACE|UPDATE|DELETE|TRUNCATE|CALL|DO|HANDLER|LOAD\s+(?:DATA|XML)\s+INFILE|(?:ALTER|CREATE|DROP|RENAME)\s+(?:DATABASE|TABLE|VIEW|FUNCTION|PROCEDURE|TRIGGER|INDEX)|PREPARE|EXECUTE|DEALLOCATE\s+PREPARE|DESCRIBE|EXPLAIN|HELP|USE|LOCK\s+TABLES|UNLOCK\s+TABLES|SET|SHOW|START\s+TRANSACTION|BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE SAVEPOINT|CACHE\s+INDEX|FLUSH|KILL|LOAD|RESET|PURGE\s+BINARY\s+LOGS|START\s+SLAVE|STOP\s+SLAVE)\b/si', $sql, $matches)) return null;
+
+        $type = strtoupper(preg_replace('/\s++/', ' ', $matches[1]));
+        if ($type === 'BEGIN') $type = 'START TRANSACTION';
+
+        return $type;
+    }
