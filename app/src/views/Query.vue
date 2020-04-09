@@ -18,54 +18,58 @@
 
       <div class="content-body">
 
-        <div v-if="query_result.result == 'error'" class="bg-red-700 border border-red-800 px-3 py-2 text-white">
-          {{ query_result.message }}
-        </div>
+        <div v-if="query_results.length > 0" v-for="(query_result, query_result_index) in query_results" :key="query_result_index" class="mb-8 mt-1">
 
-        <div v-if="query_result.result == 'success'" class="bg-highlight-400 border border-highlight-700 p-4 mb-3">
-          {{ query_result.query }}
-          <hr class="border-light-200 my-4">
-          <div v-if="query_result.type == 'change'">
-            Affected {{ query_result.affected_rows }} rows
+          <div v-if="query_result.result == 'error'" class="bg-red-700 border border-red-800 px-3 py-2 text-white">
+            {{ query_result.message }}
           </div>
-          <div v-else="query_result.type == 'data'">
-            {{ query_result.row_count }} rows
+
+          <div v-if="query_result.result == 'success'" class="bg-highlight-400 border border-highlight-700 p-4 mb-3">
+            {{ query_result.query }}
+            <hr class="border-light-200 my-2">
+            <div v-if="query_result.type == 'change'">
+              Affected {{ query_result.affected_rows }} rows
+            </div>
+            <div v-else="query_result.type == 'data'">
+              {{ query_result.row_count }} rows
+            </div>
           </div>
-        </div>
 
 
+          <div v-if="query_result.result == 'success' && query_result.type == 'data'">
 
+            <table cellspacing="0" class="table-data" v-if="query_result.rows.length > 0" ref="datatable"
+                   @keydown.right.prevent="focusCellNext($event, 1)"
+                   @keydown.left.prevent="focusCellPrevious($event, 1)"
+                   @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+                   @keydown.shift.right.prevent="focusCellNext($event,5)"
+                   @keydown.shift.left.prevent="focusCellPrevious($event,5)"
+                   @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
+                   @keyup.q="$refs['query'].focus()"
+                   @keydown.esc="unfocusDatatable()">
+              <thead>
+              <tr>
+                <th v-for="(column_meta, column_meta_index) in query_result.columns_meta" :key="column_meta_index">
+                  <span>{{ column_meta.name }}</span>
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(row, row_index) in query_result.rows">
+                <td class="table-data-row" v-for="(cell, index) in row" @dblclick="toggleRowSidebar(query_result_index, row_index)"
+                    :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
+                  <span v-if="cell === null" class="null-value"><i>NULL</i></span>
+                  <span v-else>{{ cell }}</span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
 
-        <div v-if="query_result.result == 'success' && query_result.type == 'data'">
+            <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
+                         :rowdata="sidebar_row_data"
+                         :columndata="sidebar_column_data" :columntabledata="sidebar_column_table_data"></row-sidebar>
+          </div>
 
-          <table cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
-                 @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"
-                 @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
-                 @keydown.shift.right.prevent="focusCellNext($event,5)"
-                 @keydown.shift.left.prevent="focusCellPrevious($event,5)"
-                 @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
-                 @keyup.q="$refs['query'].focus()"
-                 @keydown.esc="unfocusDatatable()">
-            <thead>
-            <tr>
-              <th v-for="column_meta in columns_meta">
-                <span>{{ column_meta.name }}</span>
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(row, row_index) in tabledata">
-              <td class="table-data-row" v-for="(cell, index) in row" @dblclick="toggleRowSidebar(row_index)"
-                  :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
-                <span v-if="cell === null" class="null-value"><i>NULL</i></span>
-                <span v-else>{{ cell }}</span>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-
-          <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar" :rowdata="sidebar_row_data"
-                       :columndata="sidebar_column_data" :columntabledata="sidebar_column_table_data"></row-sidebar>
         </div>
 
       </div>
@@ -91,7 +95,7 @@
     data() {
       return {
         endpoint: 'http://localhost/rove/api/query.php?db=',
-        query_result: {},
+        query_results: {},
         tabledata: [],
         columns_meta: [],
         sidebarisopen: false,
@@ -132,11 +136,7 @@
           }
         },
         hintOptions: {
-          // todo: fill hints
-          tables: {
-            users: ["name", "score", "birthDate"],
-            countries: ["name", "population", "size"]
-          }
+          tables: this.tables_with_columns
         }
       });
     },
@@ -151,7 +151,11 @@
 
       active_database() {
         return this.$store.state.activeDatabase;
-      }
+      },
+
+      tables_with_columns() {
+        return this.$store.getters["tables/tablesWithColumns"];
+      },
     },
 
     methods: {
@@ -164,11 +168,12 @@
         let query         = window.editor.getValue();
         const querystring = require('querystring');
         axios.post(api_url, querystring.stringify({query: query})).then(response => {
-          this.query_result = response.data;
+          this.query_results = response.data;
           this.tabledata    = this.query_result.rows;
           this.columns_meta = this.query_result.columns_meta;
           this.$nextTick().then(function () {
-            vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
+            // todo: navigation on query results???
+            // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
           });
         }).catch(error => {
           console.log('-----error-------');
@@ -180,15 +185,15 @@
         this.sidebarisopen = false;
       },
 
-      toggleRowSidebar(row_index) {
+      toggleRowSidebar(query_result_index, row_index) {
         // this.sidebar_row_data = this.tabledata[row_index];
         let column_num_keys = [];
         let table_num_keys  = [];
-        for (var key in this.columns_meta) {
-          column_num_keys.push(this.columns_meta[key].name);
-          table_num_keys.push(this.columns_meta[key].table);
+        for (var key in this.query_results[query_result_index].columns_meta) {
+          column_num_keys.push(this.query_results[query_result_index].columns_meta[key].name);
+          table_num_keys.push(this.query_results[query_result_index].columns_meta[key].table);
         }
-        this.sidebar_row_data          = this.tabledata[row_index];
+        this.sidebar_row_data          = this.query_results[query_result_index].rows[row_index];
         this.sidebar_column_data       = column_num_keys;
         this.sidebar_column_table_data = table_num_keys;
         this.sidebarisopen             = true;
@@ -210,7 +215,8 @@
   }
 
   .cm-s-default .CodeMirror-gutters {
-    @apply bg-transparent border-light-300 border-r;
+    @apply border-light-300 border-r;
+    background: hsl(213, 27%, 41%);
   }
 
   .cm-s-default .CodeMirror-linenumber {

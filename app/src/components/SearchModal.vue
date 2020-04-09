@@ -35,7 +35,6 @@
     data() {
       return {
         search_value: '',
-        endpoint: 'http://localhost/rove/api/tables_with_columns.php?db=',
         current: -1
       }
     },

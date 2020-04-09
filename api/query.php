@@ -2,38 +2,44 @@
 
     require_once '_header.php';
 
-    $query = $_POST['query'];
+    $sql_text = $_POST['query'];
 
-    try {
-        $query_result = $pdo->query($query);
-    } catch (Exception $e) {
-        echo json_encode([
-          'result'  => 'error',
-          'message' => $e->getMessage(),
-        ]);
-        exit;
-    }
+    $sql_text = removeComments($sql_text);
+    $queries  = split_sql($sql_text);
 
-    $return_data = [
-      'result' => 'success',
-      'query'  => $query,
-    ];
-
-    // if the result has columns, it means it has data (eg SELECT or EXPLAIN query)
-    if ($query_result->columnCount()) {
-        foreach (range(0, $query_result->columnCount() - 1) as $column_index) {
-            $columns_meta[] = $query_result->getColumnMeta($column_index);
+    $query_results = [];
+    foreach ($queries as $query) {
+        $result_data = ['query' => $query];
+        try {
+            $query_result = $pdo->query($query);
+        } catch (Exception $e) {
+            $result_data['result']  = 'error';
+            $result_data['message'] = $e->getMessage();
+            $query_results[]        = $result_data;
+            continue;
         }
-        $return_data['columns_meta'] = $columns_meta;
-        $return_data['rows']         = $query_result->fetchAll(PDO::FETCH_NUM); // fetch as num, because of possible joins with the same column names
-        $return_data['row_count']    = $query_result->rowCount();
-        $return_data['type']         = 'data';
-    } else {
-        $return_data['affected_rows'] = $query_result->rowCount();
-        $return_data['type']          = 'change';
+
+        $result_data['result'] = 'success';
+
+        // if the result has columns, it means it has data (eg SELECT or EXPLAIN query)
+        if ($query_result->columnCount()) {
+            $columns_meta = [];
+            foreach (range(0, $query_result->columnCount() - 1) as $column_index) {
+                $columns_meta[] = $query_result->getColumnMeta($column_index);
+            }
+            $result_data['columns_meta'] = $columns_meta;
+            $result_data['rows']         = $query_result->fetchAll(PDO::FETCH_NUM); // fetch as num, because of possible joins with the same column names
+            $result_data['row_count']    = $query_result->rowCount();
+            $result_data['type']         = 'data';
+        } else {
+            // DML (data manipulation language) queries
+            $result_data['affected_rows'] = $query_result->rowCount();
+            $result_data['type']          = 'change';
+        }
+        $query_results[] = $result_data;
     }
 
-    echo json_encode($return_data);
+    echo json_encode($query_results);
     exit;
 
 
