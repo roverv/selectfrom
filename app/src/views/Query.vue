@@ -1,67 +1,75 @@
 <template>
   <div class="flex justify-center">
-  <div style="min-width: 900px;">
-    <h1 class="text-xl mb-4">Execute query</h1>
+    <div class="grid-container-content">
+      <div style="min-width: 900px;" class="content-header">
+        <h1 class="text-xl mb-4">Execute query</h1>
 
-    <form method="post" @submit.prevent="runQuery()" ref="queryform">
-        <textarea ref="query" id="query"></textarea>
+        <form method="post" @submit.prevent="runQuery()" ref="queryform">
+          <textarea ref="query" id="query"></textarea>
 
-      <button class="btn mt-4">Run</button>
+          <button class="btn mt-4">Run</button>
 
-      <a @click="formatQuery()" class="btn mt-4 ml-6">Format query</a>
+          <a @click="formatQuery()" class="btn mt-4 ml-6">Format query</a>
 
-      <hr class="border-light-200 my-4">
+          <hr class="border-light-200 my-4">
 
-      <div v-if="query_result.result == 'error'" class="bg-red-700 border border-red-800 px-3 py-2 text-white">
-        {{ query_result.message }}
+        </form>
       </div>
 
-      <div v-if="query_result.result == 'success'">
-        {{ query_result.query }}
+      <div class="content-body">
+
+        <div v-if="query_result.result == 'error'" class="bg-red-700 border border-red-800 px-3 py-2 text-white">
+          {{ query_result.message }}
+        </div>
+
+        <div v-if="query_result.result == 'success'" class="bg-highlight-400 border border-highlight-700 p-4 mb-3">
+          {{ query_result.query }}
+          <hr class="border-light-200 my-4">
+          <div v-if="query_result.type == 'change'">
+            Affected {{ query_result.affected_rows }} rows
+          </div>
+          <div v-else="query_result.type == 'data'">
+            {{ query_result.row_count }} rows
+          </div>
+        </div>
+
+
+
+
+        <div v-if="query_result.result == 'success' && query_result.type == 'data'">
+
+          <table cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
+                 @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"
+                 @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+                 @keydown.shift.right.prevent="focusCellNext($event,5)"
+                 @keydown.shift.left.prevent="focusCellPrevious($event,5)"
+                 @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
+                 @keyup.q="$refs['query'].focus()"
+                 @keydown.esc="unfocusDatatable()">
+            <thead>
+            <tr>
+              <th v-for="column_meta in columns_meta">
+                <span>{{ column_meta.name }}</span>
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(row, row_index) in tabledata">
+              <td class="table-data-row" v-for="(cell, index) in row" @dblclick="toggleRowSidebar(row_index)"
+                  :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
+                <span v-if="cell === null" class="null-value"><i>NULL</i></span>
+                <span v-else>{{ cell }}</span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar" :rowdata="sidebar_row_data"
+                       :columndata="sidebar_column_data" :columntabledata="sidebar_column_table_data"></row-sidebar>
+        </div>
+
       </div>
-
-      <div v-if="query_result.result == 'success' && query_result.type == 'change'">
-        Affected {{ query_result.affected_rows }} rows
-      </div>
-
-
-      <div v-if="query_result.result == 'success' && query_result.type == 'data'">
-
-        {{ query_result.row_count }} rows
-
-        <table cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
-               @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"
-               @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
-               @keydown.shift.right.prevent="focusCellNext($event,5)"
-               @keydown.shift.left.prevent="focusCellPrevious($event,5)"
-               @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
-               @keyup.q="$refs['query'].focus()"
-               @keydown.esc="unfocusDatatable()">
-          <thead>
-          <tr>
-            <th v-for="column_meta in columns_meta">
-              <span>{{ column_meta.name }}</span>
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="(row, row_index) in tabledata">
-            <td class="table-data-row" v-for="(cell, index) in row" @dblclick="toggleRowSidebar(row_index)"
-                :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
-              <span v-if="cell === null" class="null-value"><i>NULL</i></span>
-              <span v-else>{{ cell }}</span>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-
-        <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar" :rowdata="sidebar_row_data"
-                     :columndata="sidebar_column_data" :columntabledata="sidebar_column_table_data"></row-sidebar>
-      </div>
-
-    </form>
-
-  </div>
+    </div>
   </div>
 </template>
 
@@ -119,7 +127,7 @@
           'Ctrl-Enter': function () {
             vue_instance.runQuery();
           },
-          "Esc": function() {
+          "Esc": function () {
             document.getElementById('app').focus();
           }
         },
@@ -153,7 +161,7 @@
 
         let vue_instance = this;
 
-        let query = window.editor.getValue();
+        let query         = window.editor.getValue();
         const querystring = require('querystring');
         axios.post(api_url, querystring.stringify({query: query})).then(response => {
           this.query_result = response.data;
@@ -197,7 +205,7 @@
 
 <style>
   .cm-s-default.CodeMirror {
-    @apply bg-light-300 outline-none border border-light-300 text-gray-300 text-xl h-auto;
+    @apply bg-light-300 outline-none border border-light-300 text-gray-300 text-xl h-auto text-gray-900 ;
     /*@apply bg-light-300 outline-none border border-light-300 text-dark-600 text-xl;*/
   }
 
@@ -215,6 +223,52 @@
 
   .cm-s-default .cm-bracket {
     @apply text-dark-600;
+  }
+
+
+  .content-header {
+    grid-area: content-header;
+  }
+
+  .content-body {
+    grid-area: content-body;
+  }
+
+  .grid-container-content {
+    display:               grid;
+    height:                100%;
+    grid-template-areas: 'content-header .' 'content-body content-body';
+    grid-gap:              0px;
+    grid-template-columns: 1fr auto;
+    /*background-color:      #ff0000;*/
+    padding:               10px;
+  }
+
+
+  html {
+    --scrollbarBG: hsla(0, 0%, 100%, 0.5);
+    --thumbBG:     #90A4AE;
+  }
+
+  .CodeMirror-hscrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .CodeMirror-hscrollbar {
+    scrollbar-width: 8px;
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+    @apply outline-none;
+  }
+
+  .CodeMirror-hscrollbar::-webkit-scrollbar-track {
+    background: var(--scrollbarBG);
+  }
+
+  .CodeMirror-hscrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border-radius:    5px;
+    border:           1px solid var(--scrollbarBG);
   }
 
 </style>
