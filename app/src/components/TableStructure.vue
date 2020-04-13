@@ -58,7 +58,11 @@
     computed: {
       active_database() {
         return this.$store.state.activeDatabase;
-      }
+      },
+
+      api_endpoint() {
+        return this.$store.state.apiEndPoint;
+      },
     },
 
     watch: {
