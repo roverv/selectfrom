@@ -56,7 +56,7 @@
               </thead>
               <tbody>
               <tr v-for="(row, row_index) in query_result.rows">
-                <td class="table-data-row" v-for="(cell, index) in row" @dblclick="toggleRowSidebar(query_result_index, row_index)"
+                <td class="table-data-row" v-for="(cell, index) in row" @click.ctrl="toggleRowSidebar(query_result_index, row_index)"
                     :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
                   <span v-if="cell === null" class="null-value"><i>NULL</i></span>
                   <span v-else>{{ cell }}</span>
@@ -66,8 +66,8 @@
             </table>
 
             <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
-                         :rowdata="sidebar_row_data"
-                         :columndata="sidebar_column_data" :columntabledata="sidebar_column_table_data"></row-sidebar>
+                         :rowdata="sidebar_row_data" :columndata="sidebar_column_data" :from="query"
+                         :columntabledata="sidebar_column_table_data"></row-sidebar>
           </div>
 
         </div>

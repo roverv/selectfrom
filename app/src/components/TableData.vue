@@ -89,7 +89,7 @@
               {{ selected_rows.length }} rows
             </div>
 
-            <a class="rows-action" v-if="selected_rows.length == 1" @click="editRow()">
+            <a class="rows-action" v-if="selected_rows.length == 1" @click="editRowFromTable()">
               <span>Edit</span>
             </a>
 
@@ -132,6 +132,10 @@
 
         </div>
 
+      <a class="btn mt-5" @click="editRowFromSingleView()">
+        Edit
+      </a>
+
     </div>
     <br>
 
@@ -142,8 +146,8 @@
       </button>
     </div>
 
-    <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
-                 :rowdata="sidebar_row_data" :columndata="sidebar_column_data"></row-sidebar>
+    <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar" v-on:editRow="editRowFromSidebar"
+                 :rowdata="sidebar_row_data" :columndata="sidebar_column_data" :from="tabledata"></row-sidebar>
 
   </div>
 
@@ -174,6 +178,7 @@
         sidebarisopen: false,
         sidebar_row_data: [],
         sidebar_column_data: [],
+        sidebar_row_index: 0,
         selected_rows: [],
         is_fetching_data: false, // true when fetching data through ajax
         meta_box_open: false,
@@ -315,6 +320,7 @@
           row_num_keys.push(this.tabledata[row_index][key]);
           column_num_keys.push(key);
         }
+        this.sidebar_row_index = row_index;
         this.sidebar_row_data    = row_num_keys;
         this.sidebar_column_data = column_num_keys;
         this.sidebarisopen       = true;
@@ -484,7 +490,7 @@
         this.meta_box_open = !this.meta_box_open;
       },
 
-      editRow() {
+      editRow(row_index) {
         let unique_columns = this.getUniqueColumns();
 
         if (unique_columns.length == 0) {
@@ -493,11 +499,22 @@
         }
 
         let unique_column = unique_columns[0].Field;
-        let unique_column_value = this.tabledata[this.selected_rows[0]][unique_column];
+        let unique_column_value = this.tabledata[row_index][unique_column];
 
         this.$router.push({name: 'editrow', params: { 'tableid': this.tableid, 'column': unique_column, 'rowid': unique_column_value}});
       },
 
+      editRowFromSidebar() {
+        this.editRow(this.sidebar_row_index);
+      },
+
+      editRowFromTable() {
+        this.editRow(this.selected_rows[0]);
+      },
+
+      editRowFromSingleView() {
+        this.editRow(0);
+      }
 
 
     },

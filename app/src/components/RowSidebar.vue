@@ -45,9 +45,8 @@
       </div>
     </div>
 
-    <a
-      class="mt-4 px-2  py-2 mr-2 inline-flex items-center"
-      href="">
+    <a @click="$emit('editRow')" v-if="from == 'tabledata'"
+      class="mt-4 px-2  py-2 mr-2 inline-flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current text-gray-600">
         <path class="text-gray-600"
               d="M4 14a1 1 0 0 1 .3-.7l11-11a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-.7.3H5a1 1 0 0 1-1-1v-3z" />
@@ -64,7 +63,7 @@
 
   export default {
     name: 'RowSidebar',
-    props: ['sidebarisopen', 'rowdata', 'columndata', 'columntabledata'],
+    props: ['sidebarisopen', 'rowdata', 'columndata', 'columntabledata', 'from'],
     data() {
       return {
         'column_order': 'default',
