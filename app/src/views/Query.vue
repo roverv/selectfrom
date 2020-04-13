@@ -94,7 +94,7 @@
     name: 'query',
     data() {
       return {
-        endpoint: 'http://localhost/rove/api/query.php?db=',
+        endpoint: 'query.php?db=',
         query_results: {},
         tabledata: [],
         columns_meta: [],
@@ -161,7 +161,7 @@
     methods: {
 
       runQuery() {
-        let api_url = this.endpoint + this.active_database;
+        let api_url = this.api_endpoint + this.endpoint + this.active_database;
 
         let vue_instance = this;
 

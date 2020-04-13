@@ -134,7 +134,6 @@ s<template>
 
     data() {
       return {
-        endpoint: 'http://localhost/rove/api/',
         searchmodalopen: false,
         databasemodalopen: false,
         recenttablesopen: false,

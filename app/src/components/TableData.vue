@@ -170,9 +170,9 @@
         columns: [],
         total_amount_rows: 0,
         offset_rows: 0,
-        endpoint_table_data: 'http://localhost/rove/api/tabledata.php?db=',
-        endpoint_count_rows: 'http://localhost/rove/api/countrows.php?db=',
-        endpoint_delete_rows: 'http://localhost/rove/api/delete_rows.php?db=',
+        endpoint_table_data: 'tabledata.php?db=',
+        endpoint_count_rows: 'countrows.php?db=',
+        endpoint_delete_rows: 'delete_rows.php?db=',
         order_by: '',
         order_direction: '',
         sidebarisopen: false,
@@ -212,7 +212,11 @@
 
       active_database() {
         return this.$store.state.activeDatabase;
-      }
+      },
+
+      api_endpoint() {
+        return this.$store.state.apiEndPoint;
+      },
     },
 
     watch: {
@@ -249,9 +253,9 @@
 
       getTableData() {
 
-        let api_url = '';
+        let api_url = this.api_endpoint;
         if (this.tableid) {
-          api_url = this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
+          api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
         }
         if (this.column && this.value && this.value == 'groupby') {
           api_url += '&column=' + this.column + '&type=' + 'groupby';
@@ -328,9 +332,9 @@
 
       getAmountRows() {
 
-        let api_url = '';
+        let api_url = this.api_endpoint;
         if (this.tableid) {
-          api_url = this.endpoint_count_rows + this.active_database + '&tablename=' + this.tableid;
+          api_url += this.endpoint_count_rows + this.active_database + '&tablename=' + this.tableid;
         }
 
         let vue_instance = this;
@@ -353,9 +357,9 @@
 
         this.offset_rows += 1;
 
-        let api_url = '';
+        let api_url = this.api_endpoint;
         if (this.tableid) {
-          api_url = this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
+          api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
         }
         if (this.column && this.value && this.value == 'groupby') {
           api_url += '&column=' + this.column + '&type=' + 'groupby';

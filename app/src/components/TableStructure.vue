@@ -43,7 +43,7 @@
     data() {
       return {
         columns: [],
-        endpoint: 'http://localhost/rove/api/table_structure.php?db=',
+        endpoint: 'table_structure.php?db=',
       }
     },
 
@@ -77,9 +77,9 @@
     methods: {
       getTableStructure() {
 
-        let api_url = '';
+        let api_url = this.api_endpoint;
         if (this.tableid) {
-          api_url = this.endpoint + this.active_database + '&tablename=' + this.tableid;
+          api_url += this.endpoint + this.active_database + '&tablename=' + this.tableid;
         }
 
         console.log(api_url);
