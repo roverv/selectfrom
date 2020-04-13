@@ -86,8 +86,6 @@
           api_url += this.endpoint + this.active_database + '&tablename=' + this.tableid;
         }
 
-        console.log(api_url);
-
         let vue_instance = this;
 
         axios.get(api_url).then(response => {

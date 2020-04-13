@@ -187,7 +187,7 @@
     methods: {
 
       getSize(table_info) {
-        return table_info.Data_length + table_info.Index_length;
+        return parseInt(table_info.Data_length) + parseInt(table_info.Index_length);
       },
 
       showTableSize(table_info) {

@@ -13,15 +13,10 @@
     components: {
       TableStructure,
     },
-    created() {
-      console.log(' tablestructure.vue');
-    },
   }
 </script>
 
 <style>
-  .database {
-    flex-grow: 1;
-  }
+
 </style>
 

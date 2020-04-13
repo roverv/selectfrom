@@ -231,7 +231,6 @@
     @apply text-dark-600;
   }
 
-
   .content-header {
     grid-area: content-header;
   }
@@ -246,7 +245,6 @@
     grid-template-areas: 'content-header .' 'content-body content-body';
     grid-gap:              0px;
     grid-template-columns: 1fr auto;
-    /*background-color:      #ff0000;*/
     padding:               10px;
   }
 
