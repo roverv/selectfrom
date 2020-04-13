@@ -59,7 +59,7 @@ s<template>
       </div>
     </header>
 
-    <div class="flex pr-8 w-full justify-between mb-4 text-default">
+    <div class="flex pr-5 w-full justify-between mb-4 text-default">
 
       <TableListSidebar v-if="show_table_list_sidebar" />
 

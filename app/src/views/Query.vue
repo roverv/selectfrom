@@ -156,6 +156,10 @@
       tables_with_columns() {
         return this.$store.getters["tables/tablesWithColumns"];
       },
+
+      api_endpoint() {
+        return this.$store.state.apiEndPoint;
+      },
     },
 
     methods: {
@@ -229,23 +233,6 @@
 
   .cm-s-default .cm-bracket {
     @apply text-dark-600;
-  }
-
-  .content-header {
-    grid-area: content-header;
-  }
-
-  .content-body {
-    grid-area: content-body;
-  }
-
-  .grid-container-content {
-    display:               grid;
-    height:                100%;
-    grid-template-areas: 'content-header .' 'content-body content-body';
-    grid-gap:              0px;
-    grid-template-columns: 1fr auto;
-    padding:               10px;
   }
 
 

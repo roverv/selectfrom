@@ -1,118 +1,122 @@
 <template>
-  <div v-show="initial_loading === false">
+  <div v-show="initial_loading === false" class="grid-container-content">
 
-    <table-nav :tableid="tableid" v-on:toggleMetaBox="toggleMetaBox"></table-nav>
+    <div class="content-header">
+      <table-nav :tableid="tableid" v-on:toggleMetaBox="toggleMetaBox"></table-nav>
 
-    <table-data-meta v-if="meta_box_open"></table-data-meta>
+      <table-data-meta v-if="meta_box_open"></table-data-meta>
+    </div>
 
-    <div class="w-full flex items-start">
+    <div class="content-body">
+      <div class="w-full flex items-start">
 
-      <div class="relative w-full">
+        <div class="relative w-full">
 
-        <div v-cloak v-if="is_fetching_data === false && tabledata.length == 0">
-          <p class="bg-light-100 text-gray-400 px-2 py-2 inline-block">No rows found</p>
-        </div>
-
-        <table cellspacing="0" class="table-data" v-if="tabledata.length > 1" ref="datatable"
-               @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"
-               @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
-               @keydown.shift.right.prevent="focusCellNext($event,5)"
-               @keydown.shift.left.prevent="focusCellPrevious($event,5)"
-               @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
-               @keydown.esc="unfocusDatatable()"
-               @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
-               @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
-               @keydown.open-database-list="unfocusDatatable()">
-          <thead>
-          <tr>
-            <th class="toggle-row">
-              <label for="check-all-rows">
-                <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event)" />
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path
-                    d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
-                </svg>
-              </label>
-            </th>
-            <th :name="column_header.Field" :id="column_header.Field | lowercase" v-for="column_header in columns"
-                :class="{ ' highlight-column' : (column_header.Field.toLowerCase() == column)}">
-              <a @click="orderByColumn(column_header.Field)" class="column-order-link">
-                <span>{{ column_header.Field }}</span>
-                <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
-                     v-if="order_by == column_header.Field && order_direction == 'asc'">
-                  <path class="text-highlight-400"
-                        d="M6 11V4a1 1 0 1 1 2 0v7h3a1 1 0 0 1 .7 1.7l-4 4a1 1 0 0 1-1.4 0l-4-4A1 1 0 0 1 3 11h3z"></path>
-                  <path class="text-highlight-700"
-                        d="M21 21H8a1 1 0 0 1 0-2h13a1 1 0 0 1 0 2zm0-4h-9a1 1 0 0 1 0-2h9a1 1 0 0 1 0 2zm0-4h-5a1 1 0 0 1 0-2h5a1 1 0 0 1 0 2z"></path>
-                </svg>
-                <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
-                     v-if="order_by == column_header.Field && order_direction == 'desc'">
-                  <path class="text-highlight-400"
-                        d="M18 13v7a1 1 0 0 1-2 0v-7h-3a1 1 0 0 1-.7-1.7l4-4a1 1 0 0 1 1.4 0l4 4A1 1 0 0 1 21 13h-3z"></path>
-                  <path class="text-highlight-700"
-                        d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
-                </svg>
-              </a>
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="(row, row_index) in tabledata">
-            <td class="toggle-row">
-              <label>
-                <input type="checkbox" class="hidden" :value="row_index" v-model="selected_rows" />
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path
-                    d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
-                </svg>
-              </label>
-            </td>
-            <td class="table-data-row" v-for="(column_name, index) in columns" @click.ctrl="toggleRowSidebar(row_index)"
-                @click="$event.target.focus()" tabindex="1"
-                :class="{ ' sticky-first-row-cell' : (index == 0)}">
-              <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
-              <span v-else-if="row[column_name.Field] === null" class="null-value"><i>NULL</i></span>
-              <span v-else>{{ row[column_name.Field] }}</span>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-
-        <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
-             v-if="tabledata.length > 1 && selected_rows.length > 0">
-
-          <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
-
-            <div class="font-bold mr-6">
-              {{ selected_rows.length }} rows
-            </div>
-
-            <a class="rows-action" v-if="selected_rows.length == 1" @click="editRowFromTable()">
-              <span>Edit</span>
-            </a>
-
-            <a class="rows-action" href="">
-              <span>Duplicate</span>
-            </a>
-
-            <a class="rows-action" @click="deleteRows()">
-              <span>Delete</span>
-            </a>
-
-            <a class="rows-action" href="">
-              <span>Export</span>
-            </a>
-
+          <div v-cloak v-if="is_fetching_data === false && tabledata.length == 0">
+            <p class="bg-light-100 text-gray-400 px-2 py-2 inline-block">No rows found</p>
           </div>
+
+          <table cellspacing="0" class="table-data" v-if="tabledata.length > 1" ref="datatable"
+                 @keydown.right.prevent="focusCellNext($event, 1)" @keydown.left.prevent="focusCellPrevious($event, 1)"
+                 @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+                 @keydown.shift.right.prevent="focusCellNext($event,5)"
+                 @keydown.shift.left.prevent="focusCellPrevious($event,5)"
+                 @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
+                 @keydown.esc="unfocusDatatable()"
+                 @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
+                 @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
+                 @keydown.open-database-list="unfocusDatatable()">
+            <thead>
+            <tr>
+              <th class="toggle-row">
+                <label for="check-all-rows">
+                  <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event)" />
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path
+                      d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
+                  </svg>
+                </label>
+              </th>
+              <th :name="column_header.Field" :id="column_header.Field | lowercase" v-for="column_header in columns"
+                  :class="{ ' highlight-column' : (column_header.Field.toLowerCase() == column)}">
+                <a @click="orderByColumn(column_header.Field)" class="column-order-link">
+                  <span>{{ column_header.Field }}</span>
+                  <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
+                       v-if="order_by == column_header.Field && order_direction == 'asc'">
+                    <path class="text-highlight-400"
+                          d="M6 11V4a1 1 0 1 1 2 0v7h3a1 1 0 0 1 .7 1.7l-4 4a1 1 0 0 1-1.4 0l-4-4A1 1 0 0 1 3 11h3z"></path>
+                    <path class="text-highlight-700"
+                          d="M21 21H8a1 1 0 0 1 0-2h13a1 1 0 0 1 0 2zm0-4h-9a1 1 0 0 1 0-2h9a1 1 0 0 1 0 2zm0-4h-5a1 1 0 0 1 0-2h5a1 1 0 0 1 0 2z"></path>
+                  </svg>
+                  <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
+                       v-if="order_by == column_header.Field && order_direction == 'desc'">
+                    <path class="text-highlight-400"
+                          d="M18 13v7a1 1 0 0 1-2 0v-7h-3a1 1 0 0 1-.7-1.7l4-4a1 1 0 0 1 1.4 0l4 4A1 1 0 0 1 21 13h-3z"></path>
+                    <path class="text-highlight-700"
+                          d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
+                  </svg>
+                </a>
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(row, row_index) in tabledata">
+              <td class="toggle-row">
+                <label>
+                  <input type="checkbox" class="hidden" :value="row_index" v-model="selected_rows" />
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path
+                      d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
+                  </svg>
+                </label>
+              </td>
+              <td class="table-data-row" v-for="(column_name, index) in columns"
+                  @click.ctrl="toggleRowSidebar(row_index)"
+                  @click="$event.target.focus()" tabindex="1"
+                  :class="{ ' sticky-first-row-cell' : (index == 0)}">
+                <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
+                <span v-else-if="row[column_name.Field] === null" class="null-value"><i>NULL</i></span>
+                <span v-else>{{ row[column_name.Field] }}</span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
+               v-if="tabledata.length > 1 && selected_rows.length > 0">
+
+            <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
+
+              <div class="font-bold mr-6">
+                {{ selected_rows.length }} rows
+              </div>
+
+              <a class="rows-action" v-if="selected_rows.length == 1" @click="editRowFromTable()">
+                <span>Edit</span>
+              </a>
+
+              <a class="rows-action" href="">
+                <span>Duplicate</span>
+              </a>
+
+              <a class="rows-action" @click="deleteRows()">
+                <span>Delete</span>
+              </a>
+
+              <a class="rows-action" href="">
+                <span>Export</span>
+              </a>
+
+            </div>
+          </div>
+
         </div>
 
       </div>
 
-    </div>
-
-    <div class="w-full px-2" v-if="tabledata.length == 1">
+      <div class="w-full px-2" v-if="tabledata.length == 1">
         <div class="row-data-field w-full" v-for="column in columns">
 
           <div class=" header bg-dark-400 flex items-center w-2/5 pl-3 flex-shrink-0"
@@ -132,18 +136,19 @@
 
         </div>
 
-      <a class="btn mt-5" @click="editRowFromSingleView()">
-        Edit
-      </a>
+        <a class="btn mt-5" @click="editRowFromSingleView()">
+          Edit
+        </a>
 
-    </div>
-    <br>
+      </div>
+      <br>
 
-    <div class="flex" v-if="showLoadMoreDataButtons()">
-      <button class="btn mr-3" @click="loadMoreRows()">Load 90 more rows</button>
-      <button class="btn mr-3" @click="loadAllRows()">
-        Load all rows ({{ total_amount_rows }})
-      </button>
+      <div class="flex" v-if="showLoadMoreDataButtons()">
+        <button class="btn mr-3" @click="loadMoreRows()">Load 90 more rows</button>
+        <button class="btn mr-3" @click="loadAllRows()">
+          Load all rows ({{ total_amount_rows }})
+        </button>
+      </div>
     </div>
 
     <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar" v-on:editRow="editRowFromSidebar"
@@ -203,7 +208,7 @@
 
     computed: {
       columns_halved: function () {
-        if(this.columns.length == 0) return [];
+        if (this.columns.length == 0) return [];
         let halfwayThrough  = Math.floor(this.columns.length / 2)
         let arrayFirstHalf  = this.columns.slice(0, halfwayThrough);
         let arraySecondHalf = this.columns.slice(halfwayThrough, this.columns.length);
@@ -271,8 +276,8 @@
         this.is_fetching_data = true;
 
         axios.get(api_url).then(response => {
-          this.tabledata = response.data.data;
-          this.columns   = response.data.columns;
+          this.tabledata       = response.data.data;
+          this.columns         = response.data.columns;
           this.initial_loading = false;
           this.$nextTick().then(function () {
             // DOM updated
@@ -283,8 +288,8 @@
             // set focus on first cell, for cell navigation with keyboard
             if (vue_instance.tabledata.length > 0) {
               let cell_nr = 1;
-              if(vue_instance.gotocolumn) {
-                let obj = vue_instance.columns.find(column_object=> column_object.Field.toLowerCase() == vue_instance.column.toLowerCase());
+              if (vue_instance.gotocolumn) {
+                let obj = vue_instance.columns.find(column_object => column_object.Field.toLowerCase() == vue_instance.column.toLowerCase());
                 cell_nr = vue_instance.columns.indexOf(obj) + 1; // set the focus on the same column as the column highlight
               }
 
@@ -324,7 +329,7 @@
           row_num_keys.push(this.tabledata[row_index][key]);
           column_num_keys.push(key);
         }
-        this.sidebar_row_index = row_index;
+        this.sidebar_row_index   = row_index;
         this.sidebar_row_data    = row_num_keys;
         this.sidebar_column_data = column_num_keys;
         this.sidebarisopen       = true;
@@ -502,10 +507,13 @@
           return;
         }
 
-        let unique_column = unique_columns[0].Field;
+        let unique_column       = unique_columns[0].Field;
         let unique_column_value = this.tabledata[row_index][unique_column];
 
-        this.$router.push({name: 'editrow', params: { 'tableid': this.tableid, 'column': unique_column, 'rowid': unique_column_value}});
+        this.$router.push({
+          name: 'editrow',
+          params: {'tableid': this.tableid, 'column': unique_column, 'rowid': unique_column_value}
+        });
       },
 
       editRowFromSidebar() {

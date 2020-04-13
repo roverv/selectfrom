@@ -2,6 +2,10 @@
   display: none;
 }
 
+/*********************
+ * BUTTONS
+ *********************/
+
 .btn {
   @apply inline-flex py-1 px-5 items-center cursor-pointer relative;
   background: hsla(215, 27%, 20%, 0.15);
@@ -18,10 +22,34 @@
   top: 2px;
 }
 
+/*********************
+ * MESSAGE BOXES
+ *********************/
+
 .error-box {
   @apply bg-red-700 border border-red-800 px-3 py-2 text-white;
 }
 
 .success-box {
   @apply bg-highlight-400 border border-highlight-700 px-3 py-2;
+}
+
+/*********************
+ * CONTENT GRID
+ *********************/
+
+.content-header {
+  grid-area: content-header;
+}
+
+.content-body {
+  grid-area: content-body;
+}
+
+.grid-container-content {
+  display:               grid;
+  height:                100%;
+  grid-template-areas: 'content-header .' 'content-body content-body';
+  grid-gap:              0px;
+  grid-template-columns: 1fr auto;
 }

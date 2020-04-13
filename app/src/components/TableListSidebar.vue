@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar flex-shrink-0 pr-1  "
-       :class="[tables_list_is_open ? 'mr-4 ml-8 ' : 'w-8']">
+       :class="[tables_list_is_open ? 'mr-4 ml-5 ' : 'w-8']">
 
     <div class="flex flex-col h-screen pt-20 relative">
 
