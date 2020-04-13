@@ -20,11 +20,11 @@
 
         <div v-if="query_results.length > 0" v-for="(query_result, query_result_index) in query_results" :key="query_result_index" class="mb-8 mt-1">
 
-          <div v-if="query_result.result == 'error'" class="bg-red-700 border border-red-800 px-3 py-2 text-white">
+          <div v-if="query_result.result == 'error'" class="error-box">
             {{ query_result.message }}
           </div>
 
-          <div v-if="query_result.result == 'success'" class="bg-highlight-400 border border-highlight-700 p-4 mb-3">
+          <div v-if="query_result.result == 'success'" class="success-box mb-3">
             {{ query_result.query }}
             <hr class="border-light-200 my-2">
             <div v-if="query_result.type == 'change'">
@@ -193,7 +193,7 @@
           column_num_keys.push(this.query_results[query_result_index].columns_meta[key].name);
           table_num_keys.push(this.query_results[query_result_index].columns_meta[key].table);
         }
-        this.sidebar_row_data          = this.query_results[query_result_index].rows[row_index];
+          this.sidebar_row_data          = this.query_results[query_result_index].rows[row_index];
         this.sidebar_column_data       = column_num_keys;
         this.sidebar_column_table_data = table_num_keys;
         this.sidebarisopen             = true;

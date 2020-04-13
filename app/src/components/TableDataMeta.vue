@@ -28,7 +28,7 @@
     </div>
 
     <div class="my-6 flex items-center">
-      <div class="inline-block text-sm text-gray-300 border border-gray-500 py-1 px-2 bg-light-200">
+      <div class="inline-block text-sm text-gray-300 border border-dashed border-gray-500 py-1 px-2 bg-light-200">
         SELECT * FROM user LIMIT 90
       </div>
       <a>

@@ -89,7 +89,7 @@
               {{ selected_rows.length }} rows
             </div>
 
-            <a class="rows-action" href="" v-if="selected_rows.length == 1">
+            <a class="rows-action" v-if="selected_rows.length == 1" @click="editRow()">
               <span>Edit</span>
             </a>
 
@@ -482,7 +482,23 @@
 
       toggleMetaBox() {
         this.meta_box_open = !this.meta_box_open;
-      }
+      },
+
+      editRow() {
+        let unique_columns = this.getUniqueColumns();
+
+        if (unique_columns.length == 0) {
+          alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
+          return;
+        }
+
+        let unique_column = unique_columns[0].Field;
+        let unique_column_value = this.tabledata[this.selected_rows[0]][unique_column];
+
+        this.$router.push({name: 'editrow', params: { 'tableid': this.tableid, 'column': unique_column, 'rowid': unique_column_value}});
+      },
+
+
 
     },
 

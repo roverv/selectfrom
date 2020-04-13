@@ -52,7 +52,7 @@
     },
 
     mounted() {
-      this.getAllPosts();
+      this.getTableStructure();
     },
 
     computed: {
@@ -75,7 +75,7 @@
     },
 
     methods: {
-      getAllPosts() {
+      getTableStructure() {
 
         let api_url = '';
         if (this.tableid) {

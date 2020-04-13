@@ -18,3 +18,10 @@
   top: 2px;
 }
 
+.error-box {
+  @apply bg-red-700 border border-red-800 px-3 py-2 text-white;
+}
+
+.success-box {
+  @apply bg-highlight-400 border border-highlight-700 px-3 py-2;
+}

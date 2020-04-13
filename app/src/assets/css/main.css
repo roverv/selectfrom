@@ -4,6 +4,7 @@
 
 @import "./general.css";
 @import "./tabledata.css";
+@import "./form.css";
 
 @import 'theme.light.css';
 @import 'theme.color.css';

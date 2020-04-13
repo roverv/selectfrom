@@ -1,0 +1,30 @@
+.custom-checkbox {
+  @apply cursor-pointer flex items-center;
+}
+.custom-checkbox .input-box {
+  @apply bg-light-100 border border-light-200 w-4 h-4 inline-block relative mr-2;
+}
+.custom-checkbox .input-box:after {
+  @apply border-white absolute bg-transparent;
+  content: '';
+  width: 11px;
+  height: 7px;
+  top: 2px;
+  left: 2px;
+  border: 3px solid;
+  border-top: none;
+  border-right: none;
+  /* default off */
+  opacity: 0;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.custom-checkbox input[type="checkbox"]:checked + .input-box:after {
+  /* show check if checkbox is checked */
+  opacity: 1;
+}
+
+
+input[type="text"].default-text-input {
+  @apply bg-light-100 border border-light-200 py-1;
+}

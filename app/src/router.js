@@ -54,6 +54,12 @@ export default new Router({
       props: true,
     },
     {
+      path: '/editrow/:tableid/:column/:rowid',
+      name: 'editrow',
+      component: () => import(/* webpackChunkName: "about" */ './views/EditRow.vue'),
+      props: true,
+    },
+    {
       path: '/query',
       name: 'query',
       component: () => import(/* webpackChunkName: "about" */ './views/Query.vue'),
