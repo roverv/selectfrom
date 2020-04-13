@@ -32,22 +32,17 @@ s<template>
               d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
 
-          <SwitchDatabase></SwitchDatabase>
 
-          <router-link :to="{ name: 'database', params: {database: active_database }}" class="mx-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 fill-current">
-              <path class="text-gray-300"
-                    d="M17.56 17.66a8 8 0 0 1-11.32 0L1.3 12.7a1 1 0 0 1 0-1.42l4.95-4.95a8 8 0 0 1 11.32 0l4.95 4.95a1 1 0 0 1 0 1.42l-4.95 4.95zM11.9 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"></path>
-              <circle cx="12" cy="12" r="3" class="text-gray-400"></circle>
-            </svg>
+          <router-link :to="{ name: 'database', params: {database: active_database }}" class="mx-2" v-if="active_database">
+            {{ active_database }}
           </router-link>
 
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
-               style="transform: rotate(90deg);">
+               style="transform: rotate(90deg);" v-if="page_is_table">
             <path
               d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
-          <a class="">user</a>
+          <a v-if="page_is_table" class="">{{ this.$route.params.tableid }}</a>
         </div>
 
         <div>
@@ -131,7 +126,6 @@ s<template>
   import DatabasesModal from "./components/DatabasesModal";
   import TableListSidebar from "./components/TableListSidebar";
   import RecentTables from "./components/RecentTables";
-  import SwitchDatabase from "./components/SwitchDatabase";
 
   // use this to reload the main component
   // this.$store.state.reloadMainComponentKey += 1;
@@ -173,7 +167,6 @@ s<template>
       RecentTables,
       SearchModal,
       DatabasesModal,
-      SwitchDatabase
     },
 
     computed: {
@@ -183,6 +176,10 @@ s<template>
 
       show_table_list_sidebar() {
         return !(this.active_database == '' || this.$route.name == 'server');
+      },
+
+      page_is_table() {
+        return (typeof this.$route.params.tableid !== 'undefined' && this.$route.params.tableid);
       }
     },
 
