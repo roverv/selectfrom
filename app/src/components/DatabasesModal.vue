@@ -138,6 +138,14 @@
 
         // cannot go to a database that does not exists, skip
         if (this.databases.includes(this.search_value) === false) {
+
+          // if the table is not found, but there are autocomplete items, just replace the value with the first matching autocomplete item
+          // very handy when doing fuzzy search: orgadd > ENTER > organisation_address
+          if(this.matches.length > 0) {
+            this.search_value = this.matches[0];
+            return false;
+          }
+
           // briefly highlight the text red, to show the user the input is false
           this.$refs.searchany.classList.add('text-red-700');
           let vue = this;
