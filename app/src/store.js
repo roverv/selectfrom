@@ -4,6 +4,7 @@ import createPersistedState from "vuex-persistedstate";
 
 import DatabasesStore from './store/databases';
 import TablesStore from './store/tables';
+import QueryHistory from './store/queries';
 
 Vue.use(Vuex)
 
@@ -14,6 +15,7 @@ export default new Vuex.Store({
   modules: {
     databases: DatabasesStore,
     tables: TablesStore,
+    queryhistory: QueryHistory,
   },
 
 

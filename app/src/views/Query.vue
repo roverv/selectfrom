@@ -92,6 +92,7 @@
 
   export default {
     name: 'query',
+    props: ['historyindex'],
     data() {
       return {
         endpoint: 'query.php?db=',
@@ -137,6 +138,10 @@
           tables: this.tables_with_columns
         }
       });
+
+      if(typeof this.historyindex !== 'undefined' && this.historyindex >= 0) {
+        window.editor.setValue(this.query_history[this.historyindex])
+      }
     },
 
     computed: {
@@ -151,6 +156,10 @@
       api_endpoint() {
         return this.$store.state.apiEndPoint;
       },
+
+      query_history() {
+        return this.$store.getters["queryhistory/queries"];
+      },
     },
 
     methods: {
@@ -164,6 +173,9 @@
         const querystring = require('querystring');
         axios.post(api_url, querystring.stringify({query: query})).then(response => {
           this.query_results = response.data;
+          if(this.query_history.includes(query) === false) {
+            this.$store.commit("queryhistory/ADD_QUERY", query);
+          }
           this.$nextTick().then(function () {
             // todo: navigation on query results???
             // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
