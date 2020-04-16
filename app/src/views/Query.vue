@@ -96,8 +96,6 @@
       return {
         endpoint: 'query.php?db=',
         query_results: {},
-        tabledata: [],
-        columns_meta: [],
         sidebarisopen: false,
         sidebar_row_data: [],
         sidebar_column_data: [],
@@ -142,13 +140,6 @@
     },
 
     computed: {
-      columns() {
-        if (this.tabledata.length > 0) {
-          return Object.keys(this.tabledata[0]);
-        }
-        return [];
-      },
-
       active_database() {
         return this.$store.state.activeDatabase;
       },
@@ -173,8 +164,6 @@
         const querystring = require('querystring');
         axios.post(api_url, querystring.stringify({query: query})).then(response => {
           this.query_results = response.data;
-          this.tabledata    = this.query_result.rows;
-          this.columns_meta = this.query_result.columns_meta;
           this.$nextTick().then(function () {
             // todo: navigation on query results???
             // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
