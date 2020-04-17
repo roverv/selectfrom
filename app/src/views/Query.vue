@@ -92,12 +92,11 @@
 
   export default {
     name: 'query',
+    props: ['historyindex'],
     data() {
       return {
         endpoint: 'query.php?db=',
         query_results: {},
-        tabledata: [],
-        columns_meta: [],
         sidebarisopen: false,
         sidebar_row_data: [],
         sidebar_column_data: [],
@@ -139,16 +138,13 @@
           tables: this.tables_with_columns
         }
       });
+
+      if(typeof this.historyindex !== 'undefined' && this.historyindex >= 0) {
+        window.editor.setValue(this.query_history[this.historyindex])
+      }
     },
 
     computed: {
-      columns() {
-        if (this.tabledata.length > 0) {
-          return Object.keys(this.tabledata[0]);
-        }
-        return [];
-      },
-
       active_database() {
         return this.$store.state.activeDatabase;
       },
@@ -159,6 +155,10 @@
 
       api_endpoint() {
         return this.$store.state.apiEndPoint;
+      },
+
+      query_history() {
+        return this.$store.getters["queryhistory/queries"];
       },
     },
 
@@ -173,8 +173,9 @@
         const querystring = require('querystring');
         axios.post(api_url, querystring.stringify({query: query})).then(response => {
           this.query_results = response.data;
-          this.tabledata    = this.query_result.rows;
-          this.columns_meta = this.query_result.columns_meta;
+          if(this.query_history.includes(query) === false) {
+            this.$store.commit("queryhistory/ADD_QUERY", query);
+          }
           this.$nextTick().then(function () {
             // todo: navigation on query results???
             // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();

@@ -1,6 +1,7 @@
 s<template>
   <div id="app" v-on:keyup.self.open-search="openSearchModal" v-on:keyup.self.open-recent-tables="openRecentTables"
        v-on:keyup.self.to-query="goToQuery" v-on:keyup.self.open-database-list="openDatabasesModal"
+       v-on:keyup.self.open-query-history="openQueryHistory"
        v-on:keyup.self.refresh-page="refreshPage" tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
@@ -12,6 +13,9 @@ s<template>
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen"
                   :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0"
                   @keydown.esc="recenttablesopen = false" />
+
+    <QueryHistory v-if="active_database && queryhistoryopen" :modalisopen="queryhistoryopen"
+                  v-on:closequeryhistory="closeQueryHistory()" tabindex="0" @keydown.esc="queryhistoryopen = false" />
 
     <header class="bg-gray-500 py-3 px-10 mb-3 bg-light-100 absolute w-full top-0 z-20">
       <div class="flex justify-between items-center">
@@ -126,6 +130,7 @@ s<template>
   import DatabasesModal from "./components/DatabasesModal";
   import TableListSidebar from "./components/TableListSidebar";
   import RecentTables from "./components/RecentTables";
+  import QueryHistory from "./components/QueryHistory";
 
   // use this to reload the main component
   // this.$store.state.reloadMainComponentKey += 1;
@@ -137,6 +142,7 @@ s<template>
         searchmodalopen: false,
         databasemodalopen: false,
         recenttablesopen: false,
+        queryhistoryopen: false,
         recent_tables: [],
         tables: [],
       }
@@ -156,6 +162,7 @@ s<template>
         this.searchmodalopen   = false;
         this.recenttablesopen  = false;
         this.databasemodalopen = false;
+        this.queryhistoryopen  = false;
         this.$nextTick();
         document.getElementById('app').focus();
       }
@@ -166,6 +173,7 @@ s<template>
       RecentTables,
       SearchModal,
       DatabasesModal,
+      QueryHistory,
     },
 
     computed: {
@@ -185,18 +193,23 @@ s<template>
     methods: {
 
       openSearchModal() {
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
         this.searchmodalopen = true;
       },
 
       openDatabasesModal() {
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
         this.databasemodalopen = true;
       },
 
       openRecentTables() {
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
         this.recenttablesopen = true;
+      },
+
+      openQueryHistory() {
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
+        this.queryhistoryopen = true;
       },
 
       closeSearchModal() {
@@ -213,6 +226,12 @@ s<template>
 
       closeRecentTables() {
         this.recenttablesopen = false;
+        // when the modal is closed, we need to set the focus back on the app
+        document.getElementById('app').focus();
+      },
+
+      closeQueryHistory() {
+        this.queryhistoryopen = false;
         // when the modal is closed, we need to set the focus back on the app
         document.getElementById('app').focus();
       },

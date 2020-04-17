@@ -59,6 +59,12 @@ export default new Router({
       component: () => import(/* webpackChunkName: "query" */ './views/Query.vue'),
       props: true,
     },
+    {
+      path: '/query/history/:historyindex',
+      name: 'queryhistory',
+      component: () => import(/* webpackChunkName: "query" */ './views/Query.vue'),
+      props: true,
+    },
   ]
 });
 
