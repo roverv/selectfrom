@@ -24,24 +24,27 @@
 
   export default {
     name: 'RecentTables',
-    props: ['modalisopen', 'recent_tables'],
+    props: ['modalisopen'],
     data() {
       return {
-        tables: [],
         current: 0
       }
     },
 
     created() {
-      if (localStorage.getItem('recent_tables')) {
-        this.tables = JSON.parse(localStorage.getItem('recent_tables'));
-      }
       document.addEventListener('keydown', this.triggerKeyDown);
     },
 
     beforeDestroy() {
       document.removeEventListener('keydown', this.triggerKeyDown);
     },
+
+    computed:  {
+      recent_tables() {
+        return this.$store.getters["recenttables/tables"];
+      },
+    },
+
 
     methods: {
 

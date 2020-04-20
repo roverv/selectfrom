@@ -11,7 +11,7 @@ s<template>
                     v-on:closedatabasesmodal="closeDatabasesModal()" />
 
     <RecentTables v-if="active_database && recenttablesopen" :modalisopen="recenttablesopen"
-                  :recent_tables="recent_tables" v-on:closerecenttables="closeRecentTables()" tabindex="0"
+                  v-on:closerecenttables="closeRecentTables()" tabindex="0"
                   @keydown.esc="recenttablesopen = false" />
 
     <QueryHistory v-if="active_database && queryhistoryopen" :modalisopen="queryhistoryopen"
@@ -68,7 +68,7 @@ s<template>
       <TableListSidebar v-if="show_table_list_sidebar" />
 
       <div class="flex-grow py-6 relative pt-20 mb-4 pr-4">
-        <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" v-on:addrecenttable="addRecentTable" />
+        <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" />
       </div>
 
     </div>
@@ -143,18 +143,12 @@ s<template>
         databasemodalopen: false,
         recenttablesopen: false,
         queryhistoryopen: false,
-        recent_tables: [],
         tables: [],
       }
     },
 
     created() {
-
       this.$store.dispatch("databases/get");
-
-      if (sessionStorage.getItem('recent_tables')) {
-        this.recent_tables = JSON.parse(sessionStorage.getItem('recent_tables'));
-      }
     },
 
     watch: {
@@ -238,20 +232,6 @@ s<template>
 
       forceupdate() {
         this.$forceUpdate();
-      },
-
-      addRecentTable: function (tableid) {
-        // remove duplicates
-        if (this.recent_tables.indexOf(tableid) >= 0) {
-          this.recent_tables.splice(this.recent_tables.indexOf(tableid), 1);
-        }
-        // limit to 8
-        while (this.recent_tables.length > 7) {
-          this.recent_tables.splice(7, 1);
-        }
-        // add new table to the beginning of the array
-        this.recent_tables.unshift(tableid);
-        sessionStorage.setItem('recent_tables', JSON.stringify(this.recent_tables));
       },
 
       SwitchTheme(theme_name) {

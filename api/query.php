@@ -9,6 +9,8 @@
 
     $query_results = [];
     foreach ($queries as $query) {
+        if(empty(trim($query))) continue;
+
         $result_data = ['query' => $query];
         try {
             $query_result = $pdo->query($query);
