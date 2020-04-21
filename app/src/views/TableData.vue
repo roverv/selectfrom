@@ -14,7 +14,7 @@
       TableData,
     },
     created() {
-      this.$emit('addrecenttable', this.tableid);
+      this.$store.commit("recenttables/ADD_RECENT_TABLE", this.tableid);
     },
   }
 </script>

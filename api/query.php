@@ -9,9 +9,14 @@
 
     $query_results = [];
     foreach ($queries as $query) {
+        if(empty(trim($query))) continue;
+
         $result_data = ['query' => $query];
         try {
+            $execution_start = microtime(true);
             $query_result = $pdo->query($query);
+            $execution_end = microtime(true);
+            $result_data['execution_time']  = $execution_end - $execution_start;
         } catch (Exception $e) {
             $result_data['result']  = 'error';
             $result_data['message'] = $e->getMessage();

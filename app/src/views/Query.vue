@@ -27,11 +27,16 @@
           <div v-if="query_result.result == 'success'" class="success-box mb-3">
             {{ query_result.query }}
             <hr class="border-light-200 my-2">
-            <div v-if="query_result.type == 'change'">
-              Affected {{ query_result.affected_rows }} rows
-            </div>
-            <div v-else="query_result.type == 'data'">
-              {{ query_result.row_count }} rows
+            <div class="flex justify-between items-center">
+              <div v-if="query_result.type == 'change'">
+                Affected {{ query_result.affected_rows }} rows
+              </div>
+              <div v-else="query_result.type == 'data'">
+                {{ query_result.row_count }} rows
+              </div>
+              <div class="text-gray-400 text-sm">
+                {{ query_result.execution_time | formatSeconds }}s
+              </div>
             </div>
           </div>
 
@@ -89,6 +94,8 @@
   import "codemirror/addon/hint/show-hint";
   import "codemirror/addon/hint/sql-hint";
   import sqlFormatter from "sql-formatter";
+  import {number_format} from '../util'
+
 
   export default {
     name: 'query',
@@ -111,6 +118,12 @@
     mixins: [
       TableKeyNavigation
     ],
+
+    filters: {
+      formatSeconds: function(seconds) {
+        return number_format(seconds, 3, '.', '');
+      }
+    },
 
     mounted() {
       this.$refs.query.focus();
