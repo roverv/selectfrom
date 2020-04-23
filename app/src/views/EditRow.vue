@@ -3,7 +3,10 @@
 
     <div style="width: 900px;">
 
-      <h1 class="text-xl mb-4">Edit row of {{ tableid }}</h1>
+      <h1 class="text-xl mb-4">
+        <span v-if="$route.name == 'addrow'">Add row to table <span class="text-highlight-700">{{ tableid }}</span></span>
+        <span v-else>Edit row of table <span class="text-highlight-700">{{ tableid }}</span></span>
+        </h1>
 
       <div v-if="query_result.result == 'error'" class="error-box mb-4">
         {{ query_result.message }}
@@ -24,14 +27,16 @@
         </a>
       </div>
 
-      <form method="post" @submit.prevent="endpoint_update_row()" autocomplete="off">
+      <form method="post" @submit.prevent="saveRow()" autocomplete="off">
 
         <div class="w-full" v-if="columns.length > 0">
           <div class="flex w-full mb-1" v-for="column in columns">
 
             <div class="bg-dark-400 flex justify-between items-center w-2/5 pl-3 flex-shrink-0 relative flex-wrap mr-2">
               <div>{{ column.Field }}</div>
-              <span class=" text-xs text-light-200 mr-3">{{ column.Type }}</span>
+              <span class=" text-xs text-light-200 mr-3">
+                {{ column.Type }}<span v-if="column.Extra != ''">, {{ column.Extra }}</span>
+              </span>
             </div>
 
             <input type="text" v-model="row_data[column.Field]" @input="cellTextChanged($event, column.Field)" class="default-text-input pl-4 flex-grow"
@@ -73,6 +78,7 @@
       return {
         endpoint_table_structure: 'table_structure.php?db=',
         endpoint_row_data: 'rowdata.php?db=',
+        endpoint_insert_row: 'insertrow.php?db=',
         endpoint_update_row: 'updaterow.php?db=',
         columns: [],
         row_data: {},
@@ -83,7 +89,10 @@
 
     mounted() {
       this.getTableStructure();
-      this.getRowData();
+      if(this.$route.name == 'editrow') {
+        this.getRowData();
+      }
+
     },
 
     computed: {
@@ -111,6 +120,9 @@
 
         axios.get(api_url).then(response => {
           this.columns = response.data;
+          if(this.$route.name == 'addrow') {
+            this.fillDefaults();
+          }
 
         }).catch(error => {
           console.log('-----error-------');
@@ -141,7 +153,8 @@
 
       saveRow() {
         let api_url = this.api_endpoint;
-        api_url += this.endpoint_update_row + this.active_database + '&tablename=' + this.tableid;
+        api_url += (this.$route.name == 'addrow') ? this.endpoint_insert_row : this.endpoint_update_row;
+        api_url += this.active_database + '&tablename=' + this.tableid;
         api_url += '&column=' + this.column + '&value=' + this.rowid;
 
         let vue_instance = this;
@@ -153,7 +166,11 @@
 
         axios.post(api_url, params).then(response => {
           vue_instance.query_result = response.data;
-          if(vue_instance.query_result.result == 'success') {
+          if(vue_instance.query_result.result == 'success' && typeof vue_instance.query_result.inserted_row_id !== 'undefined') {
+            vue_instance.$router.push({'name': 'table', 'params': {'tableid': vue_instance.tableid}});
+            //@todo: flash message with query
+          }
+          else if(vue_instance.query_result.result == 'success') {
             // refresh data when query was success
             vue_instance.getRowData();
           }
@@ -162,6 +179,15 @@
           console.log('-----error-------');
           console.log(error);
         })
+      },
+
+      fillDefaults() {
+        for (let column_key in this.columns) {
+          let column_data = this.columns[column_key];
+          this.$set(this.row_data, column_data.Field, column_data.Default);
+          // set the null value to true if the field is nullable and the default is null
+          this.$set(this.columns_null, column_data.Field, (column_data.Null === 'YES' && column_data.Default === null) ? true : false);
+        }
       },
 
       toggleQuerySize(event) {

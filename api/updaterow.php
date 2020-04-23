@@ -3,7 +3,6 @@
     require_once '_header.php';
     require_once 'pdoDebug.php';
 
-    // todo: remove, http://localhost/rove/api/updaterow.php?db=rove&tablename=user&column=id&value=1964
 //    $_POST = ['id' => '1964', 'lastname' => 'Bob en Susan2']; // test data
 
     $columns_with_values = $_POST;

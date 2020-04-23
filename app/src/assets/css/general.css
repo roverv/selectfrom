@@ -48,8 +48,9 @@
 
 .grid-container-content {
   display:               grid;
+  min-width:             900px;
   height:                100%;
-  grid-template-areas: 'content-header .' 'content-body content-body';
+  grid-template-areas:   'content-header .' 'content-body content-body';
   grid-gap:              0px;
   grid-template-columns: 1fr auto;
 }

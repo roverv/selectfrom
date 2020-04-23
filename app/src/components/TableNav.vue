@@ -24,9 +24,9 @@
         Foreign keys
       </a>
 
-      <a class="subnav-item">
+      <router-link :to="{ name: 'addrow', params: { tableid: tableid } }" class="subnav-item" :class="{ 'active' : ($route.name == 'addrow') }">
         Add row
-      </a>
+      </router-link>
     </div>
     <div></div>
 
