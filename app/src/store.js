@@ -6,6 +6,7 @@ import DatabasesStore from './store/databases';
 import TablesStore from './store/tables';
 import QueryHistory from './store/queries';
 import RecentTables from './store/recenttables';
+import FlashMessage from './store/flashmessage';
 
 Vue.use(Vuex)
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     tables: TablesStore,
     queryhistory: QueryHistory,
     recenttables: RecentTables,
+    flashmessage: FlashMessage,
   },
 
 

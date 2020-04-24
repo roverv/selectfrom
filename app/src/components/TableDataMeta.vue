@@ -27,10 +27,8 @@
       </div>
     </div>
 
-    <div class="my-6 flex items-center">
-      <div class="inline-block text-sm text-gray-300 border border-dashed border-gray-500 py-1 px-2 bg-light-200">
-        SELECT * FROM user LIMIT 90
-      </div>
+    <div class="my-6 query-message">
+      <div class="query-sql">SELECT * FROM user LIMIT 90</div>
       <a>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 ml-2 fill-current">
           <path class="text-gray-400"

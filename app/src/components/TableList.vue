@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div>
 
       <h2 class="mb-2 text-xl">
@@ -57,7 +56,9 @@
           <td class="table-data-row" v-for="(table_list_header, index) in table_list_headers"
               @click="$event.target.focus()" tabindex="1"
               :class="{ ' sticky-first-row-cell' : (index == 0)}">
-            <router-link v-if="table_list_header == 'Name'" :to="{ name: 'table', params: { tableid: table[table_list_header] } }" class="inline-block whitespace-normal">
+            <router-link v-if="table_list_header == 'Name'"
+                         :to="{ name: 'table', params: { tableid: table[table_list_header] } }"
+                         class="inline-block whitespace-normal">
               {{ table[table_list_header] }}
             </router-link>
             <span v-else-if="table_list_header == 'Size'" v-html="showTableSize(table)"></span>
@@ -147,12 +148,12 @@
       },
 
       ordered_tables() {
-        if(this.tables.length == 0) return [];
+        if (this.tables.length == 0) return [];
 
         // create a clone of tables, we dont want to sort the vuex state
         let ordered_tables = JSON.parse(JSON.stringify(this.tables));
 
-        let reverse          = this.order_direction == 'asc' ? 1 : -1;
+        let reverse = this.order_direction == 'asc' ? 1 : -1;
 
         let vue_instance = this;
 

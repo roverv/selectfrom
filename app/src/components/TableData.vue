@@ -18,6 +18,8 @@
       </div>
 
       <table-data-meta v-if="meta_box_open"></table-data-meta>
+
+      <flash-message></flash-message>
     </div>
 
     <div class="content-body">
@@ -178,6 +180,7 @@
   import TableDataMeta from '@/components/TableDataMeta.vue'
   import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
   import RowSidebar from "./RowSidebar";
+  import FlashMessage from "./FlashMessage";
 
   export default {
     name: 'TableData',
@@ -205,6 +208,7 @@
     },
 
     components: {
+      FlashMessage,
       RowSidebar,
       TableNav,
       TableDataMeta
