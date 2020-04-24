@@ -3,9 +3,17 @@
 
     <div style="width: 900px;">
 
+      <div class="table-page-header">
+        <h2>
+          {{ tableid }}
+        </h2>
+        <table-nav :tableid="tableid"></table-nav>
+        <div></div>
+      </div>
+
       <h1 class="text-xl mb-4">
-        <span v-if="$route.name == 'addrow'">Add row to table <span class="text-highlight-700">{{ tableid }}</span></span>
-        <span v-else>Edit row of table <span class="text-highlight-700">{{ tableid }}</span></span>
+        <span v-if="$route.name == 'addrow'">Add row</span>
+        <span v-else>Edit row</span>
         </h1>
 
       <div v-if="query_result.result == 'error'" class="error-box mb-4">
@@ -67,8 +75,8 @@
 
 <script>
 
-
   import axios from "axios";
+  import TableNav from '@/components/TableNav.vue'
   import sqlFormatter from "sql-formatter";
 
   export default {
@@ -85,6 +93,10 @@
         columns_null: {},
         query_result: {},
       }
+    },
+
+    components: {
+      TableNav,
     },
 
     mounted() {

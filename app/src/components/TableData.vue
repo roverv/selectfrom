@@ -2,7 +2,20 @@
   <div v-show="initial_loading === false" class="grid-container-content">
 
     <div class="content-header">
-      <table-nav :tableid="tableid" v-on:toggleMetaBox="toggleMetaBox"></table-nav>
+
+      <div class="table-page-header">
+        <a class="inline-flex items-center" @click="toggleMetaBox()">
+          <h2>
+            {{ tableid }}
+          </h2>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 ml-1 fill-current">
+            <path class="text-gray-400"
+                  d="M15.3 10.3a1 1 0 0 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 1.4-1.4l3.3 3.29 3.3-3.3z"></path>
+          </svg>
+        </a>
+        <table-nav :tableid="tableid" v-on:toggleMetaBox="toggleMetaBox"></table-nav>
+        <div></div>
+      </div>
 
       <table-data-meta v-if="meta_box_open"></table-data-meta>
     </div>

@@ -1,12 +1,20 @@
 <template>
   <div>
 
-    <table-nav :tableid="tableid"></table-nav>
+    <div class="table-page-header">
+      <h2>
+        {{ tableid }}
+      </h2>
+      <table-nav :tableid="tableid"></table-nav>
+      <div></div>
+    </div>
+
 
     <div class="w-full flex items-start">
 
       <div class="relative w-full">
-        <table cellspacing="0" class="flex-grow  bg-light-100 relative" style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
+        <table cellspacing="0" class="flex-grow  bg-light-100 relative"
+               style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
                v-if="columns.length > 1">
           <thead class="bg-dark-400 text-gray-200">
           <tr class="font-normal">

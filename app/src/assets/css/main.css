@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import "./general.css";
+@import "./tablepage.css";
 @import "./tabledata.css";
 @import "./form.css";
 
