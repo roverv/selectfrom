@@ -1,3 +1,44 @@
+/*********************
+ * BASIC ELEMENTS
+ *********************/
+body {
+  background:              var(--background-body);
+  background-attachment:   fixed;
+  @apply text-primary;
+  min-height:              100vh;
+  @apply font-sans;
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  --scrollbarBG: white;
+  --thumbBG:     #90A4AE;
+  scrollbar-width: 12px;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+
+html::-webkit-scrollbar {
+  width:  12px;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius:    6px;
+}
+
+a {
+  @apply no-underline cursor-pointer;
+}
+
+a:hover {
+  @apply underline;
+}
+
 [v-cloak] {
   display: none;
 }

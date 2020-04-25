@@ -17,53 +17,7 @@ s<template>
     <QueryHistory v-if="active_database && queryhistoryopen" :modalisopen="queryhistoryopen"
                   v-on:closequeryhistory="closeQueryHistory()" tabindex="0" @keydown.esc="queryhistoryopen = false" />
 
-    <header class="bg-gray-500 py-3 px-10 mb-3 bg-light-100 absolute w-full top-0 z-20">
-      <div class="flex justify-between items-center">
-
-        <div class="flex items-center">
-          <a class="text-gray-300">MySQL</a>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
-               style="transform: rotate(90deg);">
-            <path
-              d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
-          </svg>
-          <router-link :to="{ name: 'server'}" class="text-gray-300">
-            Server
-          </router-link>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
-               style="transform: rotate(90deg);">
-            <path
-              d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
-          </svg>
-
-
-          <router-link :to="{ name: 'database', params: {database: active_database }}" class="mx-2" v-if="active_database">
-            {{ active_database }}
-          </router-link>
-
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
-               style="transform: rotate(90deg);" v-if="page_is_table">
-            <path
-              d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
-          </svg>
-          <router-link :to="{ name: 'table', params: {tableid: this.$route.params.tableid }}" class="mx-2" v-if="page_is_table">
-            {{ $route.params.tableid }}
-          </router-link>
-        </div>
-
-        <div>
-          <router-link :to="{ name: 'query' }" class="btn">
-            Query
-          </router-link>
-
-        </div>
-
-        <div>
-          <a @click="SwitchTheme('light')" class="mx-2">Theme light</a>
-          <a @click="SwitchTheme('color')" class="mx-2">Theme color</a>
-        </div>
-      </div>
-    </header>
+    <HeaderTopBar v-on:SwitchTheme="SwitchTheme"></HeaderTopBar>
 
     <div class="flex pr-5 w-full justify-between mb-4 text-default">
 
@@ -78,50 +32,6 @@ s<template>
 </template>
 
 <style>
-
-  body {
-    background:              var(--background-body);
-    background-attachment:   fixed;
-    @apply text-primary;
-    min-height:              100vh;
-    @apply font-sans;
-    -webkit-font-smoothing:  antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  html {
-    --scrollbarBG: white;
-    --thumbBG:     #90A4AE;
-  }
-
-  html::-webkit-scrollbar {
-    width:  14px;
-    height: 14px;
-  }
-
-  html {
-    scrollbar-width: 14px;
-    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
-  }
-
-  html::-webkit-scrollbar-track {
-    background: var(--scrollbarBG);
-  }
-
-  html::-webkit-scrollbar-thumb {
-    background-color: var(--thumbBG);
-    border-radius:    5px;
-    border:           2px solid var(--scrollbarBG);
-  }
-
-  a {
-    @apply no-underline cursor-pointer;
-  }
-
-  a:hover {
-    @apply underline;
-  }
-
   #app {
     @apply outline-none;
   }
@@ -133,6 +43,7 @@ s<template>
   import TableListSidebar from "./components/TableListSidebar";
   import RecentTables from "./components/RecentTables";
   import QueryHistory from "./components/QueryHistory";
+  import HeaderTopBar from "./components/HeaderTopBar";
 
   // use this to reload the main component
   // this.$store.state.reloadMainComponentKey += 1;
@@ -165,6 +76,7 @@ s<template>
     },
 
     components: {
+      HeaderTopBar,
       TableListSidebar,
       RecentTables,
       SearchModal,

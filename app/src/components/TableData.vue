@@ -475,7 +475,8 @@
           params.append('delete_by_rows[]', delete_by_rows[row_index]);
         }
 
-        let api_url = this.endpoint_delete_rows + this.active_database + '&tablename=' + this.tableid;
+        let api_url = this.api_endpoint;
+        api_url += this.endpoint_delete_rows + this.active_database + '&tablename=' + this.tableid;
         axios.post(api_url, params).then(response => {
           // remove the selected rows from the data, sort by highest number first, else we will remove the wrong rows because of numerical order
           let selected_rows_sorted = this.selected_rows.sort(function (a, b) {
