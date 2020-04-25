@@ -66,3 +66,24 @@
 .query-sql {
   @apply cursor-pointer inline-block text-sm text-gray-300 border border-dashed border-gray-500 py-1 px-2 bg-light-200 whitespace-pre;
 }
+.query-sql:hover {
+  @apply bg-light-100;
+}
+
+.query-message a.edit-query svg {
+  @apply w-4 ml-2 fill-current;
+}
+.edit-query svg .primary {
+  @apply text-gray-400;
+}
+.edit-query svg .secondary {
+  @apply text-gray-500;
+}
+.edit-query:hover svg .primary,
+.edit-query:hover svg .secondary {
+  @apply text-highlight-700;
+}
+.edit-query:active svg .primary,
+.edit-query:active svg .secondary {
+  @apply text-highlight-400;
+}

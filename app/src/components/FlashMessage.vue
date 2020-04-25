@@ -7,11 +7,11 @@
 
     <div v-if="query" class="query-message">
       <div @click="toggleQuerySize($event)" class="query-sql w-64 truncate flex-grow">{{ query | format }}</div>
-      <a>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 ml-2 fill-current">
-          <path class="text-gray-400"
+      <a class="edit-query">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path class="primary"
                 d="M4 14a1 1 0 0 1 .3-.7l11-11a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-.7.3H5a1 1 0 0 1-1-1v-3z"></path>
-          <rect width="20" height="2" x="2" y="20" class="text-gray-500" rx="1"></rect>
+          <rect width="20" height="2" x="2" y="20" class="secondary" rx="1"></rect>
         </svg>
       </a>
     </div>
