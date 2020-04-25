@@ -1,7 +1,7 @@
 <template>
-  <div class="flex justify-center">
+  <div class="page-content-container">
 
-    <div style="width: 900px;">
+    <div class="content-min-width">
 
       <div class="table-page-header">
         <h2>

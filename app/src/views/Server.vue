@@ -1,5 +1,5 @@
 <template>
-  <div class="server">
+  <div class="page-content-container">
     <br>
     <DatabaseList />
   </div>
@@ -15,9 +15,3 @@
     },
   }
 </script>
-
-<style>
-  .server {
-    @apply flex justify-center;
-  }
-</style>

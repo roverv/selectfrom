@@ -12,14 +12,14 @@ body {
 }
 
 html {
-  --scrollbarBG: white;
-  --thumbBG:     #90A4AE;
+  --scrollbarBG:   white;
+  --thumbBG:       #90A4AE;
   scrollbar-width: 12px;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
 }
 
 html::-webkit-scrollbar {
-  width:  12px;
+  width: 12px;
 }
 
 html::-webkit-scrollbar-track {
@@ -53,12 +53,14 @@ a:hover {
   border:     1px solid hsla(215, 27%, 20%, 0.7);
   box-shadow: 1px 1px 1px 0px hsla(215, 27%, 22%, 1);
   transition: all 0.3s ease;
-  outline: none !important;
+  outline:    none !important;
 }
+
 .btn:hover {
   @apply no-underline;
   background: hsla(215, 27%, 20%, 0.7);
 }
+
 .btn:active {
   top: 2px;
 }
@@ -89,7 +91,6 @@ a:hover {
 
 .grid-container-content {
   display:               grid;
-  min-width:             900px;
   height:                100%;
   grid-template-areas:   'content-header .' 'content-body content-body';
   grid-gap:              0px;
@@ -104,9 +105,11 @@ a:hover {
 .query-message {
   @apply flex items-center mb-8;
 }
+
 .query-sql {
   @apply cursor-pointer inline-block text-sm text-gray-300 border border-dashed border-gray-500 py-1 px-2 bg-light-200 whitespace-pre;
 }
+
 .query-sql:hover {
   @apply bg-light-100;
 }
@@ -114,17 +117,35 @@ a:hover {
 .query-message a.edit-query svg {
   @apply w-4 ml-2 fill-current;
 }
+
 .edit-query svg .primary {
   @apply text-gray-400;
 }
+
 .edit-query svg .secondary {
   @apply text-gray-500;
 }
+
 .edit-query:hover svg .primary,
 .edit-query:hover svg .secondary {
   @apply text-highlight-700;
 }
+
 .edit-query:active svg .primary,
 .edit-query:active svg .secondary {
   @apply text-highlight-400;
+}
+
+
+/*********************
+ * PAGE CONTENT BOX
+ *********************/
+
+.page-content-container {
+  @apply flex justify-center;
+  min-width: 900px;
+}
+
+.content-min-width {
+  min-width: 900px;
 }

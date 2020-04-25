@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center">
+  <div class="page-content-container">
     <TableStructure :tableid="tableid" />
   </div>
 </template>
@@ -15,8 +15,4 @@
     },
   }
 </script>
-
-<style>
-
-</style>
 

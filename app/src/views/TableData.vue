@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center">
+  <div class="page-content-container">
     <TableData :tableid="tableid" :column="column" :value="value" />
   </div>
 </template>
@@ -18,8 +18,4 @@
     },
   }
 </script>
-
-<style>
-
-</style>
 

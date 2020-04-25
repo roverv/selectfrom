@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center">
+  <div class="page-content-container">
     <br>
     <TableList />
   </div>
@@ -23,7 +23,3 @@
     }
   }
 </script>
-
-<style>
-
-</style>

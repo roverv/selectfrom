@@ -1,7 +1,7 @@
 <template>
-  <div class="flex justify-center">
+  <div class="page-content-container">
     <div class="grid-container-content">
-      <div style="min-width: 900px;" class="content-header">
+      <div class="content-header content-min-width">
         <h1 class="text-xl mb-4">Execute query</h1>
 
         <form method="post" @submit.prevent="runQuery()" ref="queryform">
@@ -277,4 +277,3 @@
   }
 
 </style>
-
