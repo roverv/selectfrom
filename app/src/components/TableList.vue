@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div>
+
+    <spinner v-if="fetching_tables" delay="200"></spinner>
+
+    <div v-if="!fetching_tables">
 
       <h2 class="mb-2 text-xl">
         <span class="text-gray-500 text-lg">{{ tables.length }}</span>
@@ -98,10 +101,11 @@
 <script>
 
   import {number_format} from '../util'
+  import Spinner from "./Spinner";
 
   export default {
     name: 'TableList',
-
+    components: {Spinner},
     data() {
       return {
         selected_rows: [],
@@ -145,6 +149,10 @@
 
       tables() {
         return this.$store.getters["tables/tables"];
+      },
+
+      fetching_tables() {
+        return this.$store.getters["tables/isLoading"];
       },
 
       ordered_tables() {
