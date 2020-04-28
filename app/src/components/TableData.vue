@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <spinner v-if="initial_loading" delay="200"></spinner>
 
@@ -187,6 +186,7 @@
   import TableNav from '@/components/TableNav.vue'
   import TableDataMeta from '@/components/TableDataMeta.vue'
   import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
+  import HandleApiError from '@/mixins/HandleApiError.js'
   import RowSidebar from "./RowSidebar";
   import FlashMessage from "./FlashMessage";
   import Spinner from "./Spinner";
@@ -200,6 +200,7 @@
         columns: [],
         total_amount_rows: 0,
         offset_rows: 0,
+        api_error: '',
         endpoint_table_data: 'tabledata.php?db=',
         endpoint_count_rows: 'countrows.php?db=',
         endpoint_delete_rows: 'delete_rows.php?db=',
@@ -225,7 +226,8 @@
     },
 
     mixins: [
-      TableKeyNavigation
+      TableKeyNavigation,
+      HandleApiError
     ],
 
     mounted() {
@@ -327,8 +329,8 @@
           });
 
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.initial_loading = false;
+          this.handle(error);
         })
       },
 

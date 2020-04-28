@@ -17,6 +17,9 @@ s<template>
     <QueryHistory v-if="active_database && queryhistoryopen" :modalisopen="queryhistoryopen"
                   v-on:closequeryhistory="closeQueryHistory()" tabindex="0" @keydown.esc="queryhistoryopen = false" />
 
+
+    <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
+
     <HeaderTopBar v-on:SwitchTheme="SwitchTheme"></HeaderTopBar>
 
     <div class="flex pr-5 w-full justify-between mb-4 text-default">
@@ -44,6 +47,7 @@ s<template>
   import RecentTables from "./components/RecentTables";
   import QueryHistory from "./components/QueryHistory";
   import HeaderTopBar from "./components/HeaderTopBar";
+  import ApiError from "./components/ApiError";
 
   // use this to reload the main component
   // this.$store.state.reloadMainComponentKey += 1;
@@ -76,6 +80,7 @@ s<template>
     },
 
     components: {
+      ApiError,
       HeaderTopBar,
       TableListSidebar,
       RecentTables,
@@ -92,10 +97,6 @@ s<template>
       show_table_list_sidebar() {
         return !(this.active_database == '' || this.$route.name == 'server');
       },
-
-      page_is_table() {
-        return (typeof this.$route.params.tableid !== 'undefined' && this.$route.params.tableid);
-      }
     },
 
     methods: {

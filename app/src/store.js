@@ -7,6 +7,7 @@ import TablesStore from './store/tables';
 import QueryHistory from './store/queries';
 import RecentTables from './store/recenttables';
 import FlashMessage from './store/flashmessage';
+import ApiError from './store/apierror';
 
 Vue.use(Vuex)
 
@@ -20,8 +21,8 @@ export default new Vuex.Store({
     queryhistory: QueryHistory,
     recenttables: RecentTables,
     flashmessage: FlashMessage,
+    apierror: ApiError,
   },
-
 
   state: {
     apiEndPoint: 'http://localhost/rove/api/',
