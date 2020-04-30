@@ -1,6 +1,12 @@
 /*********************
  * BASIC ELEMENTS
  *********************/
+
+body, html {
+  width:  100%;
+  height: 100%;
+}
+
 body {
   background:              var(--background-body);
   background-attachment:   fixed;
@@ -15,11 +21,13 @@ html {
   --scrollbarBG:   white;
   --thumbBG:       #90A4AE;
   scrollbar-width: 12px;
+  scrollbar-height: 12px;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
 }
 
 html::-webkit-scrollbar {
   width: 12px;
+  height: 12px;
 }
 
 html::-webkit-scrollbar-track {
@@ -77,17 +85,40 @@ a:hover {
   @apply bg-highlight-400 border border-highlight-700 px-3 py-2;
 }
 
+
+/*********************
+ * APP GRID
+ *********************/
+
+.grid-container-app {
+  display:               grid;
+  height:                100%;
+  width:                 100%;
+  grid-template-areas:   'app-header app-header' 'app-sidebar app-body' '. app-body';
+  grid-gap:              0px;
+  grid-row-gap:          0;
+  grid-template-columns: auto 1fr;
+  grid-template-rows:    auto minmax(0, 1fr) auto;
+}
+
+.app-header {
+  grid-area:        app-header;
+  /*background-color: yellow;*/
+}
+
+.app-sidebar {
+  grid-area:        app-sidebar;
+  /*background-color: green;*/
+}
+
+.app-body {
+  grid-area:        app-body;
+  /*background-color: blue;*/
+}
+
 /*********************
  * CONTENT GRID
  *********************/
-
-.content-header {
-  grid-area: content-header;
-}
-
-.content-body {
-  grid-area: content-body;
-}
 
 .grid-container-content {
   display:               grid;
@@ -97,6 +128,13 @@ a:hover {
   grid-template-columns: 1fr auto;
 }
 
+.content-header {
+  grid-area: content-header;
+}
+
+.content-body {
+  grid-area: content-body;
+}
 
 /*********************
  * RUN QUERIES

@@ -1,15 +1,14 @@
 <template>
-  <div class="sidebar flex-shrink-0 pr-1  "
-       :class="[tables_list_is_open ? 'mr-4 ml-5 ' : 'w-8']">
+  <div class="sidebar pr-1" :class="[tables_list_is_open ? 'mr-4 ml-5 ' : 'w-8']">
 
-    <div class="flex flex-col h-screen pt-20 relative">
+    <div class="sidebar-fixed relative">
 
-        <div class="absolute z-50" :class="[tables_list_is_open ? 'right-0 mr-2' : 'left-0 ml-1']">
-          <TableListSettingDropdown :isOpen="false" :only_show_tables_with_rows="only_show_tables_with_rows"
-                                    :tables_list_is_open="tables_list_is_open"
-                                    v-on:toggleTablesWithoutRows="toggleTablesWithoutRows()"
-                                    v-on:toggleTableList="toggleTableList()"></TableListSettingDropdown>
-        </div>
+      <div class="absolute z-50" :class="[tables_list_is_open ? 'right-0' : 'left-0 ml-1']">
+        <TableListSettingDropdown :isOpen="false" :only_show_tables_with_rows="only_show_tables_with_rows"
+                                  :tables_list_is_open="tables_list_is_open"
+                                  v-on:toggleTablesWithoutRows="toggleTablesWithoutRows()"
+                                  v-on:toggleTableList="toggleTableList()"></TableListSettingDropdown>
+      </div>
 
       <div v-if="tables_list_is_open">
 
@@ -19,23 +18,21 @@
         </h2>
 
       </div>
+    </div>
 
-      <div v-if="tables_list_is_open" class="table-list mt-2 flex-grow overflow-y-scroll mb-5">
-        <div>
-          <ul class="pr-2">
-            <li v-for="(table_data) in tables_filtered"
-                :class="{active: table_data.Name == $route.params.tableid}">
-              <router-link :to="{ name: 'table', params: { tableid: table_data.Name } }">
-                {{ table_data.Name }}
-                <span class="text-gray-500 hidden">
+    <div v-if="tables_list_is_open" class="sidebar-scrollable table-list">
+        <ul class="pr-2">
+          <li v-for="(table_data) in tables_filtered"
+              :class="{active: table_data.Name == $route.params.tableid}">
+            <router-link :to="{ name: 'table', params: { tableid: table_data.Name } }">
+              {{ table_data.Name }}
+              <span class="text-gray-500 hidden">
               ({{ table_data.Rows }})
             </span>
-              </router-link>
-            </li>
-          </ul>
-        </div>
+            </router-link>
+          </li>
+        </ul>
 
-      </div>
     </div>
 
   </div>
@@ -107,6 +104,7 @@
   li {
     @apply px-2;
   }
+
   li.active {
     @apply border-l-2 border-highlight-700 bg-light-100;
   }
@@ -117,7 +115,7 @@
   }
 
   .table-list::-webkit-scrollbar {
-    width: 7px;
+    width:  7px;
     height: 7px;
   }
 
@@ -134,6 +132,24 @@
     background-color: var(--thumbBG);
     border-radius:    5px;
     border:           3px solid var(transparent);
+  }
+
+  .sidebar {
+    display:             grid;
+    height:              100%;
+    grid-template-areas: 'fixed-part' 'dynamic-part';
+    grid-gap:            0px;
+    grid-row-gap:        0;
+    grid-template-rows:  auto minmax(0, 1fr);
+  }
+
+  .sidebar-fixed {
+    grid-area: fixed-part;
+  }
+
+  .sidebar-scrollable {
+    grid-area:  dynamic-part;
+    overflow-y: auto;
   }
 
 </style>

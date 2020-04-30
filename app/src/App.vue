@@ -1,5 +1,5 @@
 s<template>
-  <div id="app" v-on:keyup.self.open-search="openSearchModal" v-on:keyup.self.open-recent-tables="openRecentTables"
+  <div id="app" class="grid-container-app" v-on:keyup.self.open-search="openSearchModal" v-on:keyup.self.open-recent-tables="openRecentTables"
        v-on:keyup.self.to-query="goToQuery" v-on:keyup.self.open-database-list="openDatabasesModal"
        v-on:keyup.self.open-query-history="openQueryHistory"
        v-on:keyup.self.refresh-page="refreshPage" tabindex="0">
@@ -18,19 +18,21 @@ s<template>
                   v-on:closequeryhistory="closeQueryHistory()" tabindex="0" @keydown.esc="queryhistoryopen = false" />
 
 
-    <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
+    <div class="app-header">
+      <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
+      <HeaderTopBar v-on:SwitchTheme="SwitchTheme"></HeaderTopBar>
+    </div>
 
-    <HeaderTopBar v-on:SwitchTheme="SwitchTheme"></HeaderTopBar>
-
-    <div class="flex pr-5 w-full justify-between mb-4 text-default">
-
+    <div class="app-sidebar py-5">
       <TableListSidebar v-if="show_table_list_sidebar" />
+    </div>
 
-      <div class="flex-grow py-6 relative pt-20 mb-4 pr-4">
+    <div class="app-body">
+      <div class="py-5 pb-5 mr-5">
         <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" />
       </div>
-
     </div>
+
   </div>
 </template>
 
