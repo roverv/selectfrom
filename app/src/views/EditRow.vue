@@ -63,6 +63,7 @@
   import axios from "axios";
   import TableNav from '@/components/TableNav.vue'
   import sqlFormatter from "sql-formatter";
+  import HandleApiError from '@/mixins/HandleApiError.js'
 
   export default {
     name: 'editrow',
@@ -83,6 +84,10 @@
     components: {
       TableNav,
     },
+
+    mixins: [
+      HandleApiError
+    ],
 
     mounted() {
       this.getTableStructure();
@@ -122,8 +127,7 @@
           }
 
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.handleApiError(error);
         })
       },
 
@@ -139,8 +143,7 @@
             this.columns_null[column_name] = (this.row_data[column_name] === null) ? true : false;
           }
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.handleApiError(error);
         })
       },
 
@@ -180,8 +183,7 @@
           }
           scroll(0,0);
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.handleApiError(error);
         })
       },
 

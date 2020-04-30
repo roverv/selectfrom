@@ -1,6 +1,6 @@
 export default {
   methods: {
-    handle(error) {
+    handleApiError(error) {
       if (error.response) {
         // Request made and server responded
         console.log(error.response.data);

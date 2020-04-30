@@ -44,6 +44,7 @@
 
   import axios from 'axios'
   import TableNav from '@/components/TableNav.vue'
+  import HandleApiError from '@/mixins/HandleApiError.js'
 
   export default {
     name: 'TableStructure',
@@ -58,6 +59,10 @@
     components: {
       TableNav
     },
+
+    mixins: [
+      HandleApiError
+    ],
 
     mounted() {
       this.getTableStructure();
@@ -100,8 +105,7 @@
           this.columns = response.data;
 
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.handleApiError(error);
         })
       },
     }

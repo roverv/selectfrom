@@ -94,7 +94,8 @@
   import "codemirror/addon/hint/show-hint";
   import "codemirror/addon/hint/sql-hint";
   import sqlFormatter from "sql-formatter";
-  import {number_format} from '../util'
+  import {number_format} from '../util';
+  import HandleApiError from '@/mixins/HandleApiError.js';
 
 
   export default {
@@ -116,7 +117,8 @@
     },
 
     mixins: [
-      TableKeyNavigation
+      TableKeyNavigation,
+      HandleApiError
     ],
 
     filters: {
@@ -194,8 +196,7 @@
             // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
           });
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.handleApiError(error);
         })
       },
 

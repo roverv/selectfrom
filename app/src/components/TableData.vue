@@ -330,7 +330,7 @@
 
         }).catch(error => {
           this.initial_loading = false;
-          this.handle(error);
+          this.handleApiError(error);
         })
       },
 
@@ -378,8 +378,7 @@
           vue_instance.total_amount_rows = response.data.amount_rows;
           vue_instance.is_fetching_data  = false;
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.handleApiError(error);
         })
       },
 
@@ -414,8 +413,7 @@
           vue_instance.tabledata        = extended_tabledata;
           vue_instance.is_fetching_data = false;
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.handleApiError(error);
         })
       },
 
@@ -446,8 +444,7 @@
             vue_instance.tabledata        = response.data.data;
             vue_instance.is_fetching_data = false;
           }).catch(error => {
-            console.log('-----error-------');
-            console.log(error);
+            this.handleApiError(error);
           })
         }
       },
@@ -499,8 +496,7 @@
           }
           this.selected_rows = [];
         }).catch(error => {
-          console.log('-----error-------');
-          console.log(error);
+          this.handleApiError(error);
         })
 
       },
