@@ -18,63 +18,67 @@
 
       <div class="content-body">
 
-        <div v-if="query_results.length > 0" v-for="(query_result, query_result_index) in query_results" :key="query_result_index" class="mb-8 mt-1">
+        <div v-if="query_results.length > 0">
+          <div v-for="(query_result, query_result_index) in query_results" :key="query_result_index" class="mb-8 mt-1">
 
-          <div v-if="query_result.result == 'error'" class="error-box">
-            {{ query_result.message }}
-          </div>
+            <div v-if="query_result.result == 'error'" class="error-box">
+              {{ query_result.message }}
+            </div>
 
-          <div v-if="query_result.result == 'success'" class="success-box mb-3">
-            {{ query_result.query }}
-            <hr class="border-light-200 my-2">
-            <div class="flex justify-between items-center">
-              <div v-if="query_result.type == 'change'">
-                Affected {{ query_result.affected_rows }} rows
-              </div>
-              <div v-else="query_result.type == 'data'">
-                {{ query_result.row_count }} rows
-              </div>
-              <div class="text-gray-400 text-sm">
-                {{ query_result.execution_time | formatSeconds }}s
+            <div v-if="query_result.result == 'success'" class="success-box mb-3">
+              {{ query_result.query }}
+              <hr class="border-light-200 my-2">
+              <div class="flex justify-between items-center">
+                <div v-if="query_result.type == 'change'">
+                  Affected {{ query_result.affected_rows }} rows
+                </div>
+                <div v-else="query_result.type == 'data'">
+                  {{ query_result.row_count }} rows
+                </div>
+                <div class="text-gray-400 text-sm">
+                  {{ query_result.execution_time | formatSeconds }}s
+                </div>
               </div>
             </div>
+
+
+            <div v-if="query_result.result == 'success' && query_result.type == 'data'">
+
+              <table cellspacing="0" class="table-data" v-if="query_result.rows.length > 0" ref="datatable"
+                     @keydown.right.prevent="focusCellNext($event, 1)"
+                     @keydown.left.prevent="focusCellPrevious($event, 1)"
+                     @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+                     @keydown.shift.right.prevent="focusCellNext($event,5)"
+                     @keydown.shift.left.prevent="focusCellPrevious($event,5)"
+                     @keydown.shift.up.prevent="focusRowUp($event,5)"
+                     @keydown.shift.down.prevent="focusRowDown($event,5)"
+                     @keyup.q="$refs['query'].focus()"
+                     @keydown.esc="unfocusDatatable()">
+                <thead>
+                <tr>
+                  <th v-for="(column_meta, column_meta_index) in query_result.columns_meta" :key="column_meta_index">
+                    <span>{{ column_meta.name }}</span>
+                  </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(row, row_index) in query_result.rows">
+                  <td class="table-data-row" v-for="(cell, index) in row"
+                      @click.ctrl="toggleRowSidebar(query_result_index, row_index)"
+                      :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
+                    <span v-if="cell === null" class="null-value"><i>NULL</i></span>
+                    <span v-else>{{ cell }}</span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+
+              <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
+                           :rowdata="sidebar_row_data" :columndata="sidebar_column_data" :from="query"
+                           :columntabledata="sidebar_column_table_data"></row-sidebar>
+            </div>
+
           </div>
-
-
-          <div v-if="query_result.result == 'success' && query_result.type == 'data'">
-
-            <table cellspacing="0" class="table-data" v-if="query_result.rows.length > 0" ref="datatable"
-                   @keydown.right.prevent="focusCellNext($event, 1)"
-                   @keydown.left.prevent="focusCellPrevious($event, 1)"
-                   @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
-                   @keydown.shift.right.prevent="focusCellNext($event,5)"
-                   @keydown.shift.left.prevent="focusCellPrevious($event,5)"
-                   @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
-                   @keyup.q="$refs['query'].focus()"
-                   @keydown.esc="unfocusDatatable()">
-              <thead>
-              <tr>
-                <th v-for="(column_meta, column_meta_index) in query_result.columns_meta" :key="column_meta_index">
-                  <span>{{ column_meta.name }}</span>
-                </th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="(row, row_index) in query_result.rows">
-                <td class="table-data-row" v-for="(cell, index) in row" @click.ctrl="toggleRowSidebar(query_result_index, row_index)"
-                    :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
-                  <span v-if="cell === null" class="null-value"><i>NULL</i></span>
-                  <span v-else>{{ cell }}</span>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-
-            <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
-                         :rowdata="sidebar_row_data" :columndata="sidebar_column_data" :from="query"
-                         :columntabledata="sidebar_column_table_data"></row-sidebar>
-          </div>
-
         </div>
 
       </div>
@@ -122,7 +126,7 @@
     ],
 
     filters: {
-      formatSeconds: function(seconds) {
+      formatSeconds: function (seconds) {
         return number_format(seconds, 3, '.', '');
       }
     },
@@ -154,7 +158,7 @@
         }
       });
 
-      if(typeof this.historyindex !== 'undefined' && this.historyindex >= 0) {
+      if (typeof this.historyindex !== 'undefined' && this.historyindex >= 0) {
         window.editor.setValue(this.query_history[this.historyindex])
       }
     },
@@ -188,7 +192,7 @@
         const querystring = require('querystring');
         axios.post(api_url, querystring.stringify({query: query})).then(response => {
           this.query_results = response.data;
-          if(this.query_history.includes(query) === false) {
+          if (this.query_history.includes(query) === false) {
             this.$store.commit("queryhistory/ADD_QUERY", query);
           }
           this.$nextTick().then(function () {
@@ -212,7 +216,7 @@
           column_num_keys.push(this.query_results[query_result_index].columns_meta[key].name);
           table_num_keys.push(this.query_results[query_result_index].columns_meta[key].table);
         }
-          this.sidebar_row_data          = this.query_results[query_result_index].rows[row_index];
+        this.sidebar_row_data          = this.query_results[query_result_index].rows[row_index];
         this.sidebar_column_data       = column_num_keys;
         this.sidebar_column_table_data = table_num_keys;
         this.sidebarisopen             = true;
@@ -257,7 +261,7 @@
   }
 
   .CodeMirror-hscrollbar::-webkit-scrollbar {
-    width: 8px;
+    width:  8px;
     height: 8px;
   }
 
