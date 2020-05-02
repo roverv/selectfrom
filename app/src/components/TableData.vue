@@ -120,7 +120,7 @@
                   <span>Duplicate</span>
                 </a>
 
-                <a class="rows-action" @click="deleteRows()">
+                <a class="rows-action" @click="confirmDeleteRows()">
                   <span>Delete</span>
                 </a>
 
@@ -176,6 +176,11 @@
 
     </div>
 
+    <confirm-modal :modalisopen="confirm_modal_open" v-on:close="closeConfirmModal()"
+                   v-on:confirm="confirmConfirmModal()">
+      {{ confirm_modal_message }}
+    </confirm-modal>
+
   </div>
 
 </template>
@@ -190,6 +195,7 @@
   import RowSidebar from "./RowSidebar";
   import FlashMessage from "./FlashMessage";
   import Spinner from "./Spinner";
+  import ConfirmModal from "./ConfirmModal";
 
   export default {
     name: 'TableData',
@@ -214,6 +220,9 @@
         is_fetching_data: false, // true when fetching data through ajax
         meta_box_open: false,
         initial_loading: true,
+        confirm_modal_open: false,
+        confirm_modal_message: '',
+        confirm_modal_action: '',
       }
     },
 
@@ -222,7 +231,8 @@
       FlashMessage,
       RowSidebar,
       TableNav,
-      TableDataMeta
+      TableDataMeta,
+      ConfirmModal
     },
 
     mixins: [
@@ -468,9 +478,6 @@
           return;
         }
 
-        let ask_confirm = confirm('Are you sure you want to delete the selected rows?');
-        if (!ask_confirm) return;
-
         let delete_by_column = unique_columns[0].Field;
 
         let vue_instance   = this;
@@ -498,7 +505,15 @@
         }).catch(error => {
           this.handleApiError(error);
         })
+      },
 
+      confirmDeleteRows() {
+        this.confirm_modal_message = 'Delete ' + this.selected_rows.length + ' row';
+        if(this.selected_rows.length > 1) {
+          this.confirm_modal_message += 's';
+        }
+        this.confirm_modal_open    = true;
+        this.confirm_modal_action  = 'deleteRows';
       },
 
       // get the column(s) of a table by which it is identifiable
@@ -552,8 +567,19 @@
 
       editRowFromSingleView() {
         this.editRow(0);
-      }
+      },
 
+      closeConfirmModal() {
+        this.confirm_modal_open   = false;
+        this.confirm_modal_action = '';
+      },
+
+      confirmConfirmModal() {
+        // execute dynamic action
+        this[this.confirm_modal_action]();
+        this.confirm_modal_open = false;
+        this.confirm_modal_action = '';
+      }
 
     },
 

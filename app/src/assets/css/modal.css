@@ -10,7 +10,7 @@
 }
 
 .modal-content {
-  @apply relative rounded w-full m-auto flex flex-col w-full;
+  @apply relative w-full m-auto flex flex-col w-full;
 }
 
 .modal-content.modal-search {
@@ -27,6 +27,11 @@
 
 .modal-content.modal-list {
   @apply border-8 border-dark-600 bg-white;
+}
+
+.modal-content.modal-confirm {
+  @apply border border-gray-700;
+  background: linear-gradient(45deg, #536D92, #5A4688);
 }
 
 .modal-title {
