@@ -1,6 +1,6 @@
 <template>
 
-  <div class="modal-container" :class="{ 'open' : modalisopen }">
+  <div class="modal-container open">
 
     <div class="modal-content modal-confirm max-w-sm">
       <h3 class="modal-title text-center">
@@ -26,7 +26,7 @@
 
   export default {
     name: 'ConfirmModal',
-    props: ['modalisopen'],
+    props: [],
     data() {
       return {}
     },

@@ -176,7 +176,7 @@
 
     </div>
 
-    <confirm-modal :modalisopen="confirm_modal_open" v-on:close="closeConfirmModal()"
+    <confirm-modal v-if="confirm_modal_open" v-on:close="closeConfirmModal()"
                    v-on:confirm="confirmConfirmModal()">
       {{ confirm_modal_message }}
     </confirm-modal>
@@ -196,6 +196,7 @@
   import FlashMessage from "./FlashMessage";
   import Spinner from "./Spinner";
   import ConfirmModal from "./ConfirmModal";
+  import ConfirmModalMixin from "../mixins/ConfirmModal";
 
   export default {
     name: 'TableData',
@@ -220,9 +221,6 @@
         is_fetching_data: false, // true when fetching data through ajax
         meta_box_open: false,
         initial_loading: true,
-        confirm_modal_open: false,
-        confirm_modal_message: '',
-        confirm_modal_action: '',
       }
     },
 
@@ -232,12 +230,13 @@
       RowSidebar,
       TableNav,
       TableDataMeta,
-      ConfirmModal
+      ConfirmModal,
     },
 
     mixins: [
       TableKeyNavigation,
-      HandleApiError
+      HandleApiError,
+      ConfirmModalMixin
     ],
 
     mounted() {
@@ -568,18 +567,6 @@
       editRowFromSingleView() {
         this.editRow(0);
       },
-
-      closeConfirmModal() {
-        this.confirm_modal_open   = false;
-        this.confirm_modal_action = '';
-      },
-
-      confirmConfirmModal() {
-        // execute dynamic action
-        this[this.confirm_modal_action]();
-        this.confirm_modal_open = false;
-        this.confirm_modal_action = '';
-      }
 
     },
 
