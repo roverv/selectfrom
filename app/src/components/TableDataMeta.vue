@@ -40,8 +40,8 @@
 
     <div class="flex mt-6 ">
       <a class="btn mr-6">Export all</a>
-      <a class="btn mr-6">Truncate</a>
-      <a class="btn mr-6">Drop</a>
+      <a class="btn mr-6" @click="$emit('confirmTruncateTable')">Truncate</a>
+      <a class="btn mr-6" @click="$emit('confirmDropTable')">Drop</a>
     </div>
   </div>
 </template>

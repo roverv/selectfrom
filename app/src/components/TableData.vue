@@ -20,7 +20,7 @@
           <div></div>
         </div>
 
-        <table-data-meta v-if="meta_box_open"></table-data-meta>
+        <table-data-meta v-if="meta_box_open" v-on:confirmDropTable="confirmDropTable" v-on:confirmTruncateTable="confirmTruncateTable"></table-data-meta>
 
         <flash-message></flash-message>
       </div>
@@ -211,6 +211,8 @@
         endpoint_table_data: 'tabledata.php?db=',
         endpoint_count_rows: 'countrows.php?db=',
         endpoint_delete_rows: 'delete_rows.php?db=',
+        endpoint_truncate_tables: 'truncate_tables.php?db=',
+        endpoint_drop_tables: 'drop_tables.php?db=',
         order_by: '',
         order_direction: '',
         sidebarisopen: false,
@@ -566,6 +568,52 @@
 
       editRowFromSingleView() {
         this.editRow(0);
+      },
+
+      confirmDropTable() {
+        this.confirm_modal_message = 'Drop table ' + this.tableid;
+        this.confirm_modal_open   = true;
+        this.confirm_modal_action = 'dropTable';
+      },
+
+      dropTable() {
+        let params = new URLSearchParams();
+        params.append('tables[]', this.tableid);
+
+        let vue_instance = this;
+        let api_url = this.api_endpoint;
+        api_url += this.endpoint_drop_tables + this.active_database;
+        axios.post(api_url, params).then(response => {
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' dropped.');
+          this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+          this.$store.dispatch('refreshTables');
+          vue_instance.$router.push({name: 'database', params: {database : vue_instance.active_database }});
+        }).catch(error => {
+          this.handleApiError(error);
+        })
+      },
+
+      confirmTruncateTable() {
+        this.confirm_modal_message = 'Truncate table ' + this.tableid;
+        this.confirm_modal_open   = true;
+        this.confirm_modal_action = 'truncateTable';
+      },
+
+      truncateTable() {
+        let params = new URLSearchParams();
+        params.append('tables[]', this.tableid);
+
+        let vue_instance = this;
+        let api_url = this.api_endpoint;
+        api_url += this.endpoint_truncate_tables + this.active_database;
+        axios.post(api_url, params).then(response => {
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' truncated.');
+          this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+          this.$store.dispatch('refreshTables');
+          this.$store.state.reloadMainComponentKey += 1; // refresh page
+        }).catch(error => {
+          this.handleApiError(error);
+        })
       },
 
     },
