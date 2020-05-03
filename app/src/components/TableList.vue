@@ -10,6 +10,8 @@
         Tables
       </h2>
 
+      <flash-message></flash-message>
+
       <table cellspacing="0" class="table-data" v-if="tables.length > 1">
         <thead>
         <tr>
@@ -81,7 +83,7 @@
             {{ selected_rows.length }} tables
           </div>
 
-          <a class="rows-action">
+          <a class="rows-action" @click="confirmTruncateTables()">
             <span>Truncate</span>
           </a>
 
@@ -95,6 +97,11 @@
 
     </div>
 
+    <confirm-modal v-if="confirm_modal_open" v-on:close="closeConfirmModal()"
+                   v-on:confirm="confirmConfirmModal()">
+      {{ confirm_modal_message }}
+    </confirm-modal>
+
   </div>
 </template>
 
@@ -102,17 +109,34 @@
 
   import {number_format} from '../util'
   import Spinner from "./Spinner";
+  import ConfirmModal from "./ConfirmModal";
+  import ConfirmModalMixin from "../mixins/ConfirmModal";
+  import HandleApiError from "../mixins/HandleApiError";
+  import FlashMessage from "./FlashMessage";
+  import axios from "axios";
 
   export default {
     name: 'TableList',
-    components: {Spinner},
+
     data() {
       return {
         selected_rows: [],
         order_by: 'name',
         order_direction: 'asc',
+        endpoint_truncate_tables: 'truncate_tables.php?db=',
       }
     },
+
+    components: {
+      Spinner,
+      ConfirmModal,
+      FlashMessage,
+    },
+
+    mixins: [
+      ConfirmModalMixin,
+      HandleApiError
+    ],
 
     filters: {
       formatNumber(number) {
@@ -145,6 +169,10 @@
 
       active_database() {
         return this.$store.state.activeDatabase;
+      },
+
+      api_endpoint() {
+        return this.$store.state.apiEndPoint;
       },
 
       tables() {
@@ -222,6 +250,36 @@
       orderByColumn(column) {
         this.order_by        = column;
         this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
+      },
+
+      confirmTruncateTables() {
+        this.confirm_modal_message = 'Truncate ' + this.selected_rows.length + ' table';
+        if (this.selected_rows.length > 1) {
+          this.confirm_modal_message += 's';
+        }
+        this.confirm_modal_open   = true;
+        this.confirm_modal_action = 'truncateTables';
+      },
+
+      truncateTables() {
+        let params = new URLSearchParams();
+        for (let row_index in this.selected_rows) {
+          params.append('tables[]', this.ordered_tables[this.selected_rows[row_index]].Name);
+        }
+
+        let vue_instance = this;
+        let api_url = this.api_endpoint;
+        api_url += this.endpoint_truncate_tables + this.active_database;
+        axios.post(api_url, params).then(response => {
+          let message = response.data.affected_tables;
+          message += (response.data.affected_tables == 1) ? ' table truncated.' : ' tables truncated.';
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
+          this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+          this.$store.dispatch('refreshTables');
+          vue_instance.$router.push({name: 'database', params: {database : vue_instance.active_database }});
+        }).catch(error => {
+          this.handleApiError(error);
+        })
       },
 
     },

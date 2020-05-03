@@ -37,5 +37,11 @@ export default new Vuex.Store({
       this.dispatch("tables/getWithColumns");
     },
   },
-  actions: {}
+
+  actions: {
+    refreshTables() {
+      this.dispatch("tables/get");
+      this.dispatch("tables/getWithColumns");
+    },
+  }
 })
