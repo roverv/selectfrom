@@ -87,7 +87,7 @@
             <span>Truncate</span>
           </a>
 
-          <a class="rows-action">
+          <a class="rows-action" @click="confirmDropTables()">
             <span>Drop</span>
           </a>
 
@@ -124,6 +124,7 @@
         order_by: 'name',
         order_direction: 'asc',
         endpoint_truncate_tables: 'truncate_tables.php?db=',
+        endpoint_drop_tables: 'drop_tables.php?db=',
       }
     },
 
@@ -261,6 +262,15 @@
         this.confirm_modal_action = 'truncateTables';
       },
 
+      confirmDropTables() {
+        this.confirm_modal_message = 'Drop ' + this.selected_rows.length + ' table';
+        if (this.selected_rows.length > 1) {
+          this.confirm_modal_message += 's';
+        }
+        this.confirm_modal_open   = true;
+        this.confirm_modal_action = 'dropTables';
+      },
+
       truncateTables() {
         let params = new URLSearchParams();
         for (let row_index in this.selected_rows) {
@@ -273,6 +283,27 @@
         axios.post(api_url, params).then(response => {
           let message = response.data.affected_tables;
           message += (response.data.affected_tables == 1) ? ' table truncated.' : ' tables truncated.';
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
+          this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+          this.$store.dispatch('refreshTables');
+          vue_instance.$router.push({name: 'database', params: {database : vue_instance.active_database }});
+        }).catch(error => {
+          this.handleApiError(error);
+        })
+      },
+
+      dropTables() {
+        let params = new URLSearchParams();
+        for (let row_index in this.selected_rows) {
+          params.append('tables[]', this.ordered_tables[this.selected_rows[row_index]].Name);
+        }
+
+        let vue_instance = this;
+        let api_url = this.api_endpoint;
+        api_url += this.endpoint_drop_tables + this.active_database;
+        axios.post(api_url, params).then(response => {
+          let message = response.data.affected_tables;
+          message += (response.data.affected_tables == 1) ? ' table dropped.' : ' tables dropped.';
           this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
           this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
           this.$store.dispatch('refreshTables');
