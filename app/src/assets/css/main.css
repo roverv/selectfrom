@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 @import "./general.css";
+@import "./tablepage.css";
 @import "./tabledata.css";
 @import "./form.css";
+@import "./modal.css";
 
 @import 'theme.light.css';
 @import 'theme.color.css';

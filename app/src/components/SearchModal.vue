@@ -1,19 +1,14 @@
 <template>
 
-  <div class="modal-container" :class="{ 'open' : modalisopen }"
-       style="background: radial-gradient(circle, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.7) 80%); transition: opacity 0.2s ease-in;">
-    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-2xl text-on-bg-light">
+  <div class="modal-container" :class="{ 'open' : modalisopen }">
+    <div class="modal-content modal-search">
       <div class="px-8 py-4">
         <form method="post" @submit.prevent="submitSearch" ref="searchform">
 
-          <input v-model="search_value"
-                 type="text" name="searchany" id="searchany" ref="searchany"
-                 class="block w-full mt-3 px-4 py-3 text-xl border-8 border-dark-600 focus:outline-none"
-                 style="box-shadow: 0 15px 35px hsla(0,0%,0%,.2);" placeholder="Go to table, column or row"
-                 autocomplete="off"
-          >
-          <div class="relative" v-if="openAutocomplete">
-            <ul class="bg-gray-200 absolute w-full border-8 border-dark-600 border-t-0 h-64 overflow-y-scroll">
+          <input v-model="search_value" type="text" name="searchany" id="searchany" ref="searchany"
+                 class="input-search" placeholder="Go to table, column or row" autocomplete="off">
+          <div class="autocomplete-container" v-if="openAutocomplete">
+            <ul class="autocomplete-list">
               <li v-for="(table_name, index) in matches" :id="'match-' + index"
                   v-bind:class="{'active': isActive(index)}"
                   class="autocomplete-row">
@@ -66,11 +61,11 @@
         let search_results = [];
         if (this.can_autocomplete_column) {
           let search_values = this.search_value.split(this.column_split_value);
-          search_results = this.tables_with_columns[search_values[0]].filter((column_name) => {
+          search_results    = this.tables_with_columns[search_values[0]].filter((column_name) => {
             return this.fussySearchMatch(search_values[1], column_name);
           });
         } else {
-          search_results =  this.tables.filter((table_name) => {
+          search_results = this.tables.filter((table_name) => {
             return this.fussySearchMatch(this.search_value, table_name);
           });
         }
@@ -90,10 +85,9 @@
       },
 
       column_split_value() {
-        if(this.search_value.includes(".")) {
+        if (this.search_value.includes(".")) {
           return '.';
-        }
-        else if(this.search_value.includes("|")) {
+        } else if (this.search_value.includes("|")) {
           return '|';
         }
         return '';
@@ -135,26 +129,22 @@
         return true;
       },
 
-      triggerKeyDown: function(evt) {
+      triggerKeyDown: function (evt) {
         if (evt.key === 'Escape') {
           this.close();
           evt.preventDefault();
-        }
-        else if (evt.key === 'ArrowUp') {
+        } else if (evt.key === 'ArrowUp') {
           this.up();
           evt.preventDefault();
-        }
-        else if (evt.key === 'ArrowDown' || evt.key === 'Tab') {
+        } else if (evt.key === 'ArrowDown' || evt.key === 'Tab') {
           this.down();
           evt.preventDefault();
-        }
-        else if (evt.key === 'ArrowRight') {
-          if(this.current == -1) return; // do nothing when we are not on a autocomplete item
+        } else if (evt.key === 'ArrowRight') {
+          if (this.current == -1) return; // do nothing when we are not on a autocomplete item
           this.fillautocomplete(this.current);
           evt.preventDefault();
-        }
-        else if (evt.key === 'Enter') {
-          if(this.current == -1) return; // do nothing when we are not on a autocomplete item
+        } else if (evt.key === 'Enter') {
+          if (this.current == -1) return; // do nothing when we are not on a autocomplete item
           this.fillautocomplete(this.current);
           let vue = this;
           // set a tiny timeout, this way the user will see the value change from fillautocomplete
@@ -179,13 +169,13 @@
 
         let table_id = '';
         let column   = '';
-        let row_id = '';
+        let row_id   = '';
 
         if (has_id) {
           let search_values = this.search_value.split("#");
           table_id          = search_values[0];
           column            = 'id';
-          row_id         = search_values[1];
+          row_id            = search_values[1];
         } else if (has_column) {
           has_column_value = this.search_value.includes("%");
           if (has_column_value) {
@@ -212,14 +202,14 @@
         if (this.tables.includes(table_id) === false) {
           // if the table is not found, but there are autocomplete items, just replace the value with the first matching autocomplete table item
           // very handy when doing fuzzy search: orgadd > ENTER > organisation_address
-          if(this.matches.length > 0) {
+          if (this.matches.length > 0) {
             this.search_value = this.matches[0];
             return false;
           }
           // briefly highlight the text red, to show the user the input is false
           this.$refs.searchany.classList.add('text-red-700');
           let vue = this;
-          setTimeout(function() {
+          setTimeout(function () {
             vue.$refs.searchany.classList.remove('text-red-700');
           }, 300);
           return false;
@@ -229,14 +219,14 @@
         if (has_id == '' && column != '' && this.tables_with_columns[table_id].includes(column) === false) {
           // if the table is not found, but there are autocomplete items, just replace the value with the first matching autocomplete table item
           // very handy when doing fuzzy search: orgadd > ENTER > organisation_address
-          if(this.matches.length > 0) {
+          if (this.matches.length > 0) {
             this.search_value = table_id + this.column_split_value + this.matches[0];
             return false;
           }
           // briefly highlight the text red, to show the user the input is false
           this.$refs.searchany.classList.add('text-red-700');
           let vue = this;
-          setTimeout(function() {
+          setTimeout(function () {
             vue.$refs.searchany.classList.remove('text-red-700');
           }, 300);
           return false;
@@ -279,11 +269,10 @@
       up() {
         if (this.current >= 0) {
           this.current--;
-        }
-        else if (this.current == -1) {
+        } else if (this.current == -1) {
           this.current = this.matches.length - 1;
         }
-        if(this.current >= 0) {
+        if (this.current >= 0) {
           let element = document.getElementById('match-' + this.current);
           element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
@@ -291,13 +280,12 @@
 
       // When up pressed while autocomplete is open
       down() {
-        if (this.current == this.matches.length -1) {
+        if (this.current == this.matches.length - 1) {
           this.current = -1;
-        }
-        else if (this.current <= this.matches.length - 1) {
+        } else if (this.current <= this.matches.length - 1) {
           this.current++;
         }
-        if(this.current >= 0) {
+        if (this.current >= 0) {
           let element = document.getElementById('match-' + this.current);
           element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
         }
@@ -332,40 +320,3 @@
 
   }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-  .modal-container.open {
-    opacity:    1;
-    visibility: visible;
-    transition: opacity .2s ease-in;
-  }
-
-  .modal-container {
-    position:   fixed;
-    top:        0;
-    right:      0;
-    bottom:     0;
-    left:       0;
-    z-index:    50;
-    overflow:   auto;
-    display:    flex;
-    visibility: hidden;
-    opacity:    0;
-    transition: opacity .2s ease-in;
-  }
-
-  .autocomplete-row {
-    @apply px-3;
-  }
-
-  .autocomplete-row a {
-    @apply block py-1 px-2 border-b border-gray-300;
-  }
-
-  .autocomplete-row.active a {
-    @apply bg-highlight-100 border-t border-highlight-700;
-  }
-
-</style>
-

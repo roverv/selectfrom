@@ -6,6 +6,8 @@ import DatabasesStore from './store/databases';
 import TablesStore from './store/tables';
 import QueryHistory from './store/queries';
 import RecentTables from './store/recenttables';
+import FlashMessage from './store/flashmessage';
+import ApiError from './store/apierror';
 
 Vue.use(Vuex)
 
@@ -18,8 +20,9 @@ export default new Vuex.Store({
     tables: TablesStore,
     queryhistory: QueryHistory,
     recenttables: RecentTables,
+    flashmessage: FlashMessage,
+    apierror: ApiError,
   },
-
 
   state: {
     apiEndPoint: 'http://localhost/rove/api/',
@@ -34,5 +37,11 @@ export default new Vuex.Store({
       this.dispatch("tables/getWithColumns");
     },
   },
-  actions: {}
+
+  actions: {
+    refreshTables() {
+      this.dispatch("tables/get");
+      this.dispatch("tables/getWithColumns");
+    },
+  }
 })

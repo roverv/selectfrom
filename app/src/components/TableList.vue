@@ -1,12 +1,16 @@
 <template>
   <div>
 
-    <div>
+    <spinner v-if="fetching_tables" delay="200"></spinner>
+
+    <div v-if="!fetching_tables">
 
       <h2 class="mb-2 text-xl">
         <span class="text-gray-500 text-lg">{{ tables.length }}</span>
         Tables
       </h2>
+
+      <flash-message></flash-message>
 
       <table cellspacing="0" class="table-data" v-if="tables.length > 1">
         <thead>
@@ -57,7 +61,9 @@
           <td class="table-data-row" v-for="(table_list_header, index) in table_list_headers"
               @click="$event.target.focus()" tabindex="1"
               :class="{ ' sticky-first-row-cell' : (index == 0)}">
-            <router-link v-if="table_list_header == 'Name'" :to="{ name: 'table', params: { tableid: table[table_list_header] } }" class="inline-block whitespace-normal">
+            <router-link v-if="table_list_header == 'Name'"
+                         :to="{ name: 'table', params: { tableid: table[table_list_header] } }"
+                         class="inline-block whitespace-normal">
               {{ table[table_list_header] }}
             </router-link>
             <span v-else-if="table_list_header == 'Size'" v-html="showTableSize(table)"></span>
@@ -77,11 +83,11 @@
             {{ selected_rows.length }} tables
           </div>
 
-          <a class="rows-action">
+          <a class="rows-action" @click="confirmTruncateTables()">
             <span>Truncate</span>
           </a>
 
-          <a class="rows-action">
+          <a class="rows-action" @click="confirmDropTables()">
             <span>Drop</span>
           </a>
 
@@ -91,12 +97,23 @@
 
     </div>
 
+    <confirm-modal v-if="confirm_modal_open" v-on:close="closeConfirmModal()"
+                   v-on:confirm="confirmConfirmModal()">
+      {{ confirm_modal_message }}
+    </confirm-modal>
+
   </div>
 </template>
 
 <script>
 
   import {number_format} from '../util'
+  import Spinner from "./Spinner";
+  import ConfirmModal from "./ConfirmModal";
+  import ConfirmModalMixin from "../mixins/ConfirmModal";
+  import HandleApiError from "../mixins/HandleApiError";
+  import FlashMessage from "./FlashMessage";
+  import axios from "axios";
 
   export default {
     name: 'TableList',
@@ -106,8 +123,21 @@
         selected_rows: [],
         order_by: 'name',
         order_direction: 'asc',
+        endpoint_truncate_tables: 'truncate_tables.php?db=',
+        endpoint_drop_tables: 'drop_tables.php?db=',
       }
     },
+
+    components: {
+      Spinner,
+      ConfirmModal,
+      FlashMessage,
+    },
+
+    mixins: [
+      ConfirmModalMixin,
+      HandleApiError
+    ],
 
     filters: {
       formatNumber(number) {
@@ -142,17 +172,25 @@
         return this.$store.state.activeDatabase;
       },
 
+      api_endpoint() {
+        return this.$store.state.apiEndPoint;
+      },
+
       tables() {
         return this.$store.getters["tables/tables"];
       },
 
+      fetching_tables() {
+        return this.$store.getters["tables/isLoading"];
+      },
+
       ordered_tables() {
-        if(this.tables.length == 0) return [];
+        if (this.tables.length == 0) return [];
 
         // create a clone of tables, we dont want to sort the vuex state
         let ordered_tables = JSON.parse(JSON.stringify(this.tables));
 
-        let reverse          = this.order_direction == 'asc' ? 1 : -1;
+        let reverse = this.order_direction == 'asc' ? 1 : -1;
 
         let vue_instance = this;
 
@@ -213,6 +251,66 @@
       orderByColumn(column) {
         this.order_by        = column;
         this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
+      },
+
+      confirmTruncateTables() {
+        this.confirm_modal_message = 'Truncate ' + this.selected_rows.length + ' table';
+        if (this.selected_rows.length > 1) {
+          this.confirm_modal_message += 's';
+        }
+        this.confirm_modal_open   = true;
+        this.confirm_modal_action = 'truncateTables';
+      },
+
+      confirmDropTables() {
+        this.confirm_modal_message = 'Drop ' + this.selected_rows.length + ' table';
+        if (this.selected_rows.length > 1) {
+          this.confirm_modal_message += 's';
+        }
+        this.confirm_modal_open   = true;
+        this.confirm_modal_action = 'dropTables';
+      },
+
+      truncateTables() {
+        let params = new URLSearchParams();
+        for (let row_index in this.selected_rows) {
+          params.append('tables[]', this.ordered_tables[this.selected_rows[row_index]].Name);
+        }
+
+        let vue_instance = this;
+        let api_url = this.api_endpoint;
+        api_url += this.endpoint_truncate_tables + this.active_database;
+        axios.post(api_url, params).then(response => {
+          let message = response.data.affected_tables;
+          message += (response.data.affected_tables == 1) ? ' table truncated.' : ' tables truncated.';
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
+          this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+          this.$store.dispatch('refreshTables');
+          vue_instance.$router.push({name: 'database', params: {database : vue_instance.active_database }});
+        }).catch(error => {
+          this.handleApiError(error);
+        })
+      },
+
+      dropTables() {
+        let params = new URLSearchParams();
+        for (let row_index in this.selected_rows) {
+          params.append('tables[]', this.ordered_tables[this.selected_rows[row_index]].Name);
+        }
+
+        let vue_instance = this;
+        let api_url = this.api_endpoint;
+        api_url += this.endpoint_drop_tables + this.active_database;
+        axios.post(api_url, params).then(response => {
+          let message = response.data.affected_tables;
+          message += (response.data.affected_tables == 1) ? ' table dropped.' : ' tables dropped.';
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
+          this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+          this.$store.dispatch('refreshTables');
+          vue_instance.$router.push({name: 'database', params: {database : vue_instance.active_database }});
+        }).catch(error => {
+          this.handleApiError(error);
+        })
       },
 
     },

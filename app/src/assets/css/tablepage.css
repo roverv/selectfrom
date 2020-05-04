@@ -1,0 +1,7 @@
+.table-page-header {
+  @apply flex justify-between items-center mb-4 py-1 max-w-full;
+}
+
+.table-page-header h2 {
+  @apply text-xl;
+}

@@ -1,3 +1,52 @@
+/*********************
+ * BASIC ELEMENTS
+ *********************/
+
+body, html {
+  width:  100%;
+  height: 100%;
+}
+
+body {
+  background:              var(--background-body);
+  background-attachment:   fixed;
+  @apply text-primary;
+  min-height:              100vh;
+  @apply font-sans;
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  --scrollbarBG:   white;
+  --thumbBG:       #90A4AE;
+  scrollbar-width: 12px;
+  scrollbar-height: 12px;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+
+html::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius:    6px;
+}
+
+a {
+  @apply no-underline cursor-pointer;
+}
+
+a:hover {
+  @apply underline;
+}
+
 [v-cloak] {
   display: none;
 }
@@ -12,12 +61,14 @@
   border:     1px solid hsla(215, 27%, 20%, 0.7);
   box-shadow: 1px 1px 1px 0px hsla(215, 27%, 22%, 1);
   transition: all 0.3s ease;
-  outline: none !important;
+  outline:    none !important;
 }
+
 .btn:hover {
   @apply no-underline;
   background: hsla(215, 27%, 20%, 0.7);
 }
+
 .btn:active {
   top: 2px;
 }
@@ -34,9 +85,48 @@
   @apply bg-highlight-400 border border-highlight-700 px-3 py-2;
 }
 
+
+/*********************
+ * APP GRID
+ *********************/
+
+.grid-container-app {
+  display:               grid;
+  height:                100%;
+  width:                 100%;
+  grid-template-areas:   'app-header app-header' 'app-sidebar app-body' '. app-body';
+  grid-gap:              0px;
+  grid-row-gap:          0;
+  grid-template-columns: auto 1fr;
+  grid-template-rows:    auto minmax(0, 1fr) auto;
+}
+
+.app-header {
+  grid-area:        app-header;
+  /*background-color: yellow;*/
+}
+
+.app-sidebar {
+  grid-area:        app-sidebar;
+  /*background-color: green;*/
+}
+
+.app-body {
+  grid-area:        app-body;
+  /*background-color: blue;*/
+}
+
 /*********************
  * CONTENT GRID
  *********************/
+
+.grid-container-content {
+  display:               grid;
+  height:                100%;
+  grid-template-areas:   'content-header .' 'content-body content-body';
+  grid-gap:              0px;
+  grid-template-columns: 1fr auto;
+}
 
 .content-header {
   grid-area: content-header;
@@ -46,10 +136,54 @@
   grid-area: content-body;
 }
 
-.grid-container-content {
-  display:               grid;
-  height:                100%;
-  grid-template-areas: 'content-header .' 'content-body content-body';
-  grid-gap:              0px;
-  grid-template-columns: 1fr auto;
+/*********************
+ * RUN QUERIES
+ *********************/
+
+.query-message {
+  @apply flex items-center mb-8;
+}
+
+.query-sql {
+  @apply cursor-pointer inline-block text-sm text-gray-300 border border-dashed border-gray-500 py-1 px-2 bg-light-200 whitespace-pre;
+}
+
+.query-sql:hover {
+  @apply bg-light-100;
+}
+
+.query-message a.edit-query svg {
+  @apply w-4 ml-2 fill-current;
+}
+
+.edit-query svg .primary {
+  @apply text-gray-400;
+}
+
+.edit-query svg .secondary {
+  @apply text-gray-500;
+}
+
+.edit-query:hover svg .primary,
+.edit-query:hover svg .secondary {
+  @apply text-highlight-700;
+}
+
+.edit-query:active svg .primary,
+.edit-query:active svg .secondary {
+  @apply text-highlight-400;
+}
+
+
+/*********************
+ * PAGE CONTENT BOX
+ *********************/
+
+.page-content-container {
+  @apply flex justify-center;
+  min-width: 900px;
+}
+
+.content-min-width {
+  min-width: 900px;
 }

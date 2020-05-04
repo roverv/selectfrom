@@ -1,0 +1,83 @@
+.modal-container {
+  @apply fixed top-0 right-0 bottom-0 left-0 z-50 overflow-auto flex invisible opacity-0;
+  transition: opacity .2s ease-in;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0.7) 80%);
+}
+
+.modal-container.open {
+  @apply opacity-100 visible;
+  transition: opacity .2s ease-in;
+}
+
+.modal-content {
+  @apply relative w-full m-auto flex flex-col w-full;
+}
+
+.modal-content.modal-search {
+  @apply max-w-2xl text-on-bg-light;
+}
+
+.input-search {
+  @apply block w-full mt-3 px-4 py-3 text-xl border-8 border-dark-600;
+  box-shadow: 0 15px 35px hsla(0, 0%, 0%, .2);
+}
+.input-search:focus {
+  @apply outline-none;
+}
+
+.modal-content.modal-list {
+  @apply border-8 border-dark-600 bg-white;
+}
+
+.modal-content.modal-confirm {
+  @apply border border-gray-700;
+  background: linear-gradient(45deg, #536D92, #5A4688);
+}
+
+.modal-title {
+  @apply bg-dark-600 text-gray-200 pt-1 pb-2 px-3 text-xl mb-4;
+}
+
+/*********************
+ * AUTOCOMPLETE
+ *********************/
+
+.autocomplete-container {
+  @apply relative;
+}
+
+.autocomplete-list {
+  @apply bg-gray-200 absolute w-full border-8 border-dark-600 border-t-0 h-64 overflow-y-scroll;
+}
+
+.autocomplete-row {
+  @apply px-3;
+}
+
+.autocomplete-row a {
+  @apply block py-1 px-2 border-b border-gray-300;
+}
+
+.autocomplete-row.active a {
+  @apply bg-highlight-100 border-t border-highlight-700;
+}
+
+/*********************
+ * LIST
+ *********************/
+
+.list-item {
+  @apply px-1 text-on-bg-light;
+}
+
+.list-item a {
+  @apply block py-1 px-1 border-b border-gray-300;
+}
+
+.list-item:not(.active) {
+  @apply truncate;
+}
+
+.list-item.active a {
+  @apply bg-highlight-100 border-t border-highlight-700;
+}

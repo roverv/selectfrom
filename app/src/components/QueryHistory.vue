@@ -1,15 +1,16 @@
 <template>
 
-  <div class="modal-container" :class="{ 'open' : modalisopen }" style="background: radial-gradient(circle, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.7) 80%); transition: opacity 0.2s ease-in;">
+  <div class="modal-container" :class="{ 'open' : modalisopen }">
 
-    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-6xl border-8 border-dark-600 bg-white">
+    <div class="modal-content modal-list max-w-6xl">
       <div class="text-lg">
-        <h3 class="bg-dark-600 text-gray-200 pt-1 pb-2 px-3 text-xl mb-4">
+        <h3 class="modal-title">
           Query history
         </h3>
         <ul class="mx-3 my-4" autocomplete="off">
-          <li v-for="(query, index) in query_history" class="list-item" v-bind:class="{'active': isActive(index)}" :ref="index">
-            <router-link :to="{ name: 'queryhistory', params: { historyindex: index } }" class="block py-1 bg-orange-100 px-2">
+          <li v-for="(query, index) in query_history" class="list-item" v-bind:class="{'active': isActive(index)}"
+              :ref="index">
+            <router-link :to="{ name: 'queryhistory', params: { historyindex: index } }">
               {{ query }}
             </router-link>
           </li>
@@ -40,7 +41,7 @@
       document.removeEventListener('keydown', this.triggerKeyDown);
     },
 
-    computed:  {
+    computed: {
       query_history() {
         return this.$store.getters["queryhistory/queries"];
       },
@@ -55,7 +56,7 @@
         }
       },
 
-      triggerKeyDown: function(evt) {
+      triggerKeyDown: function (evt) {
         if (evt.key === 'Escape') {
           this.close();
           evt.preventDefault();
@@ -95,44 +96,4 @@
 
   }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-  .modal-container.open {
-    opacity:    1;
-    visibility: visible;
-    transition: opacity .2s ease-in;
-  }
-
-  .modal-container {
-    position:   fixed;
-    top:        0;
-    right:      0;
-    bottom:     0;
-    left:       0;
-    z-index:    50;
-    overflow:   auto;
-    display:    flex;
-    visibility: hidden;
-    opacity:    0;
-    transition: opacity .2s ease-in;
-  }
-
-  .list-item {
-    @apply px-1 text-on-bg-light;
-  }
-
-  .list-item a {
-    @apply block py-1 px-1 border-b border-gray-300;
-  }
-
-  .list-item:not(.active) {
-    @apply truncate;
-  }
-
-  .list-item.active a {
-    @apply bg-highlight-100 border-t border-highlight-700;
-  }
-
-</style>
 

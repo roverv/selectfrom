@@ -70,7 +70,7 @@
     @apply outline-none;
   }
   .settings-toggle-btn svg {
-    @apply w-5 mr-4 fill-current;
+    @apply w-5 fill-current;
   }
   .settings-toggle-btn:hover svg {
     @apply text-dark-500;

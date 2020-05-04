@@ -1,15 +1,16 @@
 <template>
 
-  <div class="modal-container" :class="{ 'open' : modalisopen }" style="background: radial-gradient(circle, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.7) 80%); transition: opacity 0.2s ease-in;">
+  <div class="modal-container" :class="{ 'open' : modalisopen }">
 
-    <div class="relative rounded-md  w-full m-auto flex-col flex w-full max-w-md border-8 border-dark-600 bg-white" id="recent-tables">
+    <div class="modal-content modal-list max-w-md" id="recent-tables">
       <div class="text-lg">
-        <h3 class="bg-dark-600 text-gray-200 pt-1 pb-2 px-3 text-xl mb-4">
+        <h3 class="modal-title">
           Recent tables
         </h3>
         <ul class="mx-3 my-4" id="recent-tables-list" autocomplete="off">
-          <li v-for="(table_name, index) in recent_tables" class="list-item" v-bind:class="{'active': isActive(index)}" :ref="table_name">
-            <router-link :to="{ name: 'table', params: { tableid: table_name } }" class="block py-1 bg-orange-100 px-2">
+          <li v-for="(table_name, index) in recent_tables" class="list-item" v-bind:class="{'active': isActive(index)}"
+              :ref="table_name">
+            <router-link :to="{ name: 'table', params: { tableid: table_name } }">
               {{ table_name }}
             </router-link>
           </li>
@@ -39,7 +40,7 @@
       document.removeEventListener('keydown', this.triggerKeyDown);
     },
 
-    computed:  {
+    computed: {
       recent_tables() {
         return this.$store.getters["recenttables/tables"];
       },
@@ -55,7 +56,7 @@
         }
       },
 
-      triggerKeyDown: function(evt) {
+      triggerKeyDown: function (evt) {
         if (evt.key === 'Escape') {
           this.close();
           evt.preventDefault();
@@ -105,40 +106,3 @@
 
   }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-  .modal-container.open {
-    opacity:    1;
-    visibility: visible;
-    transition: opacity .2s ease-in;
-  }
-
-  .modal-container {
-    position:   fixed;
-    top:        0;
-    right:      0;
-    bottom:     0;
-    left:       0;
-    z-index:    50;
-    overflow:   auto;
-    display:    flex;
-    visibility: hidden;
-    opacity:    0;
-    transition: opacity .2s ease-in;
-  }
-
-  .list-item {
-    @apply px-1 text-on-bg-light;
-  }
-
-  .list-item a {
-    @apply block py-1 px-1 border-b border-gray-300;
-  }
-
-  .list-item.active a {
-    @apply bg-highlight-100 border-t border-highlight-700;
-  }
-
-</style>
-
