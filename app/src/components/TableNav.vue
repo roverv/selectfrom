@@ -1,7 +1,7 @@
 <template>
   <div>
     <router-link :to="{ name: 'table', params: { tableid: tableid } }" class="subnav-item"
-                 :class="{ 'active' : ($route.name == 'table') }">
+                 :class="{ 'active' : (['table', 'tablewithcolumn', 'tablewithcolumnvalue'].includes($route.name)) }">
       Data
     </router-link>
 

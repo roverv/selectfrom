@@ -11,7 +11,6 @@ body {
   background:              var(--background-body);
   background-attachment:   fixed;
   @apply text-primary;
-  min-height:              100vh;
   @apply font-sans;
   -webkit-font-smoothing:  antialiased;
   -moz-osx-font-smoothing: grayscale;
