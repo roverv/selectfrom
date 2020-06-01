@@ -163,7 +163,7 @@
         <br>
 
         <div class="flex" v-if="showLoadMoreDataButtons()">
-          <button class="btn mr-3" @click="loadMoreRows()">Load 90 more rows</button>
+          <button class="btn mr-3" @click="loadMoreRows()">Load 50 more rows</button>
           <button class="btn mr-3" @click="loadAllRows()">
             Load all rows ({{ total_amount_rows }})
           </button>

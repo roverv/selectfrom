@@ -3,7 +3,7 @@
     <div class="mb-6 flex items-center">
       <div class="inline-flex flex-col items-center mr-16">
         <div class="statistic-key text-normal text-gray-300 ">Rows</div>
-        <div class="statistic-value text-2xl text-gray-100">90</div>
+        <div class="statistic-value text-2xl text-gray-100">50</div>
       </div>
 
       <div class="inline-flex flex-col items-center mr-16">
@@ -28,7 +28,7 @@
     </div>
 
     <div class="my-6 query-message">
-      <div class="query-sql">SELECT * FROM user LIMIT 90</div>
+      <div class="query-sql">SELECT * FROM user LIMIT 50</div>
       <a class="edit-query">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path class="primary"
