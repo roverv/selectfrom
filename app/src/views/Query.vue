@@ -18,6 +18,8 @@
 
       <div class="content-body">
 
+        <spinner v-if="fetching_query_results"></spinner>
+
         <div v-if="query_results.length > 0">
           <div v-for="(query_result, query_result_index) in query_results" :key="query_result_index" class="mb-8 mt-1">
 
@@ -100,6 +102,7 @@
   import sqlFormatter from "sql-formatter";
   import {number_format} from '../util';
   import HandleApiError from '@/mixins/HandleApiError.js';
+  import Spinner from "@/components/Spinner";
 
 
   export default {
@@ -113,11 +116,13 @@
         sidebar_row_data: [],
         sidebar_column_data: [],
         sidebar_column_table_data: [],
+        fetching_query_results: false,
       }
     },
 
     components: {
-      RowSidebar
+      RowSidebar,
+      Spinner,
     },
 
     mixins: [
@@ -148,6 +153,9 @@
           "Ctrl-Space": "autocomplete",
           'Ctrl-Enter': function () {
             vue_instance.runQuery();
+          },
+          'Shift-Enter': function () {
+            vue_instance.formatQuery();
           },
           "Esc": function () {
             document.getElementById('app').focus();
@@ -184,6 +192,7 @@
     methods: {
 
       runQuery() {
+        this.fetching_query_results = true;
         let api_url = this.api_endpoint + this.endpoint + this.active_database;
 
         let vue_instance = this;
@@ -199,8 +208,10 @@
             // todo: navigation on query results???
             // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
           });
+          this.fetching_query_results = false;
         }).catch(error => {
           this.handleApiError(error);
+          this.fetching_query_results = false;
         })
       },
 
