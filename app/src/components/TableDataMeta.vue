@@ -3,17 +3,17 @@
     <div class="mb-6 flex items-center">
       <div class="inline-flex flex-col items-center mr-16">
         <div class="statistic-key text-normal text-gray-300 ">Rows</div>
-        <div class="statistic-value text-2xl text-gray-100">50</div>
+        <div class="statistic-value text-2xl text-gray-100">{{ rows }}</div>
       </div>
 
       <div class="inline-flex flex-col items-center mr-16">
         <div class="statistic-key text-normal text-gray-300 ">Total rows</div>
-        <div class="statistic-value text-2xl text-gray-100">4563</div>
+        <div class="statistic-value text-2xl text-gray-100">{{ totalrows }}</div>
       </div>
 
       <div class="inline-flex flex-col items-center mr-16">
         <div class="statistic-key text-normal text-gray-300 ">Columns</div>
-        <div class="statistic-value text-2xl text-gray-100">19</div>
+        <div class="statistic-value text-2xl text-gray-100">{{ columns }}</div>
       </div>
 
       <div class="inline-flex flex-col items-center mr-16">
@@ -50,6 +50,11 @@
 
   export default {
     name: 'TableDataMeta',
+    props: [
+      'totalrows',
+      'rows',
+      'columns',
+    ]
   }
 </script>
 

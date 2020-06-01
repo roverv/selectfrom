@@ -20,7 +20,11 @@
           <div></div>
         </div>
 
-        <table-data-meta v-if="meta_box_open" v-on:confirmDropTable="confirmDropTable" v-on:confirmTruncateTable="confirmTruncateTable"></table-data-meta>
+        <div v-cloak v-if="is_fetching_data === false && tabledata.length > 0">
+          <table-data-meta v-if="meta_box_open" v-on:confirmDropTable="confirmDropTable"
+                           v-on:confirmTruncateTable="confirmTruncateTable" :totalrows="total_amount_rows"
+                           :rows="tabledata.length" :columns="columns.length"></table-data-meta>
+        </div>
 
         <flash-message></flash-message>
       </div>
@@ -28,7 +32,7 @@
       <div class="content-body">
         <div class="w-full flex items-start">
 
-          <div class="relative w-full">
+          <div class="relative w-auto">
 
             <div v-cloak v-if="is_fetching_data === false && tabledata.length == 0">
               <p class="bg-light-100 text-gray-400 px-2 py-2 inline-block">No rows found</p>
