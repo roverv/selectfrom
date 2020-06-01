@@ -6,6 +6,7 @@ import DatabasesStore from './store/databases';
 import TablesStore from './store/tables';
 import QueryHistory from './store/queries';
 import RecentTables from './store/recenttables';
+import Searches from './store/searches';
 import FlashMessage from './store/flashmessage';
 import ApiError from './store/apierror';
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     tables: TablesStore,
     queryhistory: QueryHistory,
     recenttables: RecentTables,
+    searches: Searches,
     flashmessage: FlashMessage,
     apierror: ApiError,
   },

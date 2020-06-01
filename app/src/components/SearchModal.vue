@@ -58,6 +58,11 @@
     computed: {
       // Filtering the suggestion based on the input
       matches() {
+
+        if(this.search_value == '') {
+          return this.searches;
+        }
+
         let search_results = [];
         if (this.can_autocomplete_column) {
           let search_values = this.search_value.split(this.column_split_value);
@@ -77,7 +82,14 @@
       },
 
       openAutocomplete() {
-        return this.search_value.length > 0 && this.matches.length !== 0;
+        // if the input is empty and there are searches from the history
+        if(this.search_value == '' && this.searches.length > 0) {
+          return true;
+        }
+        if(this.search_value.length > 0 && this.matches.length !== 0) {
+          return true;
+        }
+        return false;
       },
 
       entering_column() {
@@ -107,7 +119,11 @@
 
       tables() {
         return Object.keys(this.tables_with_columns);
-      }
+      },
+
+      searches() {
+        return this.$store.getters["searches/searches"];
+      },
     },
 
     methods: {
@@ -146,11 +162,6 @@
         } else if (evt.key === 'Enter') {
           if (this.current == -1) return; // do nothing when we are not on a autocomplete item
           this.fillautocomplete(this.current);
-          let vue = this;
-          // set a tiny timeout, this way the user will see the value change from fillautocomplete
-          setTimeout(function () {
-            vue.submitSearch();
-          }, 100);
           evt.preventDefault();
         }
       },
@@ -231,6 +242,8 @@
           }, 300);
           return false;
         }
+
+        this.$store.commit("searches/ADD_SEARCH", this.search_value);
 
         // perform the normalize (tolowercase) here, else the .include in the code above won't work, because it is case sensitive
         table_id = this.normalizeValue(table_id);
