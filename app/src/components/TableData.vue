@@ -99,8 +99,8 @@
                     @click.ctrl="toggleRowSidebar(row_index)"
                     @click="$event.target.focus()" tabindex="1"
                     :class="{ ' sticky-first-row-cell' : (index == 0)}">
-                  <span v-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
-                  <span v-else-if="row[column_name.Field] === null" class="null-value"><i>NULL</i></span>
+                  <span v-if="row[column_name.Field] == null" class="null-value"><i>NULL</i></span>
+                  <span v-else-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
                   <span v-else>{{ row[column_name.Field] }}</span>
                 </td>
               </tr>
