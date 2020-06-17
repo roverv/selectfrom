@@ -259,8 +259,8 @@
         // go to table where primary key is value: "user#2"
         if (has_id) {
           this.$router.push({
-            name: 'tablecolumnisvalue',
-            params: {tableid: table_id, column: 'primarykey', value: row_id}
+            name: 'tablewithcolumnvalue',
+            params: {tableid: table_id, column: 'primarykey', comparetype: 'is',  value: row_id}
           });
 
         } else if (has_column) {
