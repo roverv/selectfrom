@@ -9,6 +9,7 @@ import RecentTables from './store/recenttables';
 import Searches from './store/searches';
 import FlashMessage from './store/flashmessage';
 import ApiError from './store/apierror';
+import QueryEdit from './store/queryedit';
 
 Vue.use(Vuex)
 
@@ -24,6 +25,7 @@ export default new Vuex.Store({
     searches: Searches,
     flashmessage: FlashMessage,
     apierror: ApiError,
+    queryedit: QueryEdit,
   },
 
   state: {

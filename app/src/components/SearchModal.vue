@@ -59,7 +59,7 @@
       // Filtering the suggestion based on the input
       matches() {
 
-        if(this.search_value == '') {
+        if (this.search_value == '') {
           return this.searches;
         }
 
@@ -83,10 +83,10 @@
 
       openAutocomplete() {
         // if the input is empty and there are searches from the history
-        if(this.search_value == '' && this.searches.length > 0) {
+        if (this.search_value == '' && this.searches.length > 0) {
           return true;
         }
-        if(this.search_value.length > 0 && this.matches.length !== 0) {
+        if (this.search_value.length > 0 && this.matches.length !== 0) {
           return true;
         }
         return false;
@@ -173,9 +173,9 @@
       submitSearch() {
         if (this.search_value == '') return false;
 
-        let has_id           = this.search_value.includes("#");
-        let has_column       = this.search_value.includes(".") || this.search_value.includes("|");
-        let column_value     = '';
+        let has_id             = this.search_value.includes("#");
+        let has_column         = this.search_value.includes(".") || this.search_value.includes("|");
+        let column_value       = '';
         let value_compare_type = '';
 
         let table_id = '';
@@ -196,13 +196,13 @@
             column_value       = data_values[1];
             value_compare_type = 'like';
 
-          } else if(this.search_value.includes("=")) {
-              let search_values = this.search_value.split(".");
-              let data_values   = search_values[1].split("=");
-              table_id          = search_values[0];
-              column            = data_values[0];
-              column_value      = data_values[1];
-              value_compare_type = 'is';
+          } else if (this.search_value.includes("=")) {
+            let search_values  = this.search_value.split(".");
+            let data_values    = search_values[1].split("=");
+            table_id           = search_values[0];
+            column             = data_values[0];
+            column_value       = data_values[1];
+            value_compare_type = 'is';
 
           } else if (this.column_split_value == '.') {
             let search_values = this.search_value.split(".");
@@ -260,7 +260,7 @@
         if (has_id) {
           this.$router.push({
             name: 'tablewithcolumnvalue',
-            params: {tableid: table_id, column: 'primarykey', comparetype: 'is',  value: row_id}
+            params: {tableid: table_id, column: 'primarykey', comparetype: 'is', value: row_id}
           });
 
         } else if (has_column) {
@@ -272,19 +272,25 @@
               params: {tableid: table_id, column: column, comparetype: value_compare_type, value: column_value}
             });
 
-          // go to table and center on column: "user.password"
+            // go to table and center on column: "user.password"
           } else if (this.column_split_value == '.') {
             this.$router.push({name: 'tablewithcolumn', params: {tableid: table_id, column: column}});
 
-          // query for the group by of a column: "user|sex"
+            // query for the group by of a column: "user|sex"
           } else if (this.column_split_value == '|') {
-            // @todo: change this
-            this.$router.push({
-              name: 'tablewithcolumnvalue',
-              params: {tableid: table_id, column: column, value: 'groupby',}
-            });
+            // @todo: limit instelbaar maken
+            let flash_query = "SELECT COUNT(*) as amount, " + column + " FROM " + table_id + " GROUP BY " + column + " LIMIT 50";
+            this.$store.commit("queryedit/ADD_QUERY_EDIT", flash_query);
+            this.$store.commit("queryedit/ACTIVATE_DIRECT_EXECUTION");
+            if(this.$route.name == 'query') {
+              // if we are already on the query page, just refresh the page
+              this.$store.state.reloadMainComponentKey += 1;
+            }
+            else {
+              this.$router.push({name: 'query'});
+            }
           }
-        // go to table: "user"
+          // go to table: "user"
         } else {
           this.$router.push({name: 'table', params: {tableid: this.search_value}});
         }

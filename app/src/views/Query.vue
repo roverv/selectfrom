@@ -169,6 +169,14 @@
       if (typeof this.historyindex !== 'undefined' && this.historyindex >= 0) {
         window.editor.setValue(this.query_history[this.historyindex])
       }
+
+      if(this.$store.getters["queryedit/isset"]) {
+        window.editor.setValue(this.$store.getters["queryedit/query"]);
+        if(this.$store.getters["queryedit/execute"] === true) {
+          this.runQuery();
+        }
+        this.$store.commit('queryedit/empty');
+      }
     },
 
     computed: {
