@@ -1,6 +1,6 @@
 <template>
   <div class="page-content-container">
-    <TableData :tableid="tableid" :column="column" :value="value" />
+    <TableData :tableid="tableid" :column="column" :comparetype="comparetype" :value="value" />
   </div>
 </template>
 
@@ -9,7 +9,7 @@
 
   export default {
     name: 'table',
-    props: ['tableid', 'column', 'value'],
+    props: ['tableid', 'column', 'comparetype', 'value'],
     components: {
       TableData,
     },

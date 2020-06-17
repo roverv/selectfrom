@@ -43,7 +43,7 @@ const router = new Router({
       }
     },
     {
-      path: '/table/:tableid/:column/:value',
+      path: '/table/:tableid/:column/:comparetype/:value',
       name: 'tablewithcolumnvalue',
       component: () => import(/* webpackChunkName: "tabledata" */ './views/TableData.vue'),
       props: true,

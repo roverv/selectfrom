@@ -204,7 +204,7 @@
 
   export default {
     name: 'TableData',
-    props: ['tableid', 'column', 'value'],
+    props: ['tableid', 'column', 'comparetype', 'value'],
     data() {
       return {
         tabledata: [],
@@ -306,10 +306,8 @@
         if (this.tableid) {
           api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
         }
-        if (this.column && this.value && this.value == 'groupby') {
-          api_url += '&column=' + this.column + '&type=' + 'groupby';
-        } else if (this.column && this.value) {
-          api_url += '&column=' + this.column + '&value=' + this.value;
+        if (this.column && this.value && this.comparetype) {
+          api_url += '&column=' + this.column + '&comparetype=' + this.comparetype + '&value=' + this.value;
         }
         if (this.order_by && this.order_direction) {
           api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;

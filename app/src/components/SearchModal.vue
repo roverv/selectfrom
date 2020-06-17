@@ -175,8 +175,8 @@
 
         let has_id           = this.search_value.includes("#");
         let has_column       = this.search_value.includes(".") || this.search_value.includes("|");
-        let has_column_value = false;
         let column_value     = '';
+        let value_compare_type = '';
 
         let table_id = '';
         let column   = '';
@@ -188,18 +188,27 @@
           column            = 'id';
           row_id            = search_values[1];
         } else if (has_column) {
-          has_column_value = this.search_value.includes("%");
-          if (has_column_value) {
-            let search_values = this.search_value.split(".");
-            let data_values   = search_values[1].split("%");
-            table_id          = search_values[0];
-            column            = data_values[0];
-            column_value      = data_values[1];
+          if (this.search_value.includes("%")) {
+            let search_values  = this.search_value.split(".");
+            let data_values    = search_values[1].split("%");
+            table_id           = search_values[0];
+            column             = data_values[0];
+            column_value       = data_values[1];
+            value_compare_type = 'like';
+
+          } else if(this.search_value.includes("=")) {
+              let search_values = this.search_value.split(".");
+              let data_values   = search_values[1].split("=");
+              table_id          = search_values[0];
+              column            = data_values[0];
+              column_value      = data_values[1];
+              value_compare_type = 'is';
 
           } else if (this.column_split_value == '.') {
             let search_values = this.search_value.split(".");
             table_id          = search_values[0];
             column            = search_values[1];
+
           } else if (this.column_split_value == '|') {
             let search_values = this.search_value.split("|");
             table_id          = search_values[0];
@@ -247,26 +256,35 @@
 
         // perform the normalize (tolowercase) here, else the .include in the code above won't work, because it is case sensitive
         table_id = this.normalizeValue(table_id);
+        // go to table where primary key is value: "user#2"
         if (has_id) {
           this.$router.push({
-            name: 'tablewithcolumnvalue',
-            params: {tableid: table_id, column: 'id', value: row_id}
+            name: 'tablecolumnisvalue',
+            params: {tableid: table_id, column: 'primarykey', value: row_id}
           });
+
         } else if (has_column) {
           column = this.normalizeValue(column);
-          if (has_column_value) {
+          // go to table where column equals value: "user.organisation_id=2" or "user.email%google"
+          if (value_compare_type === 'like' || value_compare_type === 'is') {
             this.$router.push({
               name: 'tablewithcolumnvalue',
-              params: {tableid: table_id, column: column, value: column_value}
+              params: {tableid: table_id, column: column, comparetype: value_compare_type, value: column_value}
             });
+
+          // go to table and center on column: "user.password"
           } else if (this.column_split_value == '.') {
             this.$router.push({name: 'tablewithcolumn', params: {tableid: table_id, column: column}});
+
+          // query for the group by of a column: "user|sex"
           } else if (this.column_split_value == '|') {
+            // @todo: change this
             this.$router.push({
               name: 'tablewithcolumnvalue',
               params: {tableid: table_id, column: column, value: 'groupby',}
             });
           }
+        // go to table: "user"
         } else {
           this.$router.push({name: 'table', params: {tableid: this.search_value}});
         }

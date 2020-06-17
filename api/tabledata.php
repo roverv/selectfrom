@@ -14,14 +14,24 @@
 
     $query                 = "SELECT * FROM ".$_GET['tablename']." ";
 
-    if(!empty($_GET['type']) && $_GET['type'] == 'groupby') {
-        $query .= "GROUP BY `".$_GET['column']."` ";
-    }
-    else if (!empty($_GET['column']) && !empty($_GET['value'])) {
+    if (!empty($_GET['column']) && !empty($_GET['value']) && !empty($_GET['comparetype'])) {
         //todo: escape, duh
-        if ($_GET['column'] == 'id') {
+        if ($_GET['column'] == 'primarykey') {
+            $primary_key_column = array_filter($table_data['columns'], function($column) {
+                return ($column['Key'] === 'PRI');
+            });
+            if (count($primary_key_column) == 0) {
+                echo json_encode([
+                  'result'  => 'error',
+                  'message' => 'Table has no PRIMARY KEY',
+                ]);
+            }
+            $query .= "WHERE `".$primary_key_column[0]['Field']."` = '".$_GET['value']."' ";
+
+        } else if($_GET['comparetype'] == 'is') {
             $query .= "WHERE `".$_GET['column']."` = '".$_GET['value']."' ";
-        } else {
+
+        } else if($_GET['comparetype'] == 'like') {
             $query .= "WHERE `".$_GET['column']."` LIKE '%".$_GET['value']."%' ";
         }
     }
@@ -30,7 +40,7 @@
         $query .= "ORDER BY `".$_GET['orderby']."` ".$_GET['orderdirection']." ";
     }
 
-    if(!empty($_GET['column']) && $_GET['column'] = 'id'){}
+    if(!empty($_GET['column']) && $_GET['column'] = 'primarykey'){}
     else if(!empty($_GET['limit']) && $_GET['limit'] = 'none'){}
     else {
         $query .= " LIMIT " . (int) $amount_rows_per_page . " ";
