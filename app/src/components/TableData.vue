@@ -139,30 +139,30 @@
 
         </div>
 
-        <div class="w-full px-2" v-if="tabledata.length == 1">
-          <div class="row-data-field w-full" v-for="column in columns">
+        <div class="flex w-full border border-light-100 p-2" v-if="tabledata.length == 1">
+          <div class="w-1/2 px-2" v-for="columns_half in columns_halved">
 
-            <div class=" header bg-dark-400 flex items-center w-2/5 pl-3 flex-shrink-0"
-                 style="padding-top: 2px; padding-bottom: 2px;">
-              <div class="text-gray-300 mr-6">{{ column.Field }}</div>
+            <div class="row-data-field w-full" v-for="column in columns_half">
 
-            </div>
+              <div class=" header bg-dark-400 flex items-center w-2/5 pl-3 flex-shrink-0"
+                   style="padding-top: 2px; padding-bottom: 2px;">
+                <div class="text-gray-300 mr-6">{{ column.Field }}</div>
 
-            <div class="data bg-light-100 border-b border-light-300 flex-grow flex items-center pr-3 py-1 justify-start"
-                 style="padding-top: 2px; padding-bottom: 2px;">
-
-              <div class=" ml-6">
-                <span v-if="tabledata[0][column.Field] === null" class="null-value"><i>NULL</i></span>
-                <span v-else>{{ tabledata[0][column.Field] }}</span>
               </div>
+
+              <div
+                class="data bg-light-100 border-b border-light-300 flex-grow flex items-center pr-3 py-1 justify-end overflow-x-hidden"
+                style="padding-top: 2px; padding-bottom: 2px;">
+
+                <div class=" ml-6">
+                  <span v-if="tabledata[0][column.Field] === null" class="null-value"><i>NULL</i></span>
+                  <span v-else class=" truncate">{{ tabledata[0][column.Field] }}</span>
+                </div>
+              </div>
+
             </div>
 
           </div>
-
-          <a class="btn mt-5" @click="editRowFromSingleView()">
-            Edit
-          </a>
-
         </div>
         <br>
 
