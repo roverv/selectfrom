@@ -20,7 +20,7 @@
           <div></div>
         </div>
 
-        <div v-cloak v-if="is_fetching_data === false && tabledata.length > 0">
+        <div v-cloak v-if="is_fetching_data === false">
           <table-data-meta v-if="meta_box_open" v-on:confirmDropTable="confirmDropTable"
                            v-on:confirmTruncateTable="confirmTruncateTable" :totalrows="total_amount_rows"
                            :rows="tabledata.length" :columns="columns.length"></table-data-meta>

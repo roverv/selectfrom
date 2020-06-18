@@ -116,8 +116,7 @@
 <style scoped>
 
   table tbody td {
-    border-bottom: 1px solid #edf2f7;
-    @apply text-gray-300;
+    @apply text-gray-300 border-b border-light-300;
   }
 
   tbody tr:hover td {
