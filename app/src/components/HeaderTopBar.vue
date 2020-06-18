@@ -71,5 +71,12 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
+header {
+  @apply -mt-12;
+}
+header:hover {
+  @apply mt-0;
+  transition: all 0.4s ease;
+}
 
 </style>
