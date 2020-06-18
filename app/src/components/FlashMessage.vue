@@ -7,7 +7,7 @@
 
     <div v-if="query" class="query-message">
       <div @click="toggleQuerySize($event)" class="query-sql w-64 truncate flex-grow">{{ query | format }}</div>
-      <a class="edit-query">
+      <a class="edit-query" @click="editQuery()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path class="primary"
                 d="M4 14a1 1 0 0 1 .3-.7l11-11a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-.7.3H5a1 1 0 0 1-1-1v-3z"></path>
@@ -61,6 +61,11 @@
           event.target.classList.add('w-64', 'truncate');
         }
       },
+
+      editQuery() {
+        this.$store.commit("queryedit/ADD_QUERY_EDIT", this.query);
+        this.$router.push({name: 'query'});
+      }
     }
 
   }
