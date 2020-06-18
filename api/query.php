@@ -4,10 +4,19 @@
 
     $sql_text = $_POST['query'];
 
+    $refresh_data_on_query_types = [
+      'CREATE TABLE',
+      'ALTER TABLE',
+      'DROP TABLE',
+    ];
+
     $sql_text = removeComments($sql_text);
     $queries  = split_sql($sql_text);
 
-    $query_results = [];
+    $return_data = [
+      'query_results' => [],
+      'refresh_cache' => false,
+    ];
     foreach ($queries as $query) {
         if(empty(trim($query))) continue;
 
@@ -20,11 +29,19 @@
         } catch (Exception $e) {
             $result_data['result']  = 'error';
             $result_data['message'] = $e->getMessage();
-            $query_results[]        = $result_data;
+            $return_data['query_results'][]        = $result_data;
             continue;
         }
 
         $result_data['result'] = 'success';
+
+        if($return_data['refresh_cache'] === false) {
+            $query_type = getQueryType($query);
+            if(in_array($query_type, $refresh_data_on_query_types)) {
+                $return_data['refresh_cache'] = true;
+            }
+        }
+
 
         // if the result has columns, it means it has data (eg SELECT or EXPLAIN query)
         if ($query_result->columnCount()) {
@@ -41,10 +58,10 @@
             $result_data['affected_rows'] = $query_result->rowCount();
             $result_data['type']          = 'change';
         }
-        $query_results[] = $result_data;
+        $return_data['query_results'][] = $result_data;
     }
 
-    echo json_encode($query_results);
+    echo json_encode($return_data);
     exit;
 
 

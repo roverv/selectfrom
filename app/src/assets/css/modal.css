@@ -10,7 +10,7 @@
 }
 
 .modal-content {
-  @apply relative w-full m-auto flex flex-col w-full;
+  @apply relative w-full m-auto flex flex-col;
 }
 
 .modal-content.modal-search {
@@ -30,7 +30,7 @@
 }
 
 .modal-content.modal-confirm {
-  @apply border border-gray-700;
+  @apply border border-dark-400;
   background: linear-gradient(45deg, #536D92, #5A4688);
 }
 
