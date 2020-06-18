@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar pr-1" :class="[tables_list_is_open ? 'mr-4 ml-5 ' : 'w-8']">
+  <div class="sidebar pr-1" :class="[tables_list_is_open ? 'open ' : 'closed']">
 
     <div class="sidebar-fixed relative">
 
@@ -141,6 +141,13 @@
     grid-gap:            0px;
     grid-row-gap:        0;
     grid-template-rows:  auto minmax(0, 1fr);
+  }
+  .sidebar.open {
+    @apply mr-4 ml-5;
+    min-width: 200px;
+  }
+  .sidebar.closed {
+    @apply w-8;
   }
 
   .sidebar-fixed {
