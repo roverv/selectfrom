@@ -8,7 +8,18 @@
     foreach ($rows as $_row) {
         $tables_with_columns[$_row['TABLE_NAME']][] = $_row['COLUMN_NAME'];
     }
-    echo json_encode($tables_with_columns);
+
+    $tables_with_primary_keys = [];
+    foreach ($rows as $_row) {
+        if ($_row['COLUMN_KEY'] == 'PRI') {
+            $tables_with_primary_keys[$_row['TABLE_NAME']] = $_row['COLUMN_NAME'];
+        }
+    }
+
+    echo json_encode([
+        'tables_with_columns'      => $tables_with_columns,
+        'tables_with_primary_keys' => $tables_with_primary_keys,
+      ]);
     exit;
 
 

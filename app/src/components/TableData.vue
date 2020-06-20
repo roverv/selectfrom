@@ -171,7 +171,7 @@
           <button class="btn mr-3" @click="loadAllRows()">
             Load all rows ({{ total_amount_rows }})
           </button>
-          <spinner v-if="is_fetching_data"></spinner>
+          <spinner v-if="is_fetching_data === true"></spinner>
         </div>
       </div>
 
@@ -246,6 +246,11 @@
     ],
 
     mounted() {
+      // @todo: make this configurable
+      if(this.primary_key !== false) {
+        this.order_by = this.primary_key;
+        this.order_direction = 'desc';
+      }
       this.getTableData();
     },
 
@@ -265,6 +270,10 @@
       api_endpoint() {
         return this.$store.state.apiEndPoint;
       },
+
+      primary_key() {
+        return this.$store.getters["tables/primaryKeyOfTable"](this.tableid);
+      }
     },
 
     watch: {
@@ -321,6 +330,7 @@
           this.columns           = response.data.columns;
           this.total_amount_rows = response.data.amount_rows;
           this.initial_loading   = false;
+          this.is_fetching_data = false;
           this.$nextTick().then(function () {
             // DOM updated
             if (vue_instance.column && vue_instance.tabledata.length > 0) {
@@ -337,8 +347,6 @@
 
               vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[cell_nr].focus();
             }
-
-            vue_instance.is_fetching_data = false;
           });
 
         }).catch(error => {
