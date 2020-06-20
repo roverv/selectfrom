@@ -14,6 +14,7 @@
 
     $query                 = "SELECT * FROM ".$_GET['tablename']." ";
 
+    $filter_query = '';
     if (!empty($_GET['column']) && !empty($_GET['value']) && !empty($_GET['comparetype'])) {
         //todo: escape, duh
         if ($_GET['column'] == 'primarykey') {
@@ -26,22 +27,24 @@
                   'message' => 'Table has no PRIMARY KEY',
                 ]);
             }
-            $query .= "WHERE `".$primary_key_column[0]['Field']."` = '".$_GET['value']."' ";
+            $filter_query .= "WHERE `".$primary_key_column[0]['Field']."` = '".$_GET['value']."' ";
 
         } else if($_GET['comparetype'] == 'is') {
-            $query .= "WHERE `".$_GET['column']."` = '".$_GET['value']."' ";
+            $filter_query .= "WHERE `".$_GET['column']."` = '".$_GET['value']."' ";
 
         } else if($_GET['comparetype'] == 'like') {
-            $query .= "WHERE `".$_GET['column']."` LIKE '%".$_GET['value']."%' ";
+            $filter_query .= "WHERE `".$_GET['column']."` LIKE '%".$_GET['value']."%' ";
         }
     }
+
+    $query .= $filter_query;
 
     if (!empty($_GET['orderby']) && !empty($_GET['orderdirection'])) {
         $query .= "ORDER BY `".$_GET['orderby']."` ".$_GET['orderdirection']." ";
     }
 
-    if(!empty($_GET['column']) && $_GET['column'] = 'primarykey'){}
-    else if(!empty($_GET['limit']) && $_GET['limit'] = 'none'){}
+    if(!empty($_GET['column']) && $_GET['column'] == 'primarykey'){}
+    else if(!empty($_GET['limit']) && $_GET['limit'] == 'none'){}
     else {
         $query .= " LIMIT " . (int) $amount_rows_per_page . " ";
     }
@@ -50,6 +53,11 @@
         $offset = $amount_rows_per_page * (int) $_GET['offset'];
         $query .= " OFFSET " . $offset . " ";
     }
+
+    $count_query = "SELECT COUNT(*) as amount_rows FROM " . $_GET['tablename'] . " "  . $filter_query;
+    $count_result  = $pdo->query($count_query)->fetch();
+
+    $table_data['amount_rows'] = $count_result['amount_rows'] ?? 0;
 
     $rows               = $pdo->query($query)->fetchAll();
     $table_data['data'] = $rows;

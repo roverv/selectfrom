@@ -171,6 +171,7 @@
           <button class="btn mr-3" @click="loadAllRows()">
             Load all rows ({{ total_amount_rows }})
           </button>
+          <spinner v-if="is_fetching_data"></spinner>
         </div>
       </div>
 
@@ -213,7 +214,6 @@
         offset_rows: 0,
         api_error: '',
         endpoint_table_data: 'tabledata.php?db=',
-        endpoint_count_rows: 'countrows.php?db=',
         endpoint_delete_rows: 'delete_rows.php?db=',
         endpoint_truncate_tables: 'truncate_tables.php?db=',
         endpoint_drop_tables: 'drop_tables.php?db=',
@@ -247,7 +247,6 @@
 
     mounted() {
       this.getTableData();
-      this.getAmountRows();
     },
 
     computed: {
@@ -318,9 +317,10 @@
         this.is_fetching_data = true;
 
         axios.get(api_url).then(response => {
-          this.tabledata       = response.data.data;
-          this.columns         = response.data.columns;
-          this.initial_loading = false;
+          this.tabledata         = response.data.data;
+          this.columns           = response.data.columns;
+          this.total_amount_rows = response.data.amount_rows;
+          this.initial_loading   = false;
           this.$nextTick().then(function () {
             // DOM updated
             if (vue_instance.column && vue_instance.tabledata.length > 0) {
@@ -377,24 +377,6 @@
         this.sidebarisopen       = true;
       },
 
-      getAmountRows() {
-
-        let api_url = this.api_endpoint;
-        if (this.tableid) {
-          api_url += this.endpoint_count_rows + this.active_database + '&tablename=' + this.tableid;
-        }
-
-        let vue_instance = this;
-
-        this.is_fetching_data = true;
-        axios.get(api_url).then(response => {
-          vue_instance.total_amount_rows = response.data.amount_rows;
-          vue_instance.is_fetching_data  = false;
-        }).catch(error => {
-          this.handleApiError(error);
-        })
-      },
-
       showLoadMoreDataButtons() {
         return (this.tabledata.length > 1 && this.total_amount_rows > this.tabledata.length);
       },
@@ -407,10 +389,8 @@
         if (this.tableid) {
           api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
         }
-        if (this.column && this.value && this.value == 'groupby') {
-          api_url += '&column=' + this.column + '&type=' + 'groupby';
-        } else if (this.column && this.value) {
-          api_url += '&column=' + this.column + '&value=' + this.value;
+        if (this.column && this.value && this.comparetype) {
+          api_url += '&column=' + this.column + '&comparetype=' + this.comparetype + '&value=' + this.value;
         }
         if (this.order_by && this.order_direction) {
           api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
@@ -436,14 +416,12 @@
           ask_confirm = confirm('Are you sure you want to load all rows?');
         }
         if (ask_confirm) {
-          let api_url = '';
+          let api_url = this.api_endpoint;
           if (this.tableid) {
-            api_url = this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
+            api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
           }
-          if (this.column && this.value && this.value == 'groupby') {
-            api_url += '&column=' + this.column + '&type=' + 'groupby';
-          } else if (this.column && this.value) {
-            api_url += '&column=' + this.column + '&value=' + this.value;
+          if (this.column && this.value && this.comparetype) {
+            api_url += '&column=' + this.column + '&comparetype=' + this.comparetype + '&value=' + this.value;
           }
           if (this.order_by && this.order_direction) {
             api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
@@ -512,11 +490,11 @@
 
       confirmDeleteRows() {
         this.confirm_modal_message = 'Delete ' + this.selected_rows.length + ' row';
-        if(this.selected_rows.length > 1) {
+        if (this.selected_rows.length > 1) {
           this.confirm_modal_message += 's';
         }
-        this.confirm_modal_open    = true;
-        this.confirm_modal_action  = 'deleteRows';
+        this.confirm_modal_open   = true;
+        this.confirm_modal_action = 'deleteRows';
       },
 
       // get the column(s) of a table by which it is identifiable
@@ -574,8 +552,8 @@
 
       confirmDropTable() {
         this.confirm_modal_message = 'Drop table ' + this.tableid;
-        this.confirm_modal_open   = true;
-        this.confirm_modal_action = 'dropTable';
+        this.confirm_modal_open    = true;
+        this.confirm_modal_action  = 'dropTable';
       },
 
       dropTable() {
@@ -583,13 +561,13 @@
         params.append('tables[]', this.tableid);
 
         let vue_instance = this;
-        let api_url = this.api_endpoint;
+        let api_url      = this.api_endpoint;
         api_url += this.endpoint_drop_tables + this.active_database;
         axios.post(api_url, params).then(response => {
           this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' dropped.');
           this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
           this.$store.dispatch('refreshTables');
-          vue_instance.$router.push({name: 'database', params: {database : vue_instance.active_database }});
+          vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
         }).catch(error => {
           this.handleApiError(error);
         })
@@ -597,8 +575,8 @@
 
       confirmTruncateTable() {
         this.confirm_modal_message = 'Truncate table ' + this.tableid;
-        this.confirm_modal_open   = true;
-        this.confirm_modal_action = 'truncateTable';
+        this.confirm_modal_open    = true;
+        this.confirm_modal_action  = 'truncateTable';
       },
 
       truncateTable() {
@@ -606,7 +584,7 @@
         params.append('tables[]', this.tableid);
 
         let vue_instance = this;
-        let api_url = this.api_endpoint;
+        let api_url      = this.api_endpoint;
         api_url += this.endpoint_truncate_tables + this.active_database;
         axios.post(api_url, params).then(response => {
           this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' truncated.');
