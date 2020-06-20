@@ -19,8 +19,8 @@ s<template>
 
 
     <div class="app-header">
-      <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
       <HeaderTopBar v-on:SwitchTheme="SwitchTheme"></HeaderTopBar>
+      <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
     </div>
 
     <div class="app-sidebar py-5">
