@@ -1,4 +1,4 @@
-s<template>
+<template>
   <div id="app" class="grid-container-app" v-on:keyup.self.open-search="openSearchModal" v-on:keyup.self.open-recent-tables="openRecentTables"
        v-on:keyup.self.to-query="goToQuery" v-on:keyup.self.open-database-list="openDatabasesModal"
        v-on:keyup.self.open-query-history="openQueryHistory"

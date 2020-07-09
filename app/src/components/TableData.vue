@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="page-content-container">
+
     <spinner v-if="initial_loading" delay="200"></spinner>
 
-    <div v-show="initial_loading === false" class="grid-container-content">
+    <div v-show="initial_loading === false" class="grid-container-content"
+         :class="[page_view == 'single' && columns_split.length > 1 ? (columns_split.length == 2 ? 'w-9/12' : 'w-full') : '']">
 
       <div class="content-header">
 
@@ -17,7 +19,32 @@
             </svg>
           </a>
           <table-nav :tableid="tableid" v-on:toggleMetaBox="toggleMetaBox"></table-nav>
-          <div></div>
+          <div class="flex">
+            <a @click="togglePageView()" class="mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current view-page-multi"
+                   :class="{ 'active' : page_view == 'multi'}">
+                <rect width="7" height="3" x="1" y="1" class="primary"></rect>
+                <rect width="7" height="3" x="9" y="1" class="primary"></rect>
+                <rect width="7" height="3" x="17" y="1" class="primary"></rect>
+                <rect width="24" height="1" x="1" y="6" class="secondary"></rect>
+                <rect width="7" height="3" x="1" y="9" class="primary"></rect>
+                <rect width="7" height="3" x="9" y="9" class="primary"></rect>
+                <rect width="7" height="3" x="17" y="9" class="primary"></rect>
+                <rect width="24" height="1" x="1" y="14" class="secondary"></rect>
+                <rect width="7" height="3" x="1" y="17" class="primary"></rect>
+                <rect width="7" height="3" x="9" y="17" class="primary"></rect>
+                <rect width="7" height="3" x="17" y="17" class="primary"></rect>
+                <rect width="24" height="1" x="1" y="22" class="secondary"></rect>
+              </svg>
+            </a>
+            <a @click="togglePageView()" class="view-page-single" :class="{ 'active' : page_view == 'single'}">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                <rect width="20" height="12" x="2" y="10" class="primary"></rect>
+                <path class="secondary"
+                      d="M20 8H4c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2zm-2-4H6c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </a>
+          </div>
         </div>
 
         <div v-cloak v-if="is_fetching_data === false">
@@ -29,22 +56,93 @@
         <flash-message></flash-message>
       </div>
 
-      <div class="content-body">
-        <div class="w-full flex items-start">
 
-          <div class="relative w-auto">
+      <div class="content-body w-full">
+
+        <div v-show="page_view == 'single'">
+
+          <p class="text-center mb-2">Showing row {{ row_pointer + 1 }} of {{ this.tabledata.length }}</p>
+
+          <div class="single-row-view" v-if="tabledata.length > 0">
+
+            <div class="single-view-sidebar">
+              <div v-show="column_for_list" class="h-full ">
+                <h3 class="mr-8 bg-dark-400 px-3 py-1">
+                  {{ columns[column_for_list].Field }}
+                </h3>
+                <div class="single-view-sidebar-scrollable mr-5 ">
+                  <a v-for="(row, row_index) in tabledata"
+                     class="block bg-light-100 border-b border-light-300 px-3 py-1 mr-1"
+                     @click="row_pointer = row_index">
+                  <span v-if="row[columns[column_for_list].Field] === null"
+                        class="null-value"><i>NULL</i></span>
+                    <span v-else class="">{{ row[columns[column_for_list].Field] }}</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div @mouseenter="addScrollingEvent()" @mouseleave="removeScrollingEvent()">
+              <div class="flex w-full mb-4">
+
+                <div class="pr-4" v-for="(columns_part, indexab) in columns_split"
+                     :class="[ (columns_split.length == 1) ? 'w-full' : ((columns_split.length == 2) ? 'w-1/2' : 'w-1/3') ]">
+
+                  <div class="column-row" v-for="(column, index) in columns_part"
+                       :class="[ (columns_split.length == 1) ? 'one-column' : ((columns_split.length == 2) ? 'two-columns' : 'three-columns') ]">
+
+                    <div class=" header bg-dark-400 pl-3"
+                         style="padding-top: 2px; padding-bottom: 2px;">
+                      <div class="text-gray-300 mr-6">
+                        <a @click="column_for_list = (indexab * columns_part.length) + index  ">
+                          {{ column.Field }}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div class="data bg-light-100 border-b border-light-300 pr-3 py-1 text-right"
+                         style="padding-top: 2px; padding-bottom: 2px;">
+                      <div class=" ml-6 overflow-hidden data-value">
+                          <span v-if="tabledata[row_pointer][column.Field] === null"
+                                class="null-value"><i>NULL</i></span>
+                        <span v-else class="">{{ tabledata[row_pointer][column.Field] }}</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex" v-if="showLoadMoreDataButtons()">
+                <button class="btn mr-3" @click="loadMoreRows()">Load 50 more rows</button>
+                <button class="btn mr-3" @click="loadAllRows()">
+                  Load all rows ({{ total_amount_rows }})
+                </button>
+                <spinner v-if="is_fetching_data === true"></spinner>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div v-show="page_view == 'multi'" class="flex">
+
+          <div class="relative w-full">
 
             <div v-cloak v-if="is_fetching_data === false && tabledata.length == 0">
               <p class="bg-light-100 text-gray-400 px-2 py-2 inline-block">No rows found</p>
             </div>
 
-            <table cellspacing="0" class="table-data" v-if="tabledata.length > 1" ref="datatable"
+            <table cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
                    @keydown.right.prevent="focusCellNext($event, 1)"
                    @keydown.left.prevent="focusCellPrevious($event, 1)"
                    @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
                    @keydown.shift.right.prevent="focusCellNext($event,5)"
                    @keydown.shift.left.prevent="focusCellPrevious($event,5)"
-                   @keydown.shift.up.prevent="focusRowUp($event,5)" @keydown.shift.down.prevent="focusRowDown($event,5)"
+                   @keydown.shift.up.prevent="focusRowUp($event,5)"
+                   @keydown.shift.down.prevent="focusRowDown($event,5)"
                    @keydown.esc="unfocusDatatable()"
                    @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
                    @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
@@ -107,72 +205,20 @@
               </tbody>
             </table>
 
-            <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
-                 v-if="tabledata.length > 1 && selected_rows.length > 0">
+            <br>
 
-              <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
-
-                <div class="font-bold mr-6">
-                  {{ selected_rows.length }} rows
-                </div>
-
-                <a class="rows-action" v-if="selected_rows.length == 1" @click="editRowFromTable()">
-                  <span>Edit</span>
-                </a>
-
-                <a class="rows-action" href="">
-                  <span>Duplicate</span>
-                </a>
-
-                <a class="rows-action" @click="confirmDeleteRows()">
-                  <span>Delete</span>
-                </a>
-
-                <a class="rows-action" href="">
-                  <span>Export</span>
-                </a>
-
-              </div>
+            <div class="flex" v-if="showLoadMoreDataButtons()">
+              <button class="btn mr-3" @click="loadMoreRows()">Load 50 more rows</button>
+              <button class="btn mr-3" @click="loadAllRows()">
+                Load all rows ({{ total_amount_rows }})
+              </button>
+              <spinner v-if="is_fetching_data === true"></spinner>
             </div>
 
           </div>
 
         </div>
 
-        <div class="flex w-full border border-light-100 p-2" v-if="tabledata.length == 1">
-          <div class="w-1/2 px-2" v-for="columns_half in columns_halved">
-
-            <div class="row-data-field w-full" v-for="column in columns_half">
-
-              <div class=" header bg-dark-400 flex items-center w-2/5 pl-3 flex-shrink-0"
-                   style="padding-top: 2px; padding-bottom: 2px;">
-                <div class="text-gray-300 mr-6">{{ column.Field }}</div>
-
-              </div>
-
-              <div
-                class="data bg-light-100 border-b border-light-300 flex-grow flex items-center pr-3 py-1 justify-end overflow-x-hidden"
-                style="padding-top: 2px; padding-bottom: 2px;">
-
-                <div class=" ml-6">
-                  <span v-if="tabledata[0][column.Field] === null" class="null-value"><i>NULL</i></span>
-                  <span v-else class=" truncate">{{ tabledata[0][column.Field] }}</span>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-        <br>
-
-        <div class="flex" v-if="showLoadMoreDataButtons()">
-          <button class="btn mr-3" @click="loadMoreRows()">Load 50 more rows</button>
-          <button class="btn mr-3" @click="loadAllRows()">
-            Load all rows ({{ total_amount_rows }})
-          </button>
-          <spinner v-if="is_fetching_data === true"></spinner>
-        </div>
       </div>
 
       <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
@@ -208,6 +254,7 @@
     props: ['tableid', 'column', 'comparetype', 'value'],
     data() {
       return {
+        page_view: 'multi',
         tabledata: [],
         columns: [],
         total_amount_rows: 0,
@@ -227,6 +274,8 @@
         is_fetching_data: false, // true when fetching data through ajax
         meta_box_open: false,
         initial_loading: true,
+        row_pointer: 0,
+        column_for_list: 0,
       }
     },
 
@@ -245,22 +294,40 @@
       ConfirmModalMixin
     ],
 
+    created() {
+      document.addEventListener('keydown', this.triggerKeyDown);
+    },
+
+    destroyed() {
+      document.removeEventListener("keydown", this.triggerKeyDown);
+    },
+
     mounted() {
       // @todo: make this configurable
-      if(this.primary_key !== false) {
-        this.order_by = this.primary_key;
+      if (this.primary_key !== false) {
+        this.order_by        = this.primary_key;
         this.order_direction = 'desc';
       }
       this.getTableData();
     },
 
     computed: {
-      columns_halved: function () {
+      columns_split: function () {
         if (this.columns.length == 0) return [];
-        let halfwayThrough  = Math.floor(this.columns.length / 2)
-        let arrayFirstHalf  = this.columns.slice(0, halfwayThrough);
-        let arraySecondHalf = this.columns.slice(halfwayThrough, this.columns.length);
-        return [arrayFirstHalf, arraySecondHalf];
+        if (this.columns.length <= 20) return [this.columns];
+
+        if (this.columns.length < 40) {
+          let halfwayThrough  = Math.round(this.columns.length / 2)
+          let arrayFirstHalf  = this.columns.slice(0, halfwayThrough);
+          let arraySecondHalf = this.columns.slice(halfwayThrough, this.columns.length);
+          return [arrayFirstHalf, arraySecondHalf];
+        }
+
+        let split_by_3   = Math.round(this.columns.length / 3);
+        let array_1_3   = this.columns.slice(0, split_by_3);
+        let array_2_3  = this.columns.slice(split_by_3, split_by_3 + split_by_3);
+        let array_3_3 = this.columns.slice(split_by_3 + split_by_3, this.columns.length);
+        return [array_1_3, array_2_3, array_3_3];
       },
 
       active_database() {
@@ -330,7 +397,7 @@
           this.columns           = response.data.columns;
           this.total_amount_rows = response.data.amount_rows;
           this.initial_loading   = false;
-          this.is_fetching_data = false;
+          this.is_fetching_data  = false;
           this.$nextTick().then(function () {
             // DOM updated
             if (vue_instance.column && vue_instance.tabledata.length > 0) {
@@ -340,12 +407,11 @@
             // set focus on first cell, for cell navigation with keyboard
             if (vue_instance.tabledata.length > 0) {
               let cell_nr = 1;
-              if (vue_instance.gotocolumn) {
+              if (vue_instance.column) {
                 let obj = vue_instance.columns.find(column_object => column_object.Field.toLowerCase() == vue_instance.column.toLowerCase());
                 cell_nr = vue_instance.columns.indexOf(obj) + 1; // set the focus on the same column as the column highlight
+                vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[cell_nr].focus();
               }
-
-              vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[cell_nr].focus();
             }
           });
 
@@ -604,6 +670,41 @@
         })
       },
 
+      handleScroll(event) {
+        if (event.deltaY < 0) {
+          this.rowPointerDown()
+        } else {
+          this.rowPointerUp()
+        }
+      },
+
+      triggerKeyDown: function (evt) {
+        if (evt.key === 'v') {
+          this.togglePageView();
+        }
+      },
+
+      rowPointerUp() {
+        this.row_pointer += 1;
+      },
+
+      rowPointerDown() {
+        this.row_pointer -= 1;
+      },
+
+      addScrollingEvent() {
+        document.addEventListener("wheel", this.handleScroll);
+      },
+
+      removeScrollingEvent() {
+        document.removeEventListener("wheel", this.handleScroll);
+      },
+
+      togglePageView() {
+        this.page_view = (this.page_view == 'single') ? 'multi' : 'single';
+      }
+
+
     },
 
   }
@@ -623,5 +724,87 @@
   .row-data-field:hover .header {
     @apply bg-dark-600;
   }
+
+  /** SINGLE PAGE VIEW **/
+  div.column-row {
+    display: grid;
+  }
+
+  div.column-row.one-column {
+    grid-template-columns: auto minmax(50px, 70%);
+    width:                 auto;
+  }
+
+  div.column-row.two-columns {
+    grid-template-columns: auto minmax(50px, 50%);
+    min-width:             70%;
+  }
+
+  div.column-row.three-columns {
+    grid-template-columns: auto minmax(50px, 50%);
+  }
+
+  div.column-row .data {
+    word-break: break-word;
+  }
+
+  .data-value {
+    @apply truncate;
+  }
+
+  .data-value:hover {
+    overflow:      visible;
+    text-overflow: unset;
+    white-space:   normal;
+  }
+
+  .single-row-view {
+    display:               grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: minmax(250px, 650px) 1fr;
+  }
+
+  .single-view-sidebar-scrollable {
+    overflow: auto;
+    height:   100%;
+  }
+
+  .single-view-sidebar-scrollable::-webkit-scrollbar {
+    width:  7px;
+    height: 7px;
+  }
+
+  .single-view-sidebar-scrollable {
+    scrollbar-width: 7px;
+    scrollbar-color: var(--thumbBG) var(transparent);
+  }
+
+  .single-view-sidebar-scrollable::-webkit-scrollbar-track {
+    background: var(transparent);
+  }
+
+  .single-view-sidebar-scrollable::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border-radius:    5px;
+    border:           3px solid var(transparent);
+  }
+
+  .view-page-multi.active .primary,
+  .view-page-single.active .primary,
+  .view-page-multi.active .secondary,
+  .view-page-single.active .secondary {
+    @apply text-highlight-400;
+  }
+
+  .view-page-multi .primary,
+  .view-page-single .primary {
+    @apply text-light-200;
+  }
+
+  .view-page-multi .secondary,
+  .view-page-single .secondary {
+    @apply text-light-300;
+  }
+
 
 </style>

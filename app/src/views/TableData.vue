@@ -1,7 +1,5 @@
 <template>
-  <div class="page-content-container">
     <TableData :tableid="tableid" :column="column" :comparetype="comparetype" :value="value" />
-  </div>
 </template>
 
 <script>
