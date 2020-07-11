@@ -205,6 +205,34 @@
               </tbody>
             </table>
 
+            <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
+                 v-if="tabledata.length > 1 && selected_rows.length > 0">
+
+              <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
+
+                <div class="font-bold mr-6">
+                  {{ selected_rows.length }} rows
+                </div>
+
+                <a class="rows-action" v-if="selected_rows.length == 1" @click="editRowFromTable()">
+                  <span>Edit</span>
+                </a>
+
+                <a class="rows-action" href="">
+                  <span>Duplicate</span>
+                </a>
+
+                <a class="rows-action" @click="confirmDeleteRows()">
+                  <span>Delete</span>
+                </a>
+
+                <a class="rows-action" href="">
+                  <span>Export</span>
+                </a>
+
+              </div>
+            </div>
+
             <br>
 
             <div class="flex" v-if="showLoadMoreDataButtons()">
