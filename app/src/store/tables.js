@@ -53,14 +53,19 @@ export default {
       state.tables    = [];
     },
     [FETCHING_TABLES_SUCCESS](state, tables) {
-      state.isLoading = false;
       state.error     = null;
       state.tables    = tables;
+      // set a very small timeout, to let vuejs load the data before displaying (else this will briefly show "0 tables")
+      setTimeout(function () {
+        state.isLoading = false;
+      }, 100);
     },
     [FETCHING_TABLES_ERROR](state, error) {
-      state.isLoading = false;
       state.error     = error;
       state.tables    = [];
+      setTimeout(function () {
+        state.isLoading = false;
+      }, 100);
     },
     [FETCHING_TABLES_WITH_COLUMNS](state) {
       state.isLoading           = true;
@@ -68,17 +73,21 @@ export default {
       state.tables_with_columns = [];
     },
     [FETCHING_TABLES_WITH_COLUMNS_SUCCESS](state, tables_with_columns) {
-      state.isLoading           = false;
       state.error               = null;
       state.tables_with_columns = tables_with_columns;
+      setTimeout(function () {
+        state.isLoading = false;
+      }, 100);
     },
     [FETCHING_TABLES_WITH_PRIMARY_KEYS](state, tables_with_primary_keys) {
       state.tables_with_primary_keys = tables_with_primary_keys;
     },
     [FETCHING_TABLES_WITH_COLUMNS_ERROR](state, error) {
-      state.isLoading           = false;
       state.error               = error;
       state.tables_with_columns = [];
+      setTimeout(function () {
+        state.isLoading = false;
+      }, 100);
     }
   },
   actions: {
