@@ -50,6 +50,10 @@ a:hover {
   display: none;
 }
 
+:focus {
+  @apply outline-none; /** remove Chrome black focus border **/
+}
+
 /*********************
  * BUTTONS
  *********************/
