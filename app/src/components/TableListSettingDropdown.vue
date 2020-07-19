@@ -29,7 +29,7 @@
       >
         <div class="w-auto bg-dark-500 text-gray-200 rounded-lg shadow-lg">
           <div class="w-64 py-1">
-            <a class="block px-6 py-3 leading-tight">Create new table</a>
+            <a class="block px-6 py-3 leading-tight" @click="goToCreateTable">Create new table</a>
             <a class="block px-6 py-3 leading-tight" @click="$emit('toggleTablesWithoutRows'), isOpen=false">
               <span v-if="only_show_tables_with_rows">Show</span>
               <span v-else>Hide</span>
@@ -60,6 +60,13 @@
     data() {
       return {
         isOpen: false
+      }
+    },
+
+    methods: {
+      goToCreateTable() {
+        this.$router.push({name: 'addtable'});
+        this.isOpen = false;
       }
     }
   }
