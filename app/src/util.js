@@ -47,3 +47,8 @@ export function uuidv4() {
     .map(([index, int]) => [4, 6, 8, 10].includes(index) ? `-${hex[int]}` : hex[int])
     .join('');
 }
+
+
+export function clone(variable) {
+  return JSON.parse(JSON.stringify(variable));
+}
