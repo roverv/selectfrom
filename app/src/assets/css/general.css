@@ -76,6 +76,10 @@ a:hover {
   top: 2px;
 }
 
+.btn.icon {
+  @apply px-0 py-0;
+}
+
 /*********************
  * MESSAGE BOXES
  *********************/

@@ -4,6 +4,9 @@
 .custom-checkbox .input-box {
   @apply bg-light-100 border border-light-200 w-4 h-4 inline-block relative mr-2;
 }
+.custom-checkbox:focus .input-box {
+  @apply border-light-500;
+}
 .custom-checkbox .input-box:after {
   @apply border-white absolute bg-transparent;
   content: '';
@@ -27,4 +30,19 @@
 
 input[type="text"].default-text-input {
   @apply bg-light-100 border border-light-200 py-1;
+}
+input[type="text"].default-text-input:focus {
+  @apply border-light-500;
+}
+
+select.default-select {
+  @apply bg-light-100 border border-light-200 py-1;
+}
+
+select.default-select:focus {
+  @apply border-light-500;
+}
+
+select.default-select option, select.default-select optgroup {
+  @apply bg-dark-400 text-white border-none;
 }
