@@ -32,7 +32,7 @@
               </span>
             </div>
 
-            <input type="text" v-model="row_data[column.Field]" @input="cellTextChanged($event, column.Field)" class="default-text-input pl-4 flex-grow"
+            <input type="text" v-model="row_data[column.Field]" @input="cellTextChanged($event, column.Field)" class="default-text-input flex-grow"
                    v-on:keyup.esc="focusToApp">
 
             <div v-if="column.Null === 'YES'" class=" pl-2 flex items-center w-16">

@@ -29,14 +29,14 @@
 
 
 input[type="text"].default-text-input {
-  @apply bg-light-100 border border-light-200 py-1;
+  @apply bg-light-100 border border-light-200 py-1 px-3;
 }
 input[type="text"].default-text-input:focus {
   @apply border-light-500;
 }
 
 select.default-select {
-  @apply bg-light-100 border border-light-200 py-1;
+  @apply bg-light-100 border border-light-200 py-1 px-2;
 }
 
 select.default-select:focus {
