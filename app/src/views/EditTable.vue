@@ -3,7 +3,7 @@
 
     <div class="edit-table-container">
 
-      <div class="table-page-header" v-if="$route.name != 'addtable'">
+      <div class="table-page-header" v-if="page_is_edit">
         <h2>
           {{ tableid }}
         </h2>
@@ -12,7 +12,7 @@
       </div>
 
       <h1 class="text-xl mb-4">
-        <span v-if="$route.name == 'addtable'">Create new table</span>
+        <span v-if="page_is_create">Create new table</span>
         <span v-else>Edit table</span>
       </h1>
 
@@ -170,10 +170,8 @@
                 </svg>
               </button>
               <a @click="removeColumn(index)" class="btn icon ml-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current"
-                     style="transform: rotate(45deg);">
-                  <path class="text-light-300" fill-rule="evenodd"
-                        d="M17 11a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H7a1 1 0 0 1 0-2h4V7a1 1 0 0 1 2 0v4h4z"></path>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                  <rect width="12" height="2" x="6" y="11" class="text-light-300" rx="1"></rect>
                 </svg>
               </a>
             </div>
@@ -243,10 +241,6 @@
 
     mounted() {
       this.getTableCreationData();
-      // if(this.$route.name == 'editrow') {
-      //   this.getRowData();
-      // }
-
     },
 
     computed: {
@@ -256,6 +250,12 @@
       api_endpoint() {
         return this.$store.state.apiEndPoint;
       },
+      page_is_create() {
+        return (this.$route.name == 'addtable');
+      },
+      page_is_edit() {
+        return (this.$route.name == 'edittable');
+      }
     },
 
     filters: {
@@ -267,13 +267,28 @@
     methods: {
 
       getTableCreationData() {
-        let api_url = this.api_endpoint + this.endpoint_table_creation_data;
+        let api_url = this.api_endpoint + this.endpoint_table_creation_data + this.active_database;
+        if (this.page_is_edit) {
+          api_url += '&tablename=' + this.tableid;
+        }
 
         axios.get(api_url).then(response => {
           this.collations           = response.data.collations;
           this.engines              = response.data.engines;
           this.data_types           = response.data.data_types;
           this.data_type_attributes = response.data.data_type_attributes;
+          if (this.page_is_edit) {
+            this.table_name                      = response.data.table_data.status.name;
+            this.engine                          = response.data.table_data.status.engine;
+            this.collation                       = response.data.table_data.status.collation;
+            this.comment                         = response.data.table_data.status.comment;
+            this.auto_increment_column_row_index = false;
+            if (response.data.table_data.hasOwnProperty('auto_increment_field')) {
+              this.auto_increment_column_row_index = response.data.table_data.auto_increment_field;
+            }
+            this.auto_increment_column_row_index = (response.data.table_data.hasOwnProperty('auto_increment_field'));
+            this.column_rows                     = response.data.table_data.columns;
+          }
         }).catch(error => {
           this.handleApiError(error);
         })
@@ -339,7 +354,7 @@
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
             this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
             this.$store.dispatch('refreshTables');
-            vue_instance.$router.push({name: 'table', params: {tableid: vue_instance.table_name }});
+            vue_instance.$router.push({name: 'table', params: {tableid: vue_instance.table_name}});
           }
           scroll(0, 0);
         }).catch(error => {

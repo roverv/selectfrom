@@ -88,6 +88,15 @@ const router = new Router({
       }
     },
     {
+      path: '/edittable/:tableid',
+      name: 'edittable',
+      component: () => import(/* webpackChunkName: "editrow" */ './views/EditTable.vue'),
+      props: true,
+      meta: {
+        requiresActiveDatabase: true
+      }
+    },
+    {
       path: '/query',
       name: 'query',
       component: () => import(/* webpackChunkName: "query" */ './views/Query.vue'),
