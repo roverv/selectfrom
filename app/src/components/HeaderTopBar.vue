@@ -24,11 +24,11 @@
         </router-link>
 
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mt-1 mx-1 fill-current text-gray-400"
-             style="transform: rotate(90deg);" v-if="page_is_table">
+             style="transform: rotate(90deg);">
           <path
             d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
         </svg>
-        <router-link :to="{ name: 'table', params: {tableid: this.$route.params.tableid }}" class="mx-2" v-if="page_is_table">
+        <router-link :to="{ name: 'table', params: {tableid: this.$route.params.tableid }}" class="mx-2">
           {{ $route.params.tableid }}
         </router-link>
       </div>

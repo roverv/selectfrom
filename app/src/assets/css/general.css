@@ -75,6 +75,9 @@ a:hover {
 .btn:active {
   top: 2px;
 }
+.btn:focus {
+  @apply border-light-300;
+}
 
 .btn.icon {
   @apply px-0 py-0;

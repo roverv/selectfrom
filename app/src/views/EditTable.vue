@@ -20,7 +20,7 @@
         {{ query_result.message }}
       </div>
 
-      <form method="post" @submit.prevent="saveRow()" autocomplete="off">
+      <form method="post" autocomplete="off">
 
         <div class="mb-8">
           <div class="flex w-full mb-1">
@@ -29,7 +29,7 @@
               <div>Table name</div>
             </div>
 
-            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp">
+            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="table_name">
           </div>
 
           <div class="flex w-full mb-1">
@@ -38,7 +38,7 @@
               <div>Engine</div>
             </div>
 
-            <select class="default-select w-64">
+            <select class="default-select w-64" v-model="engine">
               <option value=""></option>
               <option v-for="engine in engines">
                 {{ engine }}
@@ -52,7 +52,7 @@
               <div>Collation</div>
             </div>
 
-            <select name="Collation" class="default-select w-64">
+            <select name="Collation" class="default-select w-64" v-model="collation">
               <option value=""></option>
 
               <optgroup v-for="(collation_group, charset) in collations" :label="charset">
@@ -69,7 +69,7 @@
               <div>Comment</div>
             </div>
 
-            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp">
+            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="comment">
           </div>
 
         </div>
@@ -111,14 +111,16 @@
             </div>
 
             <div class="columns-table-cell">
-              <select class="default-select w-32" v-model="column_row.attribute" v-if="columnIsNumeric(column_row.type)">
+              <select class="default-select w-32" v-model="column_row.attribute"
+                      v-if="columnIsNumeric(column_row.type)">
                 <option></option>
                 <option selected="">unsigned</option>
                 <option>zerofill</option>
                 <option>unsigned zerofill</option>
               </select>
 
-              <select class="default-select w-48" v-model="column_row.attribute" v-if="columnHasCollation(column_row.type)">
+              <select class="default-select w-48" v-model="column_row.attribute"
+                      v-if="columnHasCollation(column_row.type)">
                 <option value=""></option>
 
                 <optgroup v-for="(collation_group, charset) in collations" :label="charset">
@@ -130,21 +132,23 @@
             </div>
 
             <div class="columns-table-cell justify-center">
-              <label class="custom-checkbox">
+              <label class="custom-checkbox no-label">
                 <input type="checkbox" value="1" class="opacity-0" autocomplete="off" v-model="column_row.null">
                 <span class="input-box"></span>
               </label>
             </div>
 
             <div class="columns-table-cell justify-center">
-              <label class="custom-checkbox">
-                <input type="checkbox" value="1" class="opacity-0" autocomplete="off" v-model="column_row.auto_increment">
+              <label class="custom-checkbox no-label">
+                <input type="checkbox" :value="index" autocomplete="off" :true-value="index"
+                       :false-value="!index"
+                       v-model="auto_increment_column_row_index">
                 <span class="input-box"></span>
               </label>
             </div>
 
             <div class="columns-table-cell">
-              <label class="custom-checkbox">
+              <label class="custom-checkbox no-label mr-2">
                 <input type="checkbox" value="1" class="opacity-0" autocomplete="off"
                        v-model="column_row.has_default_value">
                 <span class="input-box"></span>
@@ -159,12 +163,12 @@
             </div>
 
             <div class="flex items-start pt-1">
-              <a @click="addColumn(index)" class="btn icon ml-2">
+              <button @click="addColumn(index)" class="btn icon ml-2" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                   <path class="text-light-300" fill-rule="evenodd"
                         d="M17 11a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H7a1 1 0 0 1 0-2h4V7a1 1 0 0 1 2 0v4h4z"></path>
                 </svg>
-              </a>
+              </button>
               <a @click="removeColumn(index)" class="btn icon ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current"
                      style="transform: rotate(45deg);">
@@ -182,7 +186,7 @@
       </form>
 
       <div class="flex justify-center">
-        <button class="btn" @click="saveRow()">Save</button>
+        <button class="btn" @click="saveTable()">Save</button>
       </div>
 
     </div>
@@ -203,7 +207,6 @@
     length: '',
     attribute: '',
     null: false,
-    auto_increment: false,
     has_default_value: false,
     default_value: '',
     comment: '',
@@ -220,6 +223,11 @@
         engines: [],
         data_types: [],
         data_type_attributes: [],
+        table_name: '',
+        auto_increment_column_row_index: false,
+        engine: '',
+        collation: '',
+        comment: '',
         query_result: {},
         column_rows: [clone(default_column_row)],
       }
@@ -262,10 +270,10 @@
         let api_url = this.api_endpoint + this.endpoint_table_creation_data;
 
         axios.get(api_url).then(response => {
-          this.collations = response.data.collations;
-          this.engines    = response.data.engines;
-          this.data_types    = response.data.data_types;
-          this.data_type_attributes    = response.data.data_type_attributes;
+          this.collations           = response.data.collations;
+          this.engines              = response.data.engines;
+          this.data_types           = response.data.data_types;
+          this.data_type_attributes = response.data.data_type_attributes;
         }).catch(error => {
           this.handleApiError(error);
         })
@@ -293,7 +301,51 @@
 
       columnHasCollation(column_data_type) {
         return this.data_type_attributes.hasOwnProperty(column_data_type) && this.data_type_attributes[column_data_type] == 'collation';
-      }
+      },
+
+      saveTable() {
+        let api_url = this.api_endpoint;
+        api_url += (this.$route.name == 'addtable') ? this.endpoint_create_table : this.endpoint_alter_table;
+        api_url += this.active_database;
+
+        let vue_instance = this;
+
+        let params = new URLSearchParams();
+        params.append('table_name', this.table_name);
+        params.append('engine', this.engine);
+        params.append('collation', this.collation);
+        params.append('comment', this.comment);
+
+        let auto_increment_field = 'false';
+        if (typeof this.auto_increment_column_row_index == 'number') {
+          auto_increment_field = this.column_rows[this.auto_increment_column_row_index]['name'];
+        }
+        params.append('auto_increment_field', auto_increment_field);
+        for (let column_index in this.column_rows) {
+          for (let column_field in this.column_rows[column_index]) {
+            params.append('columns[' + column_index + '][' + column_field + ']', this.column_rows[column_index][column_field]);
+          }
+        }
+
+        axios.post(api_url, params).then(response => {
+          vue_instance.query_result = response.data;
+          if (vue_instance.query_result.result == 'success' && this.$route.name == 'addtable') {
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table created.');
+            this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
+            this.$store.dispatch('refreshTables');
+            vue_instance.$router.push({name: 'table', params: {tableid: vue_instance.table_name}});
+          } else if (vue_instance.query_result.result == 'success') {
+            let message = 'Table updated';
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
+            this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
+            this.$store.dispatch('refreshTables');
+            vue_instance.$router.push({name: 'table', params: {tableid: vue_instance.table_name }});
+          }
+          scroll(0, 0);
+        }).catch(error => {
+          this.handleApiError(error);
+        })
+      },
 
     }
   }
