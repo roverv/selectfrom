@@ -2,67 +2,48 @@
 
     require_once '_header.php';
     require_once 'pdoDebug.php';
-
-    //    var_dump($_POST);
-    //    exit;
+    require_once 'db_functions.php';
+    require_once 'classes/TableStatus.php';
 
     $columns_with_values = $_POST;
 
     // @todo: moet ik de onderstaande values binden/escapen??
 
-    $query = "CREATE TABLE " . escape_mysql_identifier($_POST['table_name']) . " ( ";
+    $data_type_attributes = getDataTypeAttributes();
+    $table_status = TableStatus::createFromPost($_POST, $data_type_attributes);
+
+    $query = "CREATE TABLE " . escape_mysql_identifier($table_status->getName()) . " ( ";
 
     $column_counter = 1;
-    foreach ($_POST['columns'] as $column_index => $column) {
-        $query .= escape_mysql_identifier($column['name']) . ' ';
-        $query .= $column['type'];
-        $query .= (!empty($column['length'])) ? "(" . $column['length'] . ") " : " ";
+    foreach ($table_status->getColumns() as $column_index => $column) {
+        $query .= escape_mysql_identifier($column->getName()) . ' ';
 
-        if (!empty($column['attribute'])) {
-            if (in_array($column['attribute'], ['unsigned', 'zerofill', 'unsigned zerofill'])) {
-                $query .= strtoupper($column['attribute']) . " ";
-            } else {
-                $query .= "COLLATE " . $pdo->quote(strtoupper($column['attribute'])) . " ";
-            }
-        }
+        $query .= $column->asQueryWithoutName($pdo);
 
-        if (!empty($column['null']) && $column['null'] === 'true') {
-            $query .= "NULL ";
-        } else {
-            $query .= "NOT NULL ";
-        }
-
-        if (!empty($column['has_default_value']) && $column['has_default_value'] === 'true') {
-            $query .= "DEFAULT  " . $pdo->quote($column['default_value']) . " ";
-        }
-
-        if (!empty($column['comment'])) {
-            $query .= "COMMENT  " . $pdo->quote($column['comment']) . " ";
-        }
-
-        if (!empty($_POST['auto_increment_field']) && $_POST['auto_increment_field'] === $column['name']) {
-            $query .= "AUTO_INCREMENT PRIMARY KEY ";
-        }
-
-        if($column_counter < count($_POST['columns'])) {
+        if($column_counter < count($table_status->getColumns())) {
             $query .= ', ';
         }
 
         $column_counter++;
     }
 
+    $auto_increment_column = $table_status->getAutoIncrementColumn();
+    if($auto_increment_column) {
+        $query .= ", PRIMARY KEY (" . escape_mysql_identifier($auto_increment_column->getName()) . ") ";
+    }
+
     $query .= ") ";
 
-    if (!empty($_POST['engine'])) {
-        $query .= "ENGINE=" . $pdo->quote(strtoupper($_POST['engine'])) . " ";
+    if (!empty($table_status->getEngine())) {
+        $query .= "ENGINE=" . $pdo->quote(strtoupper($table_status->getEngine())) . " ";
     }
 
-    if (!empty($_POST['collation'])) {
-        $query .= "COLLATE " . $pdo->quote($_POST['collation']) . " ";
+    if (!empty($table_status->getCollation())) {
+        $query .= "COLLATE " . $pdo->quote($table_status->getCollation()) . " ";
     }
 
-    if (!empty($_POST['comment'])) {
-        $query .= "COMMENT=" . $pdo->quote($_POST['comment']) . " ";
+    if (!empty($table_status->getComment())) {
+        $query .= "COMMENT=" . $pdo->quote($table_status->getComment()) . " ";
     }
 
     $query.= ";";

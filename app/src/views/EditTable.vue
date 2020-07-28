@@ -91,6 +91,9 @@
 
           <template v-for="(column_row, index) in column_rows">
             <div class="columns-table-cell">
+              <div>
+              <input type="hidden" v-model="column_row.original_field_name">
+              </div>
               <input type="text" v-model="column_row.name" class="default-text-input w-48"
                      v-on:keyup.esc="focusToApp">
             </div>
@@ -216,6 +219,7 @@
     data() {
       return {
         endpoint_create_table: 'createtable.php?db=',
+        endpoint_alter_table: 'altertable.php?db=',
         endpoint_table_creation_data: 'table_creation_data.php?db=',
         collations: [],
         engines: [],
@@ -278,16 +282,21 @@
           this.data_types           = response.data.data_types;
           this.data_type_attributes = response.data.data_type_attributes;
           if (this.page_is_edit) {
-            this.table_name                      = response.data.table_data.status.name;
-            this.engine                          = response.data.table_data.status.engine;
-            this.collation                       = response.data.table_data.status.collation;
-            this.comment                         = response.data.table_data.status.comment;
+            this.table_name                      = response.data.table_data.name;
+            this.engine                          = response.data.table_data.engine;
+            this.collation                       = response.data.table_data.collation;
+            this.comment                         = response.data.table_data.comment;
             this.auto_increment_column_row_index = false;
-            if (response.data.table_data.hasOwnProperty('auto_increment_field')) {
-              this.auto_increment_column_row_index = response.data.table_data.auto_increment_field;
+            for(let column_index in response.data.table_data.columns) {
+              if(response.data.table_data.columns[column_index].hasOwnProperty('is_auto_increment') && response.data.table_data.columns[column_index].is_auto_increment === true) {
+                this.auto_increment_column_row_index = parseInt(column_index);
+              }
             }
-            this.auto_increment_column_row_index = (response.data.table_data.hasOwnProperty('auto_increment_field'));
             this.column_rows                     = response.data.table_data.columns;
+            this.column_rows.map(function (column_row) {
+              column_row.original_field_name = column_row.name;
+              return column_row;
+            });
           }
         }).catch(error => {
           this.handleApiError(error);
@@ -320,8 +329,11 @@
 
       saveTable() {
         let api_url = this.api_endpoint;
-        api_url += (this.$route.name == 'addtable') ? this.endpoint_create_table : this.endpoint_alter_table;
+        api_url += (this.page_is_create) ? this.endpoint_create_table : this.endpoint_alter_table;
         api_url += this.active_database;
+        if (this.page_is_edit) {
+          api_url += '&tablename=' + this.tableid;
+        }
 
         let vue_instance = this;
 
@@ -332,9 +344,10 @@
         params.append('comment', this.comment);
 
         let auto_increment_field = 'false';
-        if (typeof this.auto_increment_column_row_index == 'number') {
+        if (typeof parseInt(this.auto_increment_column_row_index) == 'number') {
           auto_increment_field = this.column_rows[this.auto_increment_column_row_index]['name'];
         }
+
         params.append('auto_increment_field', auto_increment_field);
         for (let column_index in this.column_rows) {
           for (let column_field in this.column_rows[column_index]) {
