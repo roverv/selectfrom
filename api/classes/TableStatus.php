@@ -8,6 +8,7 @@
         private $engine;
         private $collation;
         private $comment;
+        private $auto_increment_value;
         private $columns;
 
         private function __construct()
@@ -21,11 +22,12 @@
          */
         public static function createFromPost($post_data)
         {
-            $table_status            = new self;
-            $table_status->name      = $post_data['table_name'];
-            $table_status->engine    = $post_data['engine'];
-            $table_status->collation = $post_data['collation'];
-            $table_status->comment   = $post_data['comment'];
+            $table_status                       = new self;
+            $table_status->name                 = $post_data['table_name'];
+            $table_status->engine               = $post_data['engine'];
+            $table_status->collation            = $post_data['collation'];
+            $table_status->comment              = $post_data['comment'];
+            $table_status->auto_increment_value = (!empty($post_data['auto_increment_value'])) ? (int) $post_data['auto_increment_value'] : null;
 
             foreach ($post_data['columns'] as $column_index => $column) {
                 $is_auto_increment = false;
@@ -47,11 +49,12 @@
          */
         public static function createFromDatabase($table_status_data, $columns_data, $data_type_attributes)
         {
-            $table_status            = new self;
-            $table_status->name      = $table_status_data['Name'];
-            $table_status->engine    = $table_status_data['Engine'];
-            $table_status->collation = $table_status_data['Collation'];
-            $table_status->comment   = $table_status_data['Comment'];
+            $table_status                       = new self;
+            $table_status->name                 = $table_status_data['Name'];
+            $table_status->engine               = $table_status_data['Engine'];
+            $table_status->collation            = $table_status_data['Collation'];
+            $table_status->comment              = $table_status_data['Comment'];
+            $table_status->auto_increment_value = (!empty($table_status_data['Auto_increment'])) ? (int)$table_status_data['Auto_increment'] : null;
 
             foreach ($columns_data as $column_index => $column) {
                 $column_structure        = ColumnStructure::createFromDatabase($column_index, $column,
@@ -132,6 +135,14 @@
         public function getColumns()
         {
             return $this->columns;
+        }
+
+        /**
+         * @return null|int
+         */
+        public function getAutoIncrementValue()
+        {
+            return $this->auto_increment_value;
         }
 
     }

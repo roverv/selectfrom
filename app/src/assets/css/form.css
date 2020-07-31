@@ -42,6 +42,14 @@ input[type="text"].default-text-input:focus {
   @apply border-light-500;
 }
 
+
+input[type="number"].default-number-input {
+  @apply bg-light-100 border border-light-200 py-1 px-3;
+}
+input[type="number"].default-number-input:focus {
+  @apply border-light-500;
+}
+
 select.default-select {
   @apply bg-light-100 border border-light-200 py-1 px-2;
 }

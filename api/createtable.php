@@ -46,6 +46,10 @@
         $query .= "COMMENT=" . $pdo->quote($table_status->getComment()) . " ";
     }
 
+    if ($table_status->getAutoIncrementValue() !== null) {
+        $query .= "AUTO_INCREMENT=" . $table_status->getAutoIncrementValue() . " ";
+    }
+
     $query.= ";";
 
     $result_data          = [];

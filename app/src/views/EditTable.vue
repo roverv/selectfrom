@@ -72,12 +72,22 @@
             <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="comment">
           </div>
 
+          <div class="flex w-full mb-1">
+
+            <div class="bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2">
+              <div>Auto increment value</div>
+            </div>
+
+            <input type="number" step="1" class="default-number-input w-32" v-on:keyup.esc="focusToApp"
+                   v-model="auto_increment_value">
+          </div>
+
         </div>
 
         <h2 class="mb-3 text-lg">Columns</h2>
 
 
-        <div class="columns-table mb-8">
+        <div class="columns-table mb-8" :class="{ 'edit' : page_is_edit }">
           <span class="head">Name</span>
           <span class="head">Type</span>
           <span class="head">Length</span>
@@ -86,13 +96,14 @@
           <span class="head">Auto increment</span>
           <span class="head">Default value</span>
           <span class="head">Comment</span>
+          <span class="head" v-if="page_is_edit">Change position</span>
           <span class=""></span>
 
 
           <template v-for="(column_row, index) in column_rows">
             <div class="columns-table-cell">
               <div>
-              <input type="hidden" v-model="column_row.original_field_name">
+                <input type="hidden" v-model="column_row.original_field_name">
               </div>
               <input type="text" v-model="column_row.name" class="default-text-input w-48"
                      v-on:keyup.esc="focusToApp">
@@ -165,6 +176,17 @@
                      v-model="column_row.comment">
             </div>
 
+            <div class="columns-table-cell" v-if="page_is_edit">
+              <select class="default-select w-32" v-model="column_row.after_column"
+                      v-if="column_row.hasOwnProperty('original_field_name')">
+                <option></option>
+                <option v-for="(column_name_after) in getAvailableAfterColumns(column_row, index)"
+                        :value="column_name_after">
+                  {{ column_name_after }}
+                </option>
+              </select>
+            </div>
+
             <div class="flex items-start pt-1">
               <button @click="addColumn(index)" class="btn icon ml-2" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
@@ -230,6 +252,7 @@
         engine: '',
         collation: '',
         comment: '',
+        auto_increment_value: '',
         query_result: {},
         column_rows: [clone(default_column_row)],
       }
@@ -286,13 +309,14 @@
             this.engine                          = response.data.table_data.engine;
             this.collation                       = response.data.table_data.collation;
             this.comment                         = response.data.table_data.comment;
+            this.auto_increment_value            = response.data.table_data.auto_increment_value;
             this.auto_increment_column_row_index = false;
-            for(let column_index in response.data.table_data.columns) {
-              if(response.data.table_data.columns[column_index].hasOwnProperty('is_auto_increment') && response.data.table_data.columns[column_index].is_auto_increment === true) {
+            for (let column_index in response.data.table_data.columns) {
+              if (response.data.table_data.columns[column_index].hasOwnProperty('is_auto_increment') && response.data.table_data.columns[column_index].is_auto_increment === true) {
                 this.auto_increment_column_row_index = parseInt(column_index);
               }
             }
-            this.column_rows                     = response.data.table_data.columns;
+            this.column_rows = response.data.table_data.columns;
             this.column_rows.map(function (column_row) {
               column_row.original_field_name = column_row.name;
               return column_row;
@@ -309,6 +333,9 @@
 
       addColumn(from_index) {
         let new_column_row = clone(default_column_row);
+        if (this.page_is_edit) {
+          new_column_row.after_column = this.column_rows[from_index].name;
+        }
         this.column_rows.splice(from_index + 1, 0, new_column_row);
       },
 
@@ -342,6 +369,7 @@
         params.append('engine', this.engine);
         params.append('collation', this.collation);
         params.append('comment', this.comment);
+        params.append('auto_increment_value', this.auto_increment_value);
 
         let auto_increment_field = 'false';
         if (typeof parseInt(this.auto_increment_column_row_index) == 'number') {
@@ -375,6 +403,20 @@
         })
       },
 
+      getAvailableAfterColumns(current_column, index) {
+        // filter out new columns
+        let columns_after = this.column_rows.filter(column_row => column_row.hasOwnProperty('original_field_name'));
+        columns_after     = columns_after.map(column_row => column_row.name);
+        // filter out self
+        columns_after     = columns_after.filter(column_name => column_name != current_column.name);
+        // add first
+        if (index !== 0) {
+          columns_after.unshift('FIRST');
+        }
+
+        return columns_after;
+      }
+
     }
   }
 </script>
@@ -384,6 +426,10 @@
   .columns-table {
     display:               grid;
     grid-template-columns: repeat(9, auto);
+  }
+
+  .columns-table.edit {
+    grid-template-columns: repeat(10, auto);
   }
 
   .columns-table .head {

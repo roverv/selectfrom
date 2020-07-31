@@ -5,10 +5,6 @@
     require_once 'classes/TableStatus.php';
 
     // @todo: moet ik de onderstaande values binden/escapen??
-    // @todo: AFTER kolom toevoegen
-    // @todo: AFTER toepassen bij CHANGE/ADD
-    // @todo: AUTO INCREMENT waarde kolom toevoegen
-    // @todo: GOED TESTEN
 
     // get current table data
     $data_type_attributes = getDataTypeAttributes();
@@ -28,6 +24,10 @@
         }
         // name of column has changed
         if($column->getName() !== $column->getOriginalFieldName()) {
+            return true;
+        }
+        // position of column has changed
+        if(!empty($column->getAfterColumn())) {
             return true;
         }
 
@@ -97,6 +97,10 @@
 
     if ($original_table_status->getComment() != $new_table_status->getComment()) {
         $query .= "COMMENT=" . $pdo->quote($new_table_status->getComment()) . " ";
+    }
+
+    if ($original_table_status->getAutoIncrementValue() !== $new_table_status->getAutoIncrementValue()) {
+        $query .= "AUTO_INCREMENT=" . $new_table_status->getAutoIncrementValue() . " ";
     }
 
     if(substr($query, -2) == ', ') {

@@ -14,6 +14,7 @@
         private $default_value;
         private $comment;
         private $is_auto_increment;
+        private $after_column;
 
         private function __construct()
         {
@@ -85,6 +86,7 @@
             $column_structure->comment             = $column_data['comment'];
             $column_structure->is_auto_increment   = $is_auto_increment;
             $column_structure->original_field_name = (isset($column_data['original_field_name'])) ? $column_data['original_field_name'] : null;
+            $column_structure->after_column        = (isset($column_data['after_column']) && $column_data['after_column'] !== 'null') ? $column_data['after_column'] : null;
 
             return $column_structure;
         }
@@ -96,7 +98,8 @@
             return $vars;
         }
 
-        public function asQueryWithoutName($pdo) {
+        public function asQueryWithoutName($pdo)
+        {
             $structure_query = $this->type;
             $structure_query .= (!empty($this->length)) ? "(" . $this->length . ") " : " ";
 
@@ -124,6 +127,15 @@
 
             if ($this->is_auto_increment) {
                 $structure_query .= "AUTO_INCREMENT ";
+            }
+
+            if (!empty($this->after_column)) {
+                if(strtolower($this->after_column) == 'first') {
+                    $structure_query .= 'FIRST ';
+                }
+                else {
+                    $structure_query .= "AFTER " . escape_mysql_identifier($this->after_column) .  " ";
+                }
             }
 
             return $structure_query;
@@ -217,7 +229,13 @@
             return $this->is_auto_increment;
         }
 
-
+        /**
+         * @return mixed
+         */
+        public function getAfterColumn()
+        {
+            return $this->after_column;
+        }
 
 
     }
