@@ -467,6 +467,15 @@
       },
 
       toggleRowSidebar(row_index) {
+        if(this.sidebarisopen === true) {
+          let row_num_keys    = [];
+          for (var key in this.tabledata[row_index]) {
+            row_num_keys.push(this.tabledata[row_index][key]);
+          }
+          this.sidebar_row_data.push(row_num_keys);
+          return;
+        }
+
         let row_num_keys    = [];
         let column_num_keys = [];
         for (var key in this.tabledata[row_index]) {
@@ -474,7 +483,7 @@
           column_num_keys.push(key);
         }
         this.sidebar_row_index   = row_index;
-        this.sidebar_row_data    = row_num_keys;
+        this.sidebar_row_data    = [row_num_keys];
         this.sidebar_column_data = column_num_keys;
         this.sidebarisopen       = true;
       },

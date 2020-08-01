@@ -1,10 +1,10 @@
 <template>
   <div
     class="sidebar fixed right-0 top-0 bg-white h-screen z-50 bg-dark-600 p-4 pt-12 pb-8 flex flex-col border-l border-light-100 "
-    :class="{ 'hidden' : !sidebarisopen }"
-    style="width: 550px; box-shadow: -3px 0px 10px 0px rgba(0,0,0,0.2);">
+    :class="[{ 'hidden' : !sidebarisopen}, getSidebarWidthClass ]"
+    style="box-shadow: -3px 0px 10px 0px rgba(0,0,0,0.2);">
 
-    <a @click="$emit('closeRowSidebar')" class="absolute left-0 top-0 ml-2 mt-2">
+    <a @click="close()" class="absolute left-0 top-0 ml-2 mt-2">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 fill-current text-gray-600">
         <path class="secondary" fill-rule="evenodd"
               d="M15.78 14.36a1 1 0 0 1-1.42 1.42l-2.82-2.83-2.83 2.83a1 1 0 1 1-1.42-1.42l2.83-2.82L7.3 8.7a1 1 0 0 1 1.42-1.42l2.83 2.83 2.82-2.83a1 1 0 0 1 1.42 1.42l-2.83 2.83 2.83 2.82z" />
@@ -14,33 +14,36 @@
     <div class="flex items-center justify-between mb-4">
       <h2 class="font-semibold text-xl">Row</h2>
 
-      <a @click="toggleColumnOrder()" class="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 mr-2 fill-current">
-          <path class="text-gray-600"
-                d="M7 18.59V9a1 1 0 0 1 2 0v9.59l2.3-2.3a1 1 0 0 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42L7 18.6z"></path>
-          <path class="primary"
-                d="M17 5.41V15a1 1 0 1 1-2 0V5.41l-2.3 2.3a1 1 0 1 1-1.4-1.42l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.42L17 5.4z"></path>
-        </svg>
-        Sort&nbsp;
-        <span v-if="column_order == 'default'">alphabetical</span>
-        <span v-else>default</span>
-      </a>
+      <div class="text-right">
+        <a @click="toggleDifferences()" class="flex items-center" v-if="rowdata.length > 1">
+          <span v-if="only_show_differences == true">Show duplicate values</span>
+          <span v-else>Hide duplicate values</span>
+        </a>
+        <a @click="toggleColumnOrder()" class="flex items-center">
+          Sort&nbsp;
+          <span v-if="column_order == 'default'">alphabetical</span>
+          <span v-else>default</span>
+        </a>
+      </div>
+
     </div>
 
 
     <div class="row-data overflow-y-scroll overflow-x-hidden pl-2 -ml-2">
       <div>
 
-        <div class="flex w-full border-b border-gray-600" v-for="row in row_data">
-          <div class="w-1/2 px-1 py-1 relative">
-            {{ row.field }}
-            <div v-if="row.table" class="absolute right-0 top-0 text-xs text-light-200 mr-1">{{ row.table }}</div>
-          </div>
-          <div class="w-1/2 px-1 py-1 ">
-            <span v-if="row.data === null" class="null-value"><i>NULL</i></span>
-            <span v-else class="font-semibold">{{ row.data }}</span>
-          </div>
-        </div>
+        <table class="w-full">
+          <tr v-for="rows in rows_data">
+            <td class="px-1 py-1 relative border-b border-gray-600" valign="top" :class="{ 'pt-2' : rows.table }">
+              {{ rows.field }}
+              <div v-if="rows.table" class="absolute right-0 top-0 text-xs text-light-200 mr-1">{{ rows.table }}</div>
+            </td>
+            <td class="px-1 py-1 break-all border-b border-gray-600" v-for="row in rows.data" valign="top">
+              <span v-if="row === null" class="null-value"><i>NULL</i></span>
+              <span v-else class="font-semibold">{{ row }}</span>
+            </td>
+          </tr>
+        </table>
 
       </div>
     </div>
@@ -66,7 +69,8 @@
     props: ['sidebarisopen', 'rowdata', 'columndata', 'columntabledata', 'from'],
     data() {
       return {
-        'column_order': 'default',
+        column_order: 'default',
+        only_show_differences: false,
       }
     },
 
@@ -79,17 +83,27 @@
     },
 
     computed: {
-      row_data: function () {
+      rows_data: function () {
         let row_data_order = [];
         let vue_instance   = this;
         this.columndata.forEach(function (column, index) {
+          let row_data = {'field': column, 'data': []};
           if(typeof vue_instance.columntabledata !== "undefined") {
-            row_data_order.push({'field': column, 'data': vue_instance.rowdata[index], 'table': vue_instance.columntabledata[index]});
+            row_data.table = vue_instance.columntabledata[index];
           }
-          else {
-            row_data_order.push({'field': column, 'data': vue_instance.rowdata[index]});
-          }
+
+          vue_instance.rowdata.forEach(function (row) {
+            row_data.data.push(row[index]);
+          });
+
+          row_data_order.push(row_data);
         });
+
+        if(this.only_show_differences) {
+          row_data_order = row_data_order.filter(function(row_data) {
+            return !(row_data.data.every((row_value, key, array) => row_value === array[0]));
+          });
+        }
 
         if (this.column_order == 'alphabetical') {
           row_data_order.sort(function (a, b) {
@@ -100,13 +114,24 @@
         }
 
         return row_data_order;
+      },
+
+      getSidebarWidthClass: function() {
+        if(this.rowdata.length == 1) {
+          return 'width-1';
+        }
+        if(this.rowdata.length == 2) {
+          return 'width-2';
+        }
+
+        return 'width-3';
       }
     },
 
     methods: {
       triggerKeyDown: function (evt) {
         if (evt.key === 'Escape') {
-          this.$emit('closeRowSidebar')
+          this.close();
           evt.preventDefault();
         }
       },
@@ -117,6 +142,15 @@
         } else {
           this.column_order = 'default';
         }
+      },
+
+      toggleDifferences: function () {
+        this.only_show_differences = !this.only_show_differences;
+      },
+
+      close() {
+        this.only_show_differences = false; // reset
+        this.$emit('closeRowSidebar');
       }
 
     }
@@ -160,6 +194,18 @@
     background-color: var(--thumbBG);
     border-radius:    5px;
     border:           3px solid var(transparent);
+  }
+
+  .sidebar.width-1 {
+    width: 550px;
+  }
+
+  .sidebar.width-2 {
+    width: 700px;
+  }
+
+  .sidebar.width-3 {
+    width: 850px;
   }
 
 

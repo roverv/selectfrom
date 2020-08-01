@@ -232,14 +232,18 @@
       },
 
       toggleRowSidebar(query_result_index, row_index) {
-        // this.sidebar_row_data = this.tabledata[row_index];
+        if(this.sidebarisopen === true) {
+          this.sidebar_row_data.push(this.query_results[query_result_index].rows[row_index]);
+          return;
+        }
+
         let column_num_keys = [];
         let table_num_keys  = [];
         for (var key in this.query_results[query_result_index].columns_meta) {
           column_num_keys.push(this.query_results[query_result_index].columns_meta[key].name);
           table_num_keys.push(this.query_results[query_result_index].columns_meta[key].table);
         }
-        this.sidebar_row_data          = this.query_results[query_result_index].rows[row_index];
+        this.sidebar_row_data          = [this.query_results[query_result_index].rows[row_index]];
         this.sidebar_column_data       = column_num_keys;
         this.sidebar_column_table_data = table_num_keys;
         this.sidebarisopen             = true;
