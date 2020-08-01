@@ -72,10 +72,10 @@
 <style scoped>
 
 header {
-  @apply -mt-12;
+  @apply -mt-16 py-6;
 }
 header:hover {
-  @apply mt-0;
+  @apply mt-0 py-3;
   transition: all 0.4s ease;
 }
 
