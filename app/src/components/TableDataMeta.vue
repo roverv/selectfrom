@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 py-4 my-5" style="background: hsla(215, 27%, 90%, 0.08);">
+  <div class="px-4 py-4 my-5 bg-light-50">
     <div class="mb-6 flex items-center">
       <div class="inline-flex flex-col items-center mr-16">
         <div class="statistic-key text-normal text-gray-300 ">Rows</div>

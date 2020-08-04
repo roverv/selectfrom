@@ -27,9 +27,9 @@ module.exports = {
         "highlight-700": "var(--color-highlight-700)",
 
       },
-      // backgroundColor: {
-      //   focus: "var(--color-bg-focus)",
-      // }
+      backgroundColor: {
+        "light-50": "var(--color-light-50)",
+      }
     }
   },
   variants: {

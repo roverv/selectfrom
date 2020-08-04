@@ -104,11 +104,14 @@ a:hover {
   display:               grid;
   height:                100%;
   width:                 100%;
-  grid-template-areas:   'app-header app-header' 'app-sidebar app-body' '. app-body';
+  grid-template-areas:
+  'app-header app-header app-header'
+    'app-sidebar-navigation app-sidebar-tables app-body'
+    '. . app-body';
   grid-gap:              0px;
   grid-row-gap:          0;
-  grid-template-columns: auto 1fr;
-  grid-template-rows:    auto minmax(0, 1fr) auto;
+  grid-template-columns: auto auto 1fr; /* width */
+  grid-template-rows:    auto minmax(0, 1fr) auto; /* height */
 }
 
 .app-header {
@@ -116,8 +119,13 @@ a:hover {
   /*background-color: yellow;*/
 }
 
-.app-sidebar {
-  grid-area:        app-sidebar;
+.app-sidebar-navigation {
+  grid-area:        app-sidebar-navigation;
+  /*background-color: yellow;*/
+}
+
+.app-sidebar-tables {
+  grid-area:        app-sidebar-tables;
   /*background-color: green;*/
 }
 

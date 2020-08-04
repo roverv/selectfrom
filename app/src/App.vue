@@ -17,13 +17,15 @@
     <QueryHistory v-if="active_database && queryhistoryopen" :modalisopen="queryhistoryopen"
                   v-on:closequeryhistory="closeQueryHistory()" tabindex="0" @keydown.esc="queryhistoryopen = false" />
 
-
     <div class="app-header">
-      <HeaderTopBar v-on:SwitchTheme="SwitchTheme"></HeaderTopBar>
       <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
     </div>
 
-    <div class="app-sidebar py-5">
+    <div class="app-sidebar-navigation h-screen">
+      <HeaderTopBar v-on:SwitchTheme="SwitchTheme"></HeaderTopBar>
+    </div>
+
+    <div class="app-sidebar-tables py-5 h-screen">
       <TableListSidebar v-if="show_table_list_sidebar" />
     </div>
 

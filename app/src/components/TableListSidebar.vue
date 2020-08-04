@@ -3,20 +3,21 @@
 
     <div class="sidebar-fixed relative">
 
-      <div class="absolute z-50" :class="[tables_list_is_open ? 'right-0' : 'left-0 ml-1']">
-        <TableListSettingDropdown :isOpen="false" :only_show_tables_with_rows="only_show_tables_with_rows"
-                                  :tables_list_is_open="tables_list_is_open"
-                                  v-on:toggleTablesWithoutRows="toggleTablesWithoutRows()"
-                                  v-on:toggleTableList="toggleTableList()"></TableListSettingDropdown>
-      </div>
+      <div class="flex justify-between items-center">
+        <div  class="flex items-center mb-2">
 
-      <div v-if="tables_list_is_open">
+          <h2 class=" text-xl mr-3" v-if="tables_list_is_open">
+            <span class="text-light-300 text-lg">{{ tables_filtered.length }}</span>
+            Tables
+          </h2>
 
-        <h2 class="mb-2 text-xl">
-          <span class="text-gray-500 text-lg">{{ tables_filtered.length }}</span>
-          Tables
-        </h2>
+          <TableListSettingDropdown class="mt-1" :isOpen="false" :class="[tables_list_is_open ? '' : 'ml-2']"
+                                    :only_show_tables_with_rows="only_show_tables_with_rows"
+                                    :tables_list_is_open="tables_list_is_open"
+                                    v-on:toggleTablesWithoutRows="toggleTablesWithoutRows()"
+                                    v-on:toggleTableList="toggleTableList()"></TableListSettingDropdown>
 
+        </div>
       </div>
     </div>
 
@@ -147,7 +148,7 @@
     min-width: 200px;
   }
   .sidebar.closed {
-    @apply w-8;
+    @apply w-12;
   }
 
   .sidebar-fixed {
