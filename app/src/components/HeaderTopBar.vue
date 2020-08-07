@@ -5,7 +5,7 @@
       <h2 class="font-bold m-0 p-0">SAKOJA</h2>
     </div>
 
-    <div class="flex h-full flex-col flex-wrap py-3 px-5">
+    <div class="flex flex-col flex-wrap py-3 px-5">
 
       <div class="w-full">
 

@@ -113,13 +113,30 @@
                 </div>
               </div>
 
-              <div class="flex" v-if="showLoadMoreDataButtons()">
-                <button class="btn mr-3" @click="loadMoreRows()">Load 50 more rows</button>
-                <button class="btn mr-3" @click="loadAllRows()">
-                  Load all rows ({{ total_amount_rows }})
-                </button>
-                <spinner v-if="is_fetching_data === true"></spinner>
+              <div class="flex items-start justify-between pr-4">
+
+                <div class="inline-flex w-1/3">
+                  <div v-if="showLoadMoreDataButtons()">
+                    <button class="btn mr-3" @click="loadMoreRows()">Load 50 more rows</button>
+                    <button class="btn mr-3" @click="loadAllRows()">
+                      Load all rows ({{ total_amount_rows }})
+                    </button>
+                    <spinner v-if="is_fetching_data === true"></spinner>
+                  </div>
+                </div>
+
+                <div class="inline-flex items-center justify-center w-1/3">
+                  <a class="btn mx-1" @click="editRowFromSingleView()">
+                    <span>Edit</span>
+                  </a>
+                  <a class="btn mx-1" @click="confirmDeleteRowFromSingleView()">
+                    <span>Delete</span>
+                  </a>
+                </div>
+
+                <div class="w-1/3">&nbsp;</div>
               </div>
+
             </div>
 
           </div>
@@ -155,7 +172,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                       <circle cx="12" cy="12" r="10"></circle>
                       <path
-                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
+                          d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
                     </svg>
                   </label>
                 </th>
@@ -189,7 +206,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                       <circle cx="12" cy="12" r="10"></circle>
                       <path
-                        d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
+                          d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
                     </svg>
                   </label>
                 </td>
@@ -198,7 +215,8 @@
                     @click="$event.target.focus()" tabindex="1"
                     :class="{ ' sticky-first-row-cell' : (index == 0)}">
                   <span v-if="row[column_name.Field] == null" class="null-value"><i>NULL</i></span>
-                  <span v-else-if="shouldTruncateField(column_name.Type)" :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
+                  <span v-else-if="shouldTruncateField(column_name.Type)"
+                        :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
                   <span v-else>{{ row[column_name.Field] }}</span>
                 </td>
               </tr>
@@ -206,7 +224,7 @@
             </table>
 
             <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
-                 v-if="tabledata.length > 1 && selected_rows.length > 0">
+                 v-if="tabledata.length > 0 && selected_rows.length > 0">
 
               <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
 
@@ -266,145 +284,270 @@
 
 <script>
 
-  import axios from 'axios'
-  import TableNav from '@/components/TableNav.vue'
-  import TableDataMeta from '@/components/TableDataMeta.vue'
-  import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
-  import HandleApiError from '@/mixins/HandleApiError.js'
-  import RowSidebar from "./RowSidebar";
-  import FlashMessage from "./FlashMessage";
-  import Spinner from "./Spinner";
-  import ConfirmModal from "./ConfirmModal";
-  import ConfirmModalMixin from "../mixins/ConfirmModal";
+import axios from 'axios'
+import TableNav from '@/components/TableNav.vue'
+import TableDataMeta from '@/components/TableDataMeta.vue'
+import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
+import HandleApiError from '@/mixins/HandleApiError.js'
+import RowSidebar from "./RowSidebar";
+import FlashMessage from "./FlashMessage";
+import Spinner from "./Spinner";
+import ConfirmModal from "./ConfirmModal";
+import ConfirmModalMixin from "../mixins/ConfirmModal";
 
-  export default {
-    name: 'TableData',
-    props: ['tableid', 'column', 'comparetype', 'value'],
-    data() {
-      return {
-        page_view: 'multi',
-        tabledata: [],
-        columns: [],
-        total_amount_rows: 0,
-        offset_rows: 0,
-        api_error: '',
-        endpoint_table_data: 'tabledata.php?db=',
-        endpoint_delete_rows: 'delete_rows.php?db=',
-        endpoint_truncate_tables: 'truncate_tables.php?db=',
-        endpoint_drop_tables: 'drop_tables.php?db=',
-        order_by: '',
-        order_direction: '',
-        sidebarisopen: false,
-        sidebar_row_data: [],
-        sidebar_column_data: [],
-        sidebar_row_index: 0,
-        selected_rows: [],
-        is_fetching_data: false, // true when fetching data through ajax
-        meta_box_open: false,
-        initial_loading: true,
-        row_pointer: 0,
-        column_for_list: 0,
+export default {
+  name: 'TableData',
+  props: ['tableid', 'column', 'comparetype', 'value'],
+  data() {
+    return {
+      page_view: 'multi',
+      tabledata: [],
+      columns: [],
+      total_amount_rows: 0,
+      offset_rows: 0,
+      api_error: '',
+      endpoint_table_data: 'tabledata.php?db=',
+      endpoint_delete_rows: 'delete_rows.php?db=',
+      endpoint_truncate_tables: 'truncate_tables.php?db=',
+      endpoint_drop_tables: 'drop_tables.php?db=',
+      order_by: '',
+      order_direction: '',
+      sidebarisopen: false,
+      sidebar_row_data: [],
+      sidebar_column_data: [],
+      sidebar_row_index: 0,
+      selected_rows: [],
+      is_fetching_data: false, // true when fetching data through ajax
+      meta_box_open: false,
+      initial_loading: true,
+      row_pointer: 0,
+      column_for_list: 0,
+    }
+  },
+
+  components: {
+    Spinner,
+    FlashMessage,
+    RowSidebar,
+    TableNav,
+    TableDataMeta,
+    ConfirmModal,
+  },
+
+  mixins: [
+    TableKeyNavigation,
+    HandleApiError,
+    ConfirmModalMixin
+  ],
+
+  created() {
+    document.addEventListener('keydown', this.triggerKeyDown);
+  },
+
+  destroyed() {
+    document.removeEventListener("keydown", this.triggerKeyDown);
+  },
+
+  mounted() {
+    // @todo: make this configurable
+    if (this.primary_key !== false) {
+      this.order_by        = this.primary_key;
+      this.order_direction = 'desc';
+    }
+    this.getTableData();
+  },
+
+  computed: {
+    columns_split: function () {
+      if (this.columns.length == 0) return [];
+      if (this.columns.length <= 20) return [this.columns];
+
+      if (this.columns.length < 40) {
+        let halfwayThrough  = Math.round(this.columns.length / 2)
+        let arrayFirstHalf  = this.columns.slice(0, halfwayThrough);
+        let arraySecondHalf = this.columns.slice(halfwayThrough, this.columns.length);
+        return [arrayFirstHalf, arraySecondHalf];
+      }
+
+      let split_by_3 = Math.round(this.columns.length / 3);
+      let array_1_3  = this.columns.slice(0, split_by_3);
+      let array_2_3  = this.columns.slice(split_by_3, split_by_3 + split_by_3);
+      let array_3_3  = this.columns.slice(split_by_3 + split_by_3, this.columns.length);
+      return [array_1_3, array_2_3, array_3_3];
+    },
+
+    active_database() {
+      return this.$store.state.activeDatabase;
+    },
+
+    api_endpoint() {
+      return this.$store.state.apiEndPoint;
+    },
+
+    primary_key() {
+      return this.$store.getters["tables/primaryKeyOfTable"](this.tableid);
+    }
+  },
+
+  watch: {
+    // force update on route change
+    '$route.params': function () {
+      this.$nextTick();
+    }
+  },
+
+  filters: {
+    lowercase: function (string) {
+      return string.toLowerCase();
+    },
+
+    truncate: function (value, limit) {
+      if (!value) return value;
+      if (value.length > limit) {
+        value = value.replace(/(\r\n|\n|\r)/gm, ""); // remove line breaks
+        value = value.substring(0, limit) + '...';
+      }
+
+      return value
+    }
+  },
+
+  methods: {
+
+    shouldTruncateField(column_type) {
+      if (column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
+        return true;
+      }
+      return false;
+    },
+
+    getTableData() {
+
+      let api_url = this.api_endpoint;
+      if (this.tableid) {
+        api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
+      }
+      if (this.column && this.value && this.comparetype) {
+        api_url += '&column=' + this.column + '&comparetype=' + this.comparetype + '&value=' + this.value;
+      }
+      if (this.order_by && this.order_direction) {
+        api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
+      }
+
+      let vue_instance = this;
+
+      this.is_fetching_data = true;
+
+      axios.get(api_url).then(response => {
+        this.tabledata         = response.data.data;
+        this.columns           = response.data.columns;
+        this.total_amount_rows = response.data.amount_rows;
+        if (this.tabledata.length == 1) {
+          this.page_view = 'single';
+        }
+        this.initial_loading  = false;
+        this.is_fetching_data = false;
+        this.$nextTick().then(function () {
+          // DOM updated
+          if (vue_instance.column && vue_instance.tabledata.length > 0) {
+            vue_instance.gotocolumn(vue_instance.column);
+          }
+
+          // set focus on first cell, for cell navigation with keyboard
+          if (vue_instance.tabledata.length > 0) {
+            let cell_nr = 1;
+            if (vue_instance.column) {
+              let obj = vue_instance.columns.find(column_object => column_object.Field.toLowerCase() == vue_instance.column.toLowerCase());
+              cell_nr = vue_instance.columns.indexOf(obj) + 1; // set the focus on the same column as the column highlight
+              vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[cell_nr].focus();
+            }
+          }
+        });
+
+      }).catch(error => {
+        this.initial_loading = false;
+        this.handleApiError(error);
+      })
+    },
+
+    gotocolumn(field_id) {
+      var element = document.getElementById(field_id);
+      if (element) {
+        element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
       }
     },
 
-    components: {
-      Spinner,
-      FlashMessage,
-      RowSidebar,
-      TableNav,
-      TableDataMeta,
-      ConfirmModal,
-    },
-
-    mixins: [
-      TableKeyNavigation,
-      HandleApiError,
-      ConfirmModalMixin
-    ],
-
-    created() {
-      document.addEventListener('keydown', this.triggerKeyDown);
-    },
-
-    destroyed() {
-      document.removeEventListener("keydown", this.triggerKeyDown);
-    },
-
-    mounted() {
-      // @todo: make this configurable
-      if (this.primary_key !== false) {
-        this.order_by        = this.primary_key;
-        this.order_direction = 'desc';
-      }
+    orderByColumn(column) {
+      this.order_by        = column;
+      this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
       this.getTableData();
     },
 
-    computed: {
-      columns_split: function () {
-        if (this.columns.length == 0) return [];
-        if (this.columns.length <= 20) return [this.columns];
-
-        if (this.columns.length < 40) {
-          let halfwayThrough  = Math.round(this.columns.length / 2)
-          let arrayFirstHalf  = this.columns.slice(0, halfwayThrough);
-          let arraySecondHalf = this.columns.slice(halfwayThrough, this.columns.length);
-          return [arrayFirstHalf, arraySecondHalf];
-        }
-
-        let split_by_3   = Math.round(this.columns.length / 3);
-        let array_1_3   = this.columns.slice(0, split_by_3);
-        let array_2_3  = this.columns.slice(split_by_3, split_by_3 + split_by_3);
-        let array_3_3 = this.columns.slice(split_by_3 + split_by_3, this.columns.length);
-        return [array_1_3, array_2_3, array_3_3];
-      },
-
-      active_database() {
-        return this.$store.state.activeDatabase;
-      },
-
-      api_endpoint() {
-        return this.$store.state.apiEndPoint;
-      },
-
-      primary_key() {
-        return this.$store.getters["tables/primaryKeyOfTable"](this.tableid);
-      }
+    closeRowSidebar() {
+      this.sidebarisopen = false;
     },
 
-    watch: {
-      // force update on route change
-      '$route.params': function () {
-        this.$nextTick();
+    toggleRowSidebar(row_index) {
+      if (this.sidebarisopen === true) {
+        let row_num_keys = [];
+        for (var key in this.tabledata[row_index]) {
+          row_num_keys.push(this.tabledata[row_index][key]);
+        }
+        this.sidebar_row_data.push(row_num_keys);
+        return;
       }
+
+      let row_num_keys    = [];
+      let column_num_keys = [];
+      for (var key in this.tabledata[row_index]) {
+        row_num_keys.push(this.tabledata[row_index][key]);
+        column_num_keys.push(key);
+      }
+      this.sidebar_row_index   = row_index;
+      this.sidebar_row_data    = [row_num_keys];
+      this.sidebar_column_data = column_num_keys;
+      this.sidebarisopen       = true;
     },
 
-    filters: {
-      lowercase: function (string) {
-        return string.toLowerCase();
-      },
-
-      truncate: function (value, limit) {
-        if (!value) return value;
-        if (value.length > limit) {
-          value = value.replace(/(\r\n|\n|\r)/gm, ""); // remove line breaks
-          value = value.substring(0, limit) + '...';
-        }
-
-        return value
-      }
+    showLoadMoreDataButtons() {
+      return (this.tabledata.length > 1 && this.total_amount_rows > this.tabledata.length);
     },
 
-    methods: {
+    loadMoreRows() {
 
-      shouldTruncateField(column_type) {
-        if (column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
-          return true;
-        }
-        return false;
-      },
+      this.offset_rows += 1;
 
-      getTableData() {
+      let api_url = this.api_endpoint;
+      if (this.tableid) {
+        api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
+      }
+      if (this.column && this.value && this.comparetype) {
+        api_url += '&column=' + this.column + '&comparetype=' + this.comparetype + '&value=' + this.value;
+      }
+      if (this.order_by && this.order_direction) {
+        api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
+      }
+      if (this.offset_rows > 0) {
+        api_url += '&offset=' + this.offset_rows;
+      }
 
+      let vue_instance              = this;
+      vue_instance.is_fetching_data = true;
+      axios.get(api_url).then(response => {
+        let extended_tabledata        = this.tabledata.concat(response.data.data)
+        vue_instance.tabledata        = extended_tabledata;
+        vue_instance.is_fetching_data = false;
+      }).catch(error => {
+        this.handleApiError(error);
+      })
+    },
+
+    loadAllRows() {
+      let ask_confirm = true;
+      if (this.total_amount_rows > 1000) {
+        ask_confirm = confirm('Are you sure you want to load all rows?');
+      }
+      if (ask_confirm) {
         let api_url = this.api_endpoint;
         if (this.tableid) {
           api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
@@ -415,433 +558,346 @@
         if (this.order_by && this.order_direction) {
           api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
         }
+        api_url += '&limit=none';
 
         let vue_instance = this;
 
-        this.is_fetching_data = true;
-
-        axios.get(api_url).then(response => {
-          this.tabledata         = response.data.data;
-          this.columns           = response.data.columns;
-          this.total_amount_rows = response.data.amount_rows;
-          this.initial_loading   = false;
-          this.is_fetching_data  = false;
-          this.$nextTick().then(function () {
-            // DOM updated
-            if (vue_instance.column && vue_instance.tabledata.length > 0) {
-              vue_instance.gotocolumn(vue_instance.column);
-            }
-
-            // set focus on first cell, for cell navigation with keyboard
-            if (vue_instance.tabledata.length > 0) {
-              let cell_nr = 1;
-              if (vue_instance.column) {
-                let obj = vue_instance.columns.find(column_object => column_object.Field.toLowerCase() == vue_instance.column.toLowerCase());
-                cell_nr = vue_instance.columns.indexOf(obj) + 1; // set the focus on the same column as the column highlight
-                vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[cell_nr].focus();
-              }
-            }
-          });
-
-        }).catch(error => {
-          this.initial_loading = false;
-          this.handleApiError(error);
-        })
-      },
-
-      gotocolumn(field_id) {
-        var element = document.getElementById(field_id);
-        if (element) {
-          element.scrollIntoView({behavior: "auto", block: "center", inline: "center"});
-        }
-      },
-
-      orderByColumn(column) {
-        this.order_by        = column;
-        this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
-        this.getTableData();
-      },
-
-      closeRowSidebar() {
-        this.sidebarisopen = false;
-      },
-
-      toggleRowSidebar(row_index) {
-        if(this.sidebarisopen === true) {
-          let row_num_keys    = [];
-          for (var key in this.tabledata[row_index]) {
-            row_num_keys.push(this.tabledata[row_index][key]);
-          }
-          this.sidebar_row_data.push(row_num_keys);
-          return;
-        }
-
-        let row_num_keys    = [];
-        let column_num_keys = [];
-        for (var key in this.tabledata[row_index]) {
-          row_num_keys.push(this.tabledata[row_index][key]);
-          column_num_keys.push(key);
-        }
-        this.sidebar_row_index   = row_index;
-        this.sidebar_row_data    = [row_num_keys];
-        this.sidebar_column_data = column_num_keys;
-        this.sidebarisopen       = true;
-      },
-
-      showLoadMoreDataButtons() {
-        return (this.tabledata.length > 1 && this.total_amount_rows > this.tabledata.length);
-      },
-
-      loadMoreRows() {
-
-        this.offset_rows += 1;
-
-        let api_url = this.api_endpoint;
-        if (this.tableid) {
-          api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
-        }
-        if (this.column && this.value && this.comparetype) {
-          api_url += '&column=' + this.column + '&comparetype=' + this.comparetype + '&value=' + this.value;
-        }
-        if (this.order_by && this.order_direction) {
-          api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
-        }
-        if (this.offset_rows > 0) {
-          api_url += '&offset=' + this.offset_rows;
-        }
-
-        let vue_instance              = this;
         vue_instance.is_fetching_data = true;
         axios.get(api_url).then(response => {
-          let extended_tabledata        = this.tabledata.concat(response.data.data)
-          vue_instance.tabledata        = extended_tabledata;
+          vue_instance.tabledata        = response.data.data;
           vue_instance.is_fetching_data = false;
         }).catch(error => {
           this.handleApiError(error);
         })
-      },
-
-      loadAllRows() {
-        let ask_confirm = true;
-        if (this.total_amount_rows > 1000) {
-          ask_confirm = confirm('Are you sure you want to load all rows?');
-        }
-        if (ask_confirm) {
-          let api_url = this.api_endpoint;
-          if (this.tableid) {
-            api_url += this.endpoint_table_data + this.active_database + '&tablename=' + this.tableid;
-          }
-          if (this.column && this.value && this.comparetype) {
-            api_url += '&column=' + this.column + '&comparetype=' + this.comparetype + '&value=' + this.value;
-          }
-          if (this.order_by && this.order_direction) {
-            api_url += '&orderby=' + this.order_by + '&orderdirection=' + this.order_direction;
-          }
-          api_url += '&limit=none';
-
-          let vue_instance = this;
-
-          vue_instance.is_fetching_data = true;
-          axios.get(api_url).then(response => {
-            vue_instance.tabledata        = response.data.data;
-            vue_instance.is_fetching_data = false;
-          }).catch(error => {
-            this.handleApiError(error);
-          })
-        }
-      },
-
-      toggleAllRows($event) {
-        if ($event.target.checked) {
-          this.selected_rows = [];
-          for (let row_index in Object.keys(this.tabledata)) {
-            this.selected_rows.push(row_index);
-          }
-        } else {
-          this.selected_rows = [];
-        }
-      },
-
-      deleteRows() {
-        let unique_columns = this.getUniqueColumns();
-
-        if (unique_columns.length == 0) {
-          alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
-          return;
-        }
-
-        let delete_by_column = unique_columns[0].Field;
-
-        let vue_instance   = this;
-        let delete_by_rows = this.selected_rows.map(function (row_index) {
-          return vue_instance.tabledata[row_index][delete_by_column];
-        });
-
-        let params = new URLSearchParams();
-        params.append('delete_by_column', delete_by_column);
-        for (let row_index in delete_by_rows) {
-          params.append('delete_by_rows[]', delete_by_rows[row_index]);
-        }
-
-        let api_url = this.api_endpoint;
-        api_url += this.endpoint_delete_rows + this.active_database + '&tablename=' + this.tableid;
-        axios.post(api_url, params).then(response => {
-          // remove the selected rows from the data, sort by highest number first, else we will remove the wrong rows because of numerical order
-          let selected_rows_sorted = this.selected_rows.sort(function (a, b) {
-            return b - a
-          });
-          for (let row_index in selected_rows_sorted) {
-            this.tabledata.splice(selected_rows_sorted[row_index], 1);
-          }
-          this.selected_rows = [];
-        }).catch(error => {
-          this.handleApiError(error);
-        })
-      },
-
-      confirmDeleteRows() {
-        this.confirm_modal_message = 'Delete ' + this.selected_rows.length + ' row';
-        if (this.selected_rows.length > 1) {
-          this.confirm_modal_message += 's';
-        }
-        this.confirm_modal_open   = true;
-        this.confirm_modal_action = 'deleteRows';
-      },
-
-      // get the column(s) of a table by which it is identifiable
-      getUniqueColumns() {
-        let key_of_primary_column = this.columns.filter(function (column_index) {
-          if (column_index.Key === 'PRI') {
-            return column_index;
-          }
-        });
-        if (key_of_primary_column.length > 0) return key_of_primary_column;
-
-        let key_of_unique_column = this.columns.filter(function (column_index) {
-          if (column_index.Key === 'UNI') {
-            return column_index;
-          }
-        });
-        if (key_of_unique_column.length > 0) return key_of_unique_column;
-
-        // todo: unique columns ophalen op basis van alle kolommen, grote text kolommen (json, TEXT) via MD5 doen, zie adminer: select.inc.php:381
-        return [];
-      },
-
-      toggleMetaBox() {
-        this.meta_box_open = !this.meta_box_open;
-      },
-
-      editRow(row_index) {
-        let unique_columns = this.getUniqueColumns();
-
-        if (unique_columns.length == 0) {
-          alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
-          return;
-        }
-
-        let unique_column       = unique_columns[0].Field;
-        let unique_column_value = this.tabledata[row_index][unique_column];
-
-        this.$router.push({
-          name: 'editrow',
-          params: {'tableid': this.tableid, 'column': unique_column, 'rowid': unique_column_value}
-        });
-      },
-
-      editRowFromSidebar() {
-        this.editRow(this.sidebar_row_index);
-      },
-
-      editRowFromTable() {
-        this.editRow(this.selected_rows[0]);
-      },
-
-      editRowFromSingleView() {
-        this.editRow(0);
-      },
-
-      confirmDropTable() {
-        this.confirm_modal_message = 'Drop table ' + this.tableid;
-        this.confirm_modal_open    = true;
-        this.confirm_modal_action  = 'dropTable';
-      },
-
-      dropTable() {
-        let params = new URLSearchParams();
-        params.append('tables[]', this.tableid);
-
-        let vue_instance = this;
-        let api_url      = this.api_endpoint;
-        api_url += this.endpoint_drop_tables + this.active_database;
-        axios.post(api_url, params).then(response => {
-          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' dropped.');
-          this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
-          this.$store.dispatch('refreshTables');
-          vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
-        }).catch(error => {
-          this.handleApiError(error);
-        })
-      },
-
-      confirmTruncateTable() {
-        this.confirm_modal_message = 'Truncate table ' + this.tableid;
-        this.confirm_modal_open    = true;
-        this.confirm_modal_action  = 'truncateTable';
-      },
-
-      truncateTable() {
-        let params = new URLSearchParams();
-        params.append('tables[]', this.tableid);
-
-        let vue_instance = this;
-        let api_url      = this.api_endpoint;
-        api_url += this.endpoint_truncate_tables + this.active_database;
-        axios.post(api_url, params).then(response => {
-          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' truncated.');
-          this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
-          this.$store.dispatch('refreshTables');
-          this.$store.state.reloadMainComponentKey += 1; // refresh page
-        }).catch(error => {
-          this.handleApiError(error);
-        })
-      },
-
-      handleScroll(event) {
-        if (event.deltaY < 0) {
-          this.rowPointerDown()
-        } else {
-          this.rowPointerUp()
-        }
-      },
-
-      triggerKeyDown: function (evt) {
-        if (evt.key === 'v') {
-          this.togglePageView();
-        }
-      },
-
-      rowPointerUp() {
-        this.row_pointer += 1;
-      },
-
-      rowPointerDown() {
-        this.row_pointer -= 1;
-      },
-
-      addScrollingEvent() {
-        document.addEventListener("wheel", this.handleScroll);
-      },
-
-      removeScrollingEvent() {
-        document.removeEventListener("wheel", this.handleScroll);
-      },
-
-      togglePageView() {
-        this.page_view = (this.page_view == 'single') ? 'multi' : 'single';
       }
-
-
     },
 
-  }
+    toggleAllRows($event) {
+      if ($event.target.checked) {
+        this.selected_rows = [];
+        for (let row_index in Object.keys(this.tabledata)) {
+          this.selected_rows.push(row_index);
+        }
+      } else {
+        this.selected_rows = [];
+      }
+    },
+
+    deleteRows() {
+      let unique_columns = this.getUniqueColumns();
+
+      if (unique_columns.length == 0) {
+        alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
+        return;
+      }
+
+      let delete_by_column = unique_columns[0].Field;
+
+      let vue_instance   = this;
+      let delete_by_rows = this.selected_rows.map(function (row_index) {
+        return vue_instance.tabledata[row_index][delete_by_column];
+      });
+
+      let params = new URLSearchParams();
+      params.append('delete_by_column', delete_by_column);
+      for (let row_index in delete_by_rows) {
+        params.append('delete_by_rows[]', delete_by_rows[row_index]);
+      }
+
+      let api_url = this.api_endpoint;
+      api_url += this.endpoint_delete_rows + this.active_database + '&tablename=' + this.tableid;
+      axios.post(api_url, params).then(response => {
+        // remove the selected rows from the data, sort by highest number first, else we will remove the wrong rows because of numerical order
+        let selected_rows_sorted = this.selected_rows.sort(function (a, b) {
+          return b - a
+        });
+        for (let row_index in selected_rows_sorted) {
+          this.tabledata.splice(selected_rows_sorted[row_index], 1);
+        }
+        this.selected_rows = [];
+      }).catch(error => {
+        this.handleApiError(error);
+      })
+    },
+
+    deleteRow() {
+      let unique_columns = this.getUniqueColumns();
+
+      if (unique_columns.length == 0) {
+        alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
+        return;
+      }
+
+      let delete_by_column = unique_columns[0].Field;
+
+      let vue_instance   = this;
+
+      let params = new URLSearchParams();
+      params.append('delete_by_column', delete_by_column);
+      params.append('delete_by_rows[]', this.tabledata[this.row_pointer][delete_by_column]);
+
+      let api_url = this.api_endpoint;
+      api_url += this.endpoint_delete_rows + this.active_database + '&tablename=' + this.tableid;
+      axios.post(api_url, params).then(response => {
+        vue_instance.query_result = response.data;
+        if(vue_instance.query_result.result == 'success') {
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Row deleted.');
+        }
+        this.$store.state.reloadMainComponentKey += 1;
+      }).catch(error => {
+        this.handleApiError(error);
+      })
+    },
+
+    confirmDeleteRows() {
+      this.confirm_modal_message = 'Delete ' + this.selected_rows.length + ' row';
+      if (this.selected_rows.length > 1) {
+        this.confirm_modal_message += 's';
+      }
+      this.confirm_modal_open   = true;
+      this.confirm_modal_action = 'deleteRows';
+    },
+
+    confirmDeleteRowFromSingleView() {
+      this.confirm_modal_message = 'Delete 1 row';
+      this.confirm_modal_open   = true;
+      this.confirm_modal_action = 'deleteRow';
+    },
+
+    // get the column(s) of a table by which it is identifiable
+    getUniqueColumns() {
+      let key_of_primary_column = this.columns.filter(function (column_index) {
+        if (column_index.Key === 'PRI') {
+          return column_index;
+        }
+      });
+      if (key_of_primary_column.length > 0) return key_of_primary_column;
+
+      let key_of_unique_column = this.columns.filter(function (column_index) {
+        if (column_index.Key === 'UNI') {
+          return column_index;
+        }
+      });
+      if (key_of_unique_column.length > 0) return key_of_unique_column;
+
+      // todo: unique columns ophalen op basis van alle kolommen, grote text kolommen (json, TEXT) via MD5 doen, zie adminer: select.inc.php:381
+      return [];
+    },
+
+    toggleMetaBox() {
+      this.meta_box_open = !this.meta_box_open;
+    },
+
+    editRow(row_index) {
+      let unique_columns = this.getUniqueColumns();
+
+      if (unique_columns.length == 0) {
+        alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
+        return;
+      }
+
+      let unique_column       = unique_columns[0].Field;
+      let unique_column_value = this.tabledata[row_index][unique_column];
+
+      this.$router.push({
+        name: 'editrow',
+        params: {'tableid': this.tableid, 'column': unique_column, 'rowid': unique_column_value}
+      });
+    },
+
+    editRowFromSidebar() {
+      this.editRow(this.sidebar_row_index);
+    },
+
+    editRowFromTable() {
+      this.editRow(this.selected_rows[0]);
+    },
+
+    editRowFromSingleView() {
+      this.editRow(this.row_pointer);
+    },
+
+    confirmDropTable() {
+      this.confirm_modal_message = 'Drop table ' + this.tableid;
+      this.confirm_modal_open    = true;
+      this.confirm_modal_action  = 'dropTable';
+    },
+
+    dropTable() {
+      let params = new URLSearchParams();
+      params.append('tables[]', this.tableid);
+
+      let vue_instance = this;
+      let api_url      = this.api_endpoint;
+      api_url += this.endpoint_drop_tables + this.active_database;
+      axios.post(api_url, params).then(response => {
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' dropped.');
+        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+        this.$store.dispatch('refreshTables');
+        vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
+      }).catch(error => {
+        this.handleApiError(error);
+      })
+    },
+
+    confirmTruncateTable() {
+      this.confirm_modal_message = 'Truncate table ' + this.tableid;
+      this.confirm_modal_open    = true;
+      this.confirm_modal_action  = 'truncateTable';
+    },
+
+    truncateTable() {
+      let params = new URLSearchParams();
+      params.append('tables[]', this.tableid);
+
+      let vue_instance = this;
+      let api_url      = this.api_endpoint;
+      api_url += this.endpoint_truncate_tables + this.active_database;
+      axios.post(api_url, params).then(response => {
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' truncated.');
+        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+        this.$store.dispatch('refreshTables');
+        this.$store.state.reloadMainComponentKey += 1; // refresh page
+      }).catch(error => {
+        this.handleApiError(error);
+      })
+    },
+
+    handleScroll(event) {
+      if (event.deltaY < 0) {
+        this.rowPointerDown()
+      } else {
+        this.rowPointerUp()
+      }
+    },
+
+    triggerKeyDown: function (evt) {
+      if (evt.key === 'v') {
+        this.togglePageView();
+      }
+    },
+
+    rowPointerUp() {
+      this.row_pointer += 1;
+    },
+
+    rowPointerDown() {
+      this.row_pointer -= 1;
+    },
+
+    addScrollingEvent() {
+      document.addEventListener("wheel", this.handleScroll);
+    },
+
+    removeScrollingEvent() {
+      document.removeEventListener("wheel", this.handleScroll);
+    },
+
+    togglePageView() {
+      this.page_view = (this.page_view == 'single') ? 'multi' : 'single';
+    }
+
+
+  },
+
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  .row-data-field {
-    @apply flex w-full;
-  }
+.row-data-field {
+  @apply flex w-full;
+}
 
-  .row-data-field:hover .data {
-    @apply bg-light-200;
-  }
+.row-data-field:hover .data {
+  @apply bg-light-200;
+}
 
-  .row-data-field:hover .header {
-    @apply bg-dark-600;
-  }
+.row-data-field:hover .header {
+  @apply bg-dark-600;
+}
 
-  /** SINGLE PAGE VIEW **/
-  div.column-row {
-    display: grid;
-  }
+/** SINGLE PAGE VIEW **/
+div.column-row {
+  display: grid;
+}
 
-  div.column-row.one-column {
-    grid-template-columns: auto minmax(50px, 70%);
-    width:                 auto;
-  }
+div.column-row.one-column {
+  grid-template-columns: auto minmax(50px, 70%);
+  width:                 auto;
+}
 
-  div.column-row.two-columns {
-    grid-template-columns: auto minmax(50px, 50%);
-    min-width:             70%;
-  }
+div.column-row.two-columns {
+  grid-template-columns: auto minmax(50px, 50%);
+  min-width:             70%;
+}
 
-  div.column-row.three-columns {
-    grid-template-columns: auto minmax(50px, 50%);
-  }
+div.column-row.three-columns {
+  grid-template-columns: auto minmax(50px, 50%);
+}
 
-  div.column-row .data {
-    word-break: break-word;
-  }
+div.column-row .data {
+  word-break: break-word;
+}
 
-  .data-value {
-    @apply truncate;
-  }
+.data-value {
+  @apply truncate;
+}
 
-  .data-value:hover {
-    overflow:      visible;
-    text-overflow: unset;
-    white-space:   normal;
-  }
+.data-value:hover {
+  overflow:      visible;
+  text-overflow: unset;
+  white-space:   normal;
+}
 
-  .single-row-view {
-    display:               grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: minmax(250px, 650px) 1fr;
-  }
+.single-row-view {
+  display:               grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: minmax(250px, 650px) 1fr;
+}
 
-  .single-view-sidebar-scrollable {
-    overflow: auto;
-    height:   100%;
-  }
+.single-view-sidebar-scrollable {
+  overflow: auto;
+  height:   100%;
+}
 
-  .single-view-sidebar-scrollable::-webkit-scrollbar {
-    width:  7px;
-    height: 7px;
-  }
+.single-view-sidebar-scrollable::-webkit-scrollbar {
+  width:  7px;
+  height: 7px;
+}
 
-  .single-view-sidebar-scrollable {
-    scrollbar-width: 7px;
-    scrollbar-color: var(--thumbBG) var(transparent);
-  }
+.single-view-sidebar-scrollable {
+  scrollbar-width: 7px;
+  scrollbar-color: var(--thumbBG) var(transparent);
+}
 
-  .single-view-sidebar-scrollable::-webkit-scrollbar-track {
-    background: var(transparent);
-  }
+.single-view-sidebar-scrollable::-webkit-scrollbar-track {
+  background: var(transparent);
+}
 
-  .single-view-sidebar-scrollable::-webkit-scrollbar-thumb {
-    background-color: var(--thumbBG);
-    border-radius:    5px;
-    border:           3px solid var(transparent);
-  }
+.single-view-sidebar-scrollable::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius:    5px;
+  border:           3px solid var(transparent);
+}
 
-  .view-page-multi.active .primary,
-  .view-page-single.active .primary,
-  .view-page-multi.active .secondary,
-  .view-page-single.active .secondary {
-    @apply text-highlight-400;
-  }
+.view-page-multi.active .primary,
+.view-page-single.active .primary,
+.view-page-multi.active .secondary,
+.view-page-single.active .secondary {
+  @apply text-highlight-400;
+}
 
-  .view-page-multi .primary,
-  .view-page-single .primary {
-    @apply text-light-200;
-  }
+.view-page-multi .primary,
+.view-page-single .primary {
+  @apply text-light-200;
+}
 
-  .view-page-multi .secondary,
-  .view-page-single .secondary {
-    @apply text-light-300;
-  }
+.view-page-multi .secondary,
+.view-page-single .secondary {
+  @apply text-light-300;
+}
 
 
 </style>
