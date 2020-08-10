@@ -32,7 +32,7 @@
         </div>
 
         <div class="flex items-center mb-1 " v-if="active_database && $route.params.hasOwnProperty('tableid')">
-          <router-link :to="{ name: 'table', params: {tableid: $route.params.tableid }}" class="btn-link break-words">
+          <router-link :to="{ name: 'table', params: {tableid: $route.params.tableid }}" class="btn-link">
             {{ $route.params.tableid }}
           </router-link>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 fill-current text-gray-400"
@@ -116,13 +116,13 @@ export default {
 <style scoped>
 
 .sidebar-navigation {
-  @apply border-r border-light-100 z-20 w-56 h-full;
+  @apply border-r border-light-100 z-20 w-56 h-full absolute;
   margin-left: -215px;
 }
 
 .sidebar-navigation:hover {
-  @apply ml-0 bg-light-50;
-  transition: all 0.4s ease;
+  @apply ml-0 bg-dark-400 border-0;
+  transition: all 0.3s ease;
 }
 
 .btn-link {
