@@ -59,7 +59,7 @@
 
       <div class="content-body w-full">
 
-        <div v-show="page_view == 'single'">
+        <div v-if="page_view == 'single'">
 
           <p class="text-center mb-2">Showing row {{ row_pointer + 1 }} of {{ this.tabledata.length }}</p>
 
@@ -144,7 +144,7 @@
         </div>
 
 
-        <div v-show="page_view == 'multi'" class="flex">
+        <div v-else-if="page_view == 'multi'" class="flex">
 
           <div class="relative w-full">
 
@@ -152,32 +152,32 @@
               <p class="bg-light-100 text-gray-400 px-2 py-2 inline-block">No rows found</p>
             </div>
 
-            <table cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
-                   @keydown.right.prevent="focusCellNext($event, 1)"
-                   @keydown.left.prevent="focusCellPrevious($event, 1)"
-                   @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
-                   @keydown.shift.right.prevent="focusCellNext($event,5)"
-                   @keydown.shift.left.prevent="focusCellPrevious($event,5)"
-                   @keydown.shift.up.prevent="focusRowUp($event,5)"
-                   @keydown.shift.down.prevent="focusRowDown($event,5)"
-                   @keydown.esc="unfocusDatatable()"
-                   @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
-                   @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
-                   @keydown.open-database-list="unfocusDatatable()">
-              <thead>
-              <tr>
-                <th class="toggle-row">
-                  <label for="check-all-rows">
+            <div cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
+                 @keydown.right.prevent="focusCellNext($event, 1)"
+                 @keydown.left.prevent="focusCellPrevious($event, 1)"
+                 @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+                 @keydown.shift.right.prevent="focusCellNext($event,5)"
+                 @keydown.shift.left.prevent="focusCellPrevious($event,5)"
+                 @keydown.shift.up.prevent="focusRowUp($event,5)"
+                 @keydown.shift.down.prevent="focusRowDown($event,5)"
+                 @keydown.esc="unfocusDatatable()"
+                 @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
+                 @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
+                 @keydown.open-database-list="unfocusDatatable()">
+              <div class="table-header">
+                <div class="toggle-row">
+                  <label for="check-all-rows" class="inline-block">
                     <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event)" />
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current -mt-1 inline-block">
                       <circle cx="12" cy="12" r="10"></circle>
                       <path
                           d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
                     </svg>
                   </label>
-                </th>
-                <th :name="column_header.Field" :id="column_header.Field | lowercase" v-for="column_header in columns"
-                    :class="{ ' highlight-column' : (column_header.Field.toLowerCase() == column)}">
+                </div>
+                <div :name="column_header.Field" :id="column_header.Field | lowercase"
+                     v-for="column_header in columns" :key="column_header.Field"
+                     :class="{ ' highlight-column' : (column_header.Field.toLowerCase() == column)}">
                   <a @click="orderByColumn(column_header.Field)" class="column-order-link">
                     <span>{{ column_header.Field }}</span>
                     <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
@@ -195,33 +195,22 @@
                             d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
                     </svg>
                   </a>
-                </th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="(row, row_index) in tabledata">
-                <td class="toggle-row">
-                  <label>
-                    <input type="checkbox" class="hidden" :value="row_index" v-model="selected_rows" />
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                </div>
+              </div>
+              <div v-for="(row, row_index) in tabledata" :key="row_index" class="table-body" @click.ctrl="toggleRowSidebar(row_index)">
+                <div class="toggle-row">
+                  <label class="inline-block">
+                    <input type="checkbox" class="hidden" :value="row_index" v-model.lazy="selected_rows" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current -mt-1 inline-block">
                       <circle cx="12" cy="12" r="10"></circle>
                       <path
                           d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
                     </svg>
                   </label>
-                </td>
-                <td class="table-data-row" v-for="(column_name, index) in columns"
-                    @click.ctrl="toggleRowSidebar(row_index)"
-                    @click="$event.target.focus()" tabindex="1"
-                    :class="{ ' sticky-first-row-cell' : (index == 0)}">
-                  <span v-if="row[column_name.Field] == null" class="null-value"><i>NULL</i></span>
-                  <span v-else-if="shouldTruncateField(column_name.Type)"
-                        :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
-                  <span v-else>{{ row[column_name.Field] }}</span>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+                </div>
+                <TableDataRow v-bind:row="row" v-bind:truncate-amount="30"></TableDataRow>
+              </div>
+            </div>
 
             <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
                  v-if="tabledata.length > 0 && selected_rows.length > 0">
@@ -294,6 +283,7 @@ import FlashMessage from "./FlashMessage";
 import Spinner from "./Spinner";
 import ConfirmModal from "./ConfirmModal";
 import ConfirmModalMixin from "../mixins/ConfirmModal";
+import TableDataRow from "./TableDataRow";
 
 export default {
   name: 'TableData',
@@ -332,6 +322,7 @@ export default {
     TableNav,
     TableDataMeta,
     ConfirmModal,
+    TableDataRow,
   },
 
   mixins: [
@@ -401,25 +392,9 @@ export default {
       return string.toLowerCase();
     },
 
-    truncate: function (value, limit) {
-      if (!value) return value;
-      if (value.length > limit) {
-        value = value.replace(/(\r\n|\n|\r)/gm, ""); // remove line breaks
-        value = value.substring(0, limit) + '...';
-      }
-
-      return value
-    }
   },
 
   methods: {
-
-    shouldTruncateField(column_type) {
-      if (column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
-        return true;
-      }
-      return false;
-    },
 
     getTableData() {
 
@@ -439,8 +414,11 @@ export default {
       this.is_fetching_data = true;
 
       axios.get(api_url).then(response => {
-        this.tabledata         = response.data.data;
-        this.columns           = response.data.columns;
+        let data = response.data.data.map(item => {
+          return Object.freeze(item);
+        });
+        this.tabledata         = data;
+        this.columns           = Object.freeze(response.data.columns);
         this.total_amount_rows = response.data.amount_rows;
         if (this.tabledata.length == 1) {
           this.page_view = 'single';
@@ -534,8 +512,8 @@ export default {
       let vue_instance              = this;
       vue_instance.is_fetching_data = true;
       axios.get(api_url).then(response => {
-        let extended_tabledata        = this.tabledata.concat(response.data.data)
-        vue_instance.tabledata        = extended_tabledata;
+        let extended_tabledata        = Object.freeze(this.tabledata.concat(response.data.data));
+        vue_instance.tabledata        = Object.freeze(extended_tabledata);
         vue_instance.is_fetching_data = false;
       }).catch(error => {
         this.handleApiError(error);
@@ -564,7 +542,10 @@ export default {
 
         vue_instance.is_fetching_data = true;
         axios.get(api_url).then(response => {
-          vue_instance.tabledata        = response.data.data;
+          let data = response.data.data.map(item => {
+            return Object.freeze(item);
+          });
+          vue_instance.tabledata        = data;
           vue_instance.is_fetching_data = false;
         }).catch(error => {
           this.handleApiError(error);

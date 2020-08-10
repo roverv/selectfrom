@@ -10,7 +10,7 @@
         $table_data['columns'] = $rows;
     }
 
-    $amount_rows_per_page = 50; //todo: instelbaar maken
+    $amount_rows_per_page = 30; //todo: instelbaar maken
 
     $query                 = "SELECT * FROM ".$_GET['tablename']." ";
 

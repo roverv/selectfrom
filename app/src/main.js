@@ -16,7 +16,10 @@ Vue.config.keyCodes = {
   "refresh-page": 82, // r
   "to-query": 81, // q
 }
-
+//before `new Vue`
+// Vue.config.devtools = true;
+// Vue.config.performance = true;
+// @todo: uitzetten
 new Vue({
   router,
   store,
