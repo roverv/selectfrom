@@ -727,7 +727,7 @@ export default {
 
       this.$router.push({
         name: 'editrow',
-        params: {'tableid': this.tableid, 'column': unique_column, 'rowid': unique_column_value}
+        params: { database: this.active_database, 'tableid': this.tableid, 'column': unique_column, 'rowid': unique_column_value}
       });
     },
 

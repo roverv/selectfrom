@@ -56,6 +56,10 @@
     },
 
     computed: {
+      active_database() {
+        return this.$store.state.activeDatabase;
+      },
+
       // Filtering the suggestion based on the input
       matches() {
 
@@ -260,7 +264,7 @@
         if (has_id) {
           this.$router.push({
             name: 'tablewithcolumnvalue',
-            params: {tableid: table_id, column: 'primarykey', comparetype: 'is', value: row_id}
+            params: {database: this.active_database, tableid: table_id, column: 'primarykey', comparetype: 'is', value: row_id}
           });
 
         } else if (has_column) {
@@ -269,12 +273,12 @@
           if (value_compare_type === 'like' || value_compare_type === 'is') {
             this.$router.push({
               name: 'tablewithcolumnvalue',
-              params: {tableid: table_id, column: column, comparetype: value_compare_type, value: column_value}
+              params: {database: this.active_database, tableid: table_id, column: column, comparetype: value_compare_type, value: column_value}
             });
 
             // go to table and center on column: "user.password"
           } else if (this.column_split_value == '.') {
-            this.$router.push({name: 'tablewithcolumn', params: {tableid: table_id, column: column}});
+            this.$router.push({name: 'tablewithcolumn', params: {database: this.active_database, tableid: table_id, column: column}});
 
             // query for the group by of a column: "user|sex"
           } else if (this.column_split_value == '|') {
@@ -292,7 +296,7 @@
           }
           // go to table: "user"
         } else {
-          this.$router.push({name: 'table', params: {tableid: this.search_value}});
+          this.$router.push({name: 'table', params: {database: this.active_database, tableid: this.search_value}});
         }
         // when on the same route, router wont change component, so close the modal
         this.close();

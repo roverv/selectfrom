@@ -10,7 +10,7 @@
         <ul class="mx-3 my-4" id="recent-tables-list" autocomplete="off">
           <li v-for="(table_name, index) in recent_tables" class="list-item" v-bind:class="{'active': isActive(index)}"
               :ref="table_name">
-            <router-link :to="{ name: 'table', params: { tableid: table_name } }">
+            <router-link :to="{ name: 'table', params: { database: active_database,  tableid: table_name } }">
               {{ table_name }}
             </router-link>
           </li>
@@ -41,6 +41,10 @@
     },
 
     computed: {
+      active_database() {
+        return this.$store.state.activeDatabase;
+      },
+
       recent_tables() {
         return this.$store.getters["recenttables/tables"];
       },

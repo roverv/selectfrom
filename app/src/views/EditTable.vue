@@ -389,13 +389,13 @@
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table created.');
             this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
             this.$store.dispatch('refreshTables');
-            vue_instance.$router.push({name: 'table', params: {tableid: vue_instance.table_name}});
+            vue_instance.$router.push({name: 'table', params: { database: this.active_database, tableid: vue_instance.table_name}});
           } else if (vue_instance.query_result.result == 'success') {
             let message = 'Table updated';
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
             this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
             this.$store.dispatch('refreshTables');
-            vue_instance.$router.push({name: 'table', params: {tableid: vue_instance.table_name}});
+            vue_instance.$router.push({name: 'table', params: { database: this.active_database, tableid: vue_instance.table_name}});
           }
           scroll(0, 0);
         }).catch(error => {

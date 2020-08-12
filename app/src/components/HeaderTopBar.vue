@@ -32,7 +32,7 @@
         </div>
 
         <div class="flex items-center mb-1 " v-if="active_database && $route.params.hasOwnProperty('tableid')">
-          <router-link :to="{ name: 'table', params: {tableid: $route.params.tableid }}" class="btn-link">
+          <router-link :to="{ name: 'table', params: {database: active_database, tableid: $route.params.tableid }}" class="btn-link">
             {{ $route.params.tableid }}
           </router-link>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 fill-current text-gray-400"

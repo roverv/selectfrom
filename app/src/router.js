@@ -25,110 +25,66 @@ const router = new Router({
       props: true,
     },
     {
-      path: '/table/:tableid',
+      path: '/:database/table/:tableid',
       name: 'table',
       component: () => import(/* webpackChunkName: "tabledata" */ './views/TableData.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/table/:tableid/:column',
+      path: '/:database/table/:tableid/:column',
       name: 'tablewithcolumn',
       component: () => import(/* webpackChunkName: "tabledata" */ './views/TableData.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/table/:tableid/:column/:comparetype/:value',
+      path: '/:database/table/:tableid/:column/:comparetype/:value',
       name: 'tablewithcolumnvalue',
       component: () => import(/* webpackChunkName: "tabledata" */ './views/TableData.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/structure/:tableid',
+      path: '/:database/structure/:tableid',
       name: 'structure',
       component: () => import(/* webpackChunkName: "tablestructure" */ './views/TableStructure.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/editrow/:tableid/:column/:rowid',
+      path: '/:database/editrow/:tableid/:column/:rowid',
       name: 'editrow',
       component: () => import(/* webpackChunkName: "editrow" */ './views/EditRow.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/addrow/:tableid',
+      path: '/:database/addrow/:tableid',
       name: 'addrow',
       component: () => import(/* webpackChunkName: "editrow" */ './views/EditRow.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/addtable',
+      path: '/:database/addtable',
       name: 'addtable',
-      component: () => import(/* webpackChunkName: "editrow" */ './views/EditTable.vue'),
+      component: () => import(/* webpackChunkName: "edittable" */ './views/EditTable.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/edittable/:tableid',
+      path: '/:database/edittable/:tableid',
       name: 'edittable',
-      component: () => import(/* webpackChunkName: "editrow" */ './views/EditTable.vue'),
+      component: () => import(/* webpackChunkName: "edittable" */ './views/EditTable.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/query',
+      path: '/:database/query',
       name: 'query',
       component: () => import(/* webpackChunkName: "query" */ './views/Query.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
     {
-      path: '/query/history/:historyindex',
+      path: '/:database/query/history/:historyindex',
       name: 'queryhistory',
       component: () => import(/* webpackChunkName: "query" */ './views/Query.vue'),
       props: true,
-      meta: {
-        requiresActiveDatabase: true
-      }
     },
   ]
 });
-
-router.beforeEach((to, from, next) => {
-  // if this route requires active database
-  if (to.matched.some(record => record.meta.requiresActiveDatabase)) {
-    // redirect to database list if active database is not set
-    if (typeof Store.state.activeDatabase === 'undefined' || Store.state.activeDatabase == '') {
-      next({name: 'server'});
-    } else {
-      next()
-    }
-  } else {
-    next()
-  }
-})
 
 export default router;

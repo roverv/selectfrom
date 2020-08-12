@@ -63,7 +63,7 @@
                 @click="$event.target.focus()" tabindex="1"
                 :class="{ ' sticky-first-row-cell' : (index == 0)}">
               <router-link v-if="table_list_header == 'Name'"
-                           :to="{ name: 'table', params: { tableid: table[table_list_header] } }"
+                           :to="{ name: 'table', params: { database: active_database, tableid: table[table_list_header] } }"
                            class="inline-block whitespace-normal">
                 {{ table[table_list_header] }}
               </router-link>
@@ -128,13 +128,6 @@ export default {
       order_direction: 'asc',
       endpoint_truncate_tables: 'truncate_tables.php?db=',
       endpoint_drop_tables: 'drop_tables.php?db=',
-    }
-  },
-
-  mounted() {
-    // check if database is changed or not yet set
-    if (this.$store.state.activeDatabase == '' || this.$store.state.activeDatabase != this.database) {
-      this.$store.commit("setActiveDatabase", this.database);
     }
   },
 

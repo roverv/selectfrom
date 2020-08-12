@@ -1,11 +1,11 @@
 <template>
   <div>
-    <router-link :to="{ name: 'table', params: { tableid: tableid } }" class="subnav-item"
+    <router-link :to="{ name: 'table', params: { database: active_database, tableid: tableid } }" class="subnav-item"
                  :class="{ 'active' : (['table', 'tablewithcolumn', 'tablewithcolumnvalue'].includes($route.name)) }">
       Data
     </router-link>
 
-    <router-link :to="{ name: 'structure', params: { tableid: tableid } }" class="subnav-item"
+    <router-link :to="{ name: 'structure', params: { database: active_database, tableid: tableid } }" class="subnav-item"
                  :class="{ 'active' : ($route.name == 'structure') }">
       Structure
     </router-link>
@@ -16,7 +16,7 @@
       Foreign keys
     </a>
 
-    <router-link :to="{ name: 'addrow', params: { tableid: tableid } }" class="subnav-item"
+    <router-link :to="{ name: 'addrow', params: { database: active_database, tableid: tableid } }" class="subnav-item"
                  :class="{ 'active' : ($route.name == 'addrow') }">
       Add row
     </router-link>
@@ -32,6 +32,12 @@
     data() {
       return {}
     },
+
+    computed: {
+      active_database() {
+        return this.$store.state.activeDatabase;
+      },
+    }
 
   }
 </script>

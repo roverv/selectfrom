@@ -10,7 +10,7 @@
         <ul class="mx-3 my-4" autocomplete="off">
           <li v-for="(query, index) in query_history" class="list-item" v-bind:class="{'active': isActive(index)}"
               :ref="index">
-            <router-link :to="{ name: 'queryhistory', params: { historyindex: index } }">
+            <router-link :to="{ name: 'queryhistory', params: { database: active_database, historyindex: index } }">
               {{ query }}
             </router-link>
           </li>
@@ -42,6 +42,10 @@
     },
 
     computed: {
+      active_database() {
+        return this.$store.state.activeDatabase;
+      },
+      
       query_history() {
         return this.$store.getters["queryhistory/queries"];
       },

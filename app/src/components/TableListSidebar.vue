@@ -25,7 +25,7 @@
         <ul class="pr-2">
           <li v-for="(table_data) in tables_filtered"
               :class="{active: table_data.Name == $route.params.tableid}">
-            <router-link :to="{ name: 'table', params: { tableid: table_data.Name } }">
+            <router-link :to="{ name: 'table', params: { database: active_database, tableid: table_data.Name } }">
               {{ table_data.Name }}
               <span class="text-gray-500 hidden">
               ({{ table_data.Rows }})

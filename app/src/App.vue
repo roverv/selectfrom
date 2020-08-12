@@ -74,6 +74,13 @@
 
     watch: {
       $route(to, from) {
+
+        if(this.$route.params.hasOwnProperty('database')) {
+          if(this.$store.state.activeDatabase == '' || this.$store.state.activeDatabase != this.$route.params.database) {
+            this.$store.commit("setActiveDatabase", this.$route.params.database);
+          }
+        }
+
         this.searchmodalopen   = false;
         this.recenttablesopen  = false;
         this.databasemodalopen = false;

@@ -169,7 +169,7 @@
           if(vue_instance.query_result.result == 'success' && typeof vue_instance.query_result.inserted_row_id !== 'undefined') {
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Row added.');
             this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
-            vue_instance.$router.push({name: 'table', params: {tableid : vue_instance.tableid }});
+            vue_instance.$router.push({name: 'table', params: {database: this.active_database, tableid : vue_instance.tableid }});
           }
           else if(vue_instance.query_result.result == 'success') {
             let message = 'Row updated';
@@ -179,7 +179,7 @@
             message += '.';
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
             this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
-            vue_instance.$router.push({name: 'table', params: {tableid : vue_instance.tableid }});
+            vue_instance.$router.push({name: 'table', params: {database: this.active_database, tableid : vue_instance.tableid }});
           }
           scroll(0,0);
         }).catch(error => {

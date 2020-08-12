@@ -30,7 +30,7 @@
             </tbody>
           </table>
 
-          <router-link :to="{ name: 'edittable', params: { tableid: tableid } }" class="btn mt-4">Edit table
+          <router-link :to="{ name: 'edittable', params: { database: active_database, tableid: tableid } }" class="btn mt-4">Edit table
           </router-link>
 
         </div>
