@@ -75,12 +75,13 @@ a:hover {
 .btn:active {
   top: 2px;
 }
-.btn:focus {
+/* explicitly tell a btn if it should show its focus (for forms and tabbing) */
+.btn.show-focus:focus {
   @apply border-light-300;
 }
 
-.btn.icon {
-  @apply px-0 py-0;
+.btn-icon {
+  @apply p-0;
 }
 
 /*********************

@@ -188,13 +188,13 @@
             </div>
 
             <div class="flex items-start pt-1">
-              <button @click="addColumn(index)" class="btn icon ml-2" type="button">
+              <button @click="addColumn(index)" class="btn btn-icon ml-2" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                   <path class="text-light-300" fill-rule="evenodd"
                         d="M17 11a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H7a1 1 0 0 1 0-2h4V7a1 1 0 0 1 2 0v4h4z"></path>
                 </svg>
               </button>
-              <a @click="removeColumn(index)" class="btn icon ml-2">
+              <a @click="removeColumn(index)" class="btn btn-icon ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                   <rect width="12" height="2" x="6" y="11" class="text-light-300" rx="1"></rect>
                 </svg>
@@ -209,7 +209,7 @@
       </form>
 
       <div class="flex justify-center">
-        <button class="btn" @click="saveTable()">Save</button>
+        <button class="btn show-focus" @click="saveTable()">Save</button>
       </div>
 
     </div>

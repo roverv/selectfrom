@@ -51,7 +51,7 @@
 
       <div class="flex">
         <div class="w-2/5 mr-2"></div>
-        <button class="btn mt-4" @click="saveRow()">Save</button>
+        <button class="btn show-focus mt-4" @click="saveRow()">Save</button>
       </div>
 
     </div>

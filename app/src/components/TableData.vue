@@ -117,7 +117,7 @@
 
                 <div class="inline-flex w-1/3">
                   <div v-if="showLoadMoreDataButtons()">
-                    <button class="btn mr-3" @click="loadMoreRows()">Load 50 more rows</button>
+                    <button class="btn mr-3" @click="loadRows('add')">Load 50 more rows</button>
                     <button class="btn mr-3" @click="loadAllRows()">
                       Load all rows ({{ total_amount_rows }})
                     </button>
@@ -242,11 +242,29 @@
 
             <br>
 
-            <div class="flex" v-if="showLoadMoreDataButtons()">
-              <button class="btn mr-3" @click="loadMoreRows()">Load 50 more rows</button>
+            <div class="flex items-center" v-if="showLoadMoreDataButtons()">
+              <button class="btn mr-3" @click="loadRows('add')">Load 50 more rows</button>
               <button class="btn mr-3" @click="loadAllRows()">
                 Load all rows ({{ total_amount_rows }})
               </button>
+
+              <button class="btn icon p-2 mr-3" @click="loadRows('prevpage')" v-if="offset_rows > 0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current text-light-200" style="transform: rotate(-90deg);">
+                  <path class="text-light-200"
+                        d="M12 20.1L3.4 21.9a1 1 0 0 1-1.3-1.36l9-18a1 1 0 0 1 1.8 0l9 18a1 1 0 0 1-1.3 1.36L12 20.1z"></path>
+                  <path class="text-light-200" d="M12 2c.36 0 .71.18.9.55l9 18a1 1 0 0 1-1.3 1.36L12 20.1V2z"></path>
+                </svg>
+              </button>
+              <button class="btn icon p-2 mr-3" @click="loadRows('nextpage')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current text-light-200" style="transform: rotate(90deg);">
+                  <path class="text-light-200"
+                        d="M12 20.1L3.4 21.9a1 1 0 0 1-1.3-1.36l9-18a1 1 0 0 1 1.8 0l9 18a1 1 0 0 1-1.3 1.36L12 20.1z"></path>
+                  <path class="" d="M12 2c.36 0 .71.18.9.55l9 18a1 1 0 0 1-1.3 1.36L12 20.1V2z"></path>
+                </svg>
+              </button>
+              <div class="text-light-300 mr-4">
+                Showing {{ rows_limit_start }}-{{ rows_limit_end }} of {{ total_amount_rows }}
+              </div>
               <spinner v-if="is_fetching_data === true"></spinner>
             </div>
 
@@ -377,6 +395,14 @@ export default {
 
     primary_key() {
       return this.$store.getters["tables/primaryKeyOfTable"](this.tableid);
+    },
+
+    rows_limit_start() {
+      return (30 * this.offset_rows) + 1;
+    },
+
+    rows_limit_end() {
+      return ((this.offset_rows + 1) * 30 > this.total_amount_rows) ? this.total_amount_rows : ((this.offset_rows + 1) * 30);
     }
   },
 
@@ -491,9 +517,15 @@ export default {
       return (this.tabledata.length > 1 && this.total_amount_rows > this.tabledata.length);
     },
 
-    loadMoreRows() {
+    //@ todo: change this function to proper functions when decided on pagination/paging
+    loadRows(action) {
 
-      this.offset_rows += 1;
+      if(action == 'prevpage') {
+        this.offset_rows -= 1;
+      }
+      else {
+        this.offset_rows += 1;
+      }
 
       let api_url = this.api_endpoint;
       if (this.tableid) {
@@ -512,8 +544,14 @@ export default {
       let vue_instance              = this;
       vue_instance.is_fetching_data = true;
       axios.get(api_url).then(response => {
-        let extended_tabledata        = Object.freeze(this.tabledata.concat(response.data.data));
-        vue_instance.tabledata        = Object.freeze(extended_tabledata);
+        if(action == 'prevpage' || action == 'nextpage') {
+          vue_instance.tabledata        = Object.freeze(response.data.data);
+        }
+        else {
+          let extended_tabledata        = Object.freeze(this.tabledata.concat(response.data.data));
+          vue_instance.tabledata        = Object.freeze(extended_tabledata);
+        }
+
         vue_instance.is_fetching_data = false;
       }).catch(error => {
         this.handleApiError(error);
