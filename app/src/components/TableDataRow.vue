@@ -22,7 +22,7 @@ export default {
         cell_value = cell_value.substring(0, context.props.truncateAmount) + '...';
       }
 
-      objects.push(createElement('div', {
+      objects.push(createElement('td', {
             attrs: {
               class: "table-data-row" + (key == 0 ? ' sticky-first-row-cell' : ''),
             },

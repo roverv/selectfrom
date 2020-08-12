@@ -152,32 +152,33 @@
               <p class="bg-light-100 text-gray-400 px-2 py-2 inline-block">No rows found</p>
             </div>
 
-            <div cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
-                 @keydown.right.prevent="focusCellNext($event, 1)"
-                 @keydown.left.prevent="focusCellPrevious($event, 1)"
-                 @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
-                 @keydown.shift.right.prevent="focusCellNext($event,5)"
-                 @keydown.shift.left.prevent="focusCellPrevious($event,5)"
-                 @keydown.shift.up.prevent="focusRowUp($event,5)"
-                 @keydown.shift.down.prevent="focusRowDown($event,5)"
-                 @keydown.esc="unfocusDatatable()"
-                 @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
-                 @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
-                 @keydown.open-database-list="unfocusDatatable()">
-              <div class="table-header">
-                <div class="toggle-row">
-                  <label for="check-all-rows" class="inline-block">
+            <table cellspacing="0" class="table-data" v-if="tabledata.length > 0" ref="datatable"
+                   @keydown.right.prevent="focusCellNext($event, 1)"
+                   @keydown.left.prevent="focusCellPrevious($event, 1)"
+                   @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+                   @keydown.shift.right.prevent="focusCellNext($event,5)"
+                   @keydown.shift.left.prevent="focusCellPrevious($event,5)"
+                   @keydown.shift.up.prevent="focusRowUp($event,5)"
+                   @keydown.shift.down.prevent="focusRowDown($event,5)"
+                   @keydown.esc="unfocusDatatable()"
+                   @keydown.open-search="unfocusDatatable()" @keydown.open-recent-tables="unfocusDatatable()"
+                   @keydown.refresh-page="unfocusDatatable()" @keydown.to-query="unfocusDatatable()"
+                   @keydown.open-database-list="unfocusDatatable()">
+              <thead>
+              <tr>
+                <th class="toggle-row">
+                  <label for="check-all-rows">
                     <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event)" />
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current -mt-1 inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                       <circle cx="12" cy="12" r="10"></circle>
                       <path
                           d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
                     </svg>
                   </label>
-                </div>
-                <div :name="column_header.Field" :id="column_header.Field | lowercase"
-                     v-for="column_header in columns" :key="column_header.Field"
-                     :class="{ ' highlight-column' : (column_header.Field.toLowerCase() == column)}">
+                </th>
+                <th :name="column_header.Field" :id="column_header.Field | lowercase" v-for="column_header in columns"
+                    :class="{ ' highlight-column' : (column_header.Field.toLowerCase() == column)}"
+                    :key="column_header.Field">
                   <a @click="orderByColumn(column_header.Field)" class="column-order-link">
                     <span>{{ column_header.Field }}</span>
                     <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
@@ -195,22 +196,27 @@
                             d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
                     </svg>
                   </a>
-                </div>
-              </div>
-              <div v-for="(row, row_index) in tabledata" :key="row_index" class="table-body" @click.ctrl="toggleRowSidebar(row_index)">
-                <div class="toggle-row">
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(row, row_index) in tabledata" :key="row_index"  @click.ctrl="toggleRowSidebar(row_index)">
+                <td class="toggle-row">
                   <label class="inline-block">
                     <input type="checkbox" class="hidden" :value="row_index" v-model.lazy="selected_rows" />
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current -mt-1 inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         class="w-6 fill-current -mt-1 inline-block">
                       <circle cx="12" cy="12" r="10"></circle>
                       <path
                           d="M10 14.59l6.3-6.3a1 1 0 0 1 1.4 1.42l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 1.4-1.42l2.3 2.3z"></path>
                     </svg>
                   </label>
-                </div>
+                </td>
                 <TableDataRow v-bind:row="row" v-bind:truncate-amount="30"></TableDataRow>
-              </div>
-            </div>
+              </tr>
+              </tbody>
+
+            </table>
 
             <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
                  v-if="tabledata.length > 0 && selected_rows.length > 0">
