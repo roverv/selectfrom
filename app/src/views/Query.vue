@@ -34,7 +34,7 @@
                 <div v-if="query_result.type == 'change'">
                   Affected {{ query_result.affected_rows }} rows
                 </div>
-                <div v-else="query_result.type == 'data'">
+                <div v-else-if="query_result.type == 'data'">
                   {{ query_result.row_count }} rows
                 </div>
                 <div class="text-gray-400 text-sm">
@@ -47,15 +47,15 @@
             <div v-if="query_result.result == 'success' && query_result.type == 'data'">
 
               <table cellspacing="0" class="table-data" v-if="query_result.rows.length > 0" ref="datatable"
-                     @keydown.right.prevent="focusCellNext($event, 1)"
-                     @keydown.left.prevent="focusCellPrevious($event, 1)"
-                     @keydown.up.prevent="focusRowUp($event, 1)" @keydown.down.prevent="focusRowDown($event, 1)"
+                     @keydown.right.exact.prevent="focusCellNext($event, 1)"
+                     @keydown.left.exact.prevent="focusCellPrevious($event, 1)"
+                     @keydown.up.exact.prevent="focusRowUp($event, 1)" @keydown.down.exact.prevent="focusRowDown($event, 1)"
                      @keydown.shift.right.prevent="focusCellNext($event,5)"
                      @keydown.shift.left.prevent="focusCellPrevious($event,5)"
                      @keydown.shift.up.prevent="focusRowUp($event,5)"
                      @keydown.shift.down.prevent="focusRowDown($event,5)"
-                     @keyup.q="$refs['query'].focus()"
-                     @keydown.esc="unfocusDatatable()">
+                     @keyup.q.exact="$refs['query'].focus()"
+                     @keydown.esc.exact="unfocusDatatable()">
                 <thead>
                 <tr>
                   <th v-for="(column_meta, column_meta_index) in query_result.columns_meta" :key="column_meta_index">
@@ -64,10 +64,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(row, row_index) in query_result.rows">
-                  <td class="table-data-row" v-for="(cell, index) in row"
+                <tr v-for="(row, row_index) in query_result.rows" :key="row_index">
+                  <td class="table-data-row" v-for="(cell, index) in row" :key="index"
                       @click.ctrl="toggleRowSidebar(query_result_index, row_index)"
-                      :class="{ ' sticky-first-row-cell' : (index == 0)}" @click="$event.target.focus()" tabindex="1">
+                      :class="{ ' sticky-first-row-cell' : (index == 0)}" @click.exact="$event.target.focus()" tabindex="1">
                     <span v-if="cell === null" class="null-value"><i>NULL</i></span>
                     <span v-else>{{ cell }}</span>
                   </td>
@@ -202,8 +202,6 @@
       runQuery() {
         this.fetching_query_results = true;
         let api_url = this.api_endpoint + this.endpoint + this.active_database;
-
-        let vue_instance = this;
 
         let query         = window.editor.getValue();
         const querystring = require('querystring');

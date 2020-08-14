@@ -20,7 +20,7 @@
               </svg>
             </label>
           </th>
-          <th v-for="database_list_header in database_list_headers">
+          <th v-for="(database_list_header, index) in database_list_headers" :key="index">
             <a @click="orderByColumn(database_list_header)" class="column-order-link">
               <span class="capitalize">{{ database_list_header }}</span>
               <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
@@ -42,7 +42,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(database, database_index) in ordered_databases">
+        <tr v-for="(database, database_index) in ordered_databases" :key="database.name">
           <td class="toggle-row">
             <label>
               <input type="checkbox" class="hidden" :value="database_index" v-model="selected_rows" />
@@ -53,7 +53,7 @@
               </svg>
             </label>
           </td>
-          <td class="table-data-row" v-for="(database_list_header, index) in database_list_headers"
+          <td class="table-data-row" v-for="(database_list_header, index) in database_list_headers" :key="index"
               @click="$event.target.focus()" tabindex="1"
               :class="{ ' sticky-first-row-cell' : (index == 0)}">
             <router-link v-if="database_list_header == 'name'"
@@ -124,9 +124,6 @@ export default {
         return reverse * ((a[vue_instance.order_by] > b[vue_instance.order_by]) - (b[vue_instance.order_by] > a[vue_instance.order_by]));
       });
 
-      // undo selection because of indexes
-      this.selected_rows = [];
-
       return ordered_databases;
     }
 
@@ -148,6 +145,8 @@ export default {
     orderByColumn(column) {
       this.order_by        = column;
       this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
+      // undo selection because of indexes
+      this.selected_rows = [];
     },
 
   },

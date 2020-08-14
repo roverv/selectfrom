@@ -26,7 +26,7 @@
                 </svg>
               </label>
             </th>
-            <th v-for="table_list_header in table_list_headers">
+            <th v-for="(table_list_header, index) in table_list_headers" :key="index">
               <a @click="orderByColumn(table_list_header)" class="column-order-link">
                 <span>{{ table_list_header }}</span>
                 <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
@@ -48,7 +48,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(table, table_index) in ordered_tables">
+          <tr v-for="(table, table_index) in ordered_tables" :key="table_index">
             <td class="toggle-row">
               <label>
                 <input type="checkbox" class="hidden" :value="table_index" v-model="selected_rows" />
@@ -59,7 +59,7 @@
                 </svg>
               </label>
             </td>
-            <td class="table-data-row" v-for="(table_list_header, index) in table_list_headers"
+            <td class="table-data-row" v-for="(table_list_header, index) in table_list_headers" :key="index"
                 @click="$event.target.focus()" tabindex="1"
                 :class="{ ' sticky-first-row-cell' : (index == 0)}">
               <router-link v-if="table_list_header == 'Name'"
@@ -217,9 +217,6 @@ export default {
         });
       }
 
-      // undo selection because of indexes
-      this.selected_rows = [];
-
       return ordered_tables;
     }
 
@@ -254,6 +251,8 @@ export default {
     orderByColumn(column) {
       this.order_by        = column;
       this.order_direction = (this.order_direction == '' || this.order_direction == 'desc') ? 'asc' : 'desc';
+      // undo selection because of indexes
+      this.selected_rows = [];
     },
 
     confirmTruncateTables() {
