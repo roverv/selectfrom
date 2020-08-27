@@ -164,32 +164,34 @@ a:hover {
 }
 
 .query-sql {
-  @apply cursor-pointer inline-block text-sm text-gray-300 border border-dashed border-gray-500 py-1 px-2 bg-light-200 whitespace-pre;
+  @apply inline-block text-sm text-gray-300 border border-dashed border-gray-500 py-1 px-2 bg-light-200 whitespace-pre;
 }
 
 .query-sql:hover {
   @apply bg-light-100;
 }
 
-.query-message a.edit-query svg {
-  @apply w-4 ml-2 fill-current;
+.query-message a.query-message-icon-btn svg {
+  @apply w-5 ml-2 fill-current;
 }
 
-.edit-query svg .primary {
+.query-message-icon-btn svg .primary {
   @apply text-gray-400;
 }
 
-.edit-query svg .secondary {
+.query-message-icon-btn svg .secondary {
   @apply text-gray-500;
 }
 
-.edit-query:hover svg .primary,
-.edit-query:hover svg .secondary {
+.query-message-icon-btn:hover svg .primary {
   @apply text-highlight-700;
 }
+.query-message-icon-btn:hover svg .secondary {
+  @apply text-highlight-400;
+}
 
-.edit-query:active svg .primary,
-.edit-query:active svg .secondary {
+.query-message-icon-btn:active svg .primary,
+.query-message-icon-btn:active svg .secondary {
   @apply text-highlight-400;
 }
 

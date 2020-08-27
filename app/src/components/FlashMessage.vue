@@ -6,12 +6,25 @@
     </div>
 
     <div v-if="query" class="query-message">
-      <div @click="toggleQuerySize($event)" class="query-sql w-64 truncate flex-grow">{{ query | format }}</div>
-      <a class="edit-query" @click="editQuery()">
+      <div @click.once="toggleQuerySize($event)" class="query-sql cursor-pointer w-64 truncate flex-grow">{{ query | format }}</div>
+      <a class="query-message-icon-btn" @click="copyQuery()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <rect width="14" height="14" x="3" y="3" class="secondary" rx="2"></rect>
+          <rect width="14" height="14" x="7" y="7" class="primary" rx="2"></rect>
+        </svg>
+      </a>
+      <a class="query-message-icon-btn" @click="editQuery()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path class="primary"
                 d="M4 14a1 1 0 0 1 .3-.7l11-11a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-.7.3H5a1 1 0 0 1-1-1v-3z"></path>
           <rect width="20" height="2" x="2" y="20" class="secondary" rx="1"></rect>
+        </svg>
+      </a>
+      <a class="query-message-icon-btn" @click="removeQuery()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" class="primary"></circle>
+          <path class="text-gray-800"
+                d="M13.41 12l2.83 2.83a1 1 0 0 1-1.41 1.41L12 13.41l-2.83 2.83a1 1 0 1 1-1.41-1.41L10.59 12 7.76 9.17a1 1 0 0 1 1.41-1.41L12 10.59l2.83-2.83a1 1 0 0 1 1.41 1.41L13.41 12z"></path>
         </svg>
       </a>
     </div>
@@ -56,15 +69,26 @@
     methods: {
       toggleQuerySize(event) {
         if (event.target.classList.contains('truncate')) {
-          event.target.classList.remove('w-64', 'truncate');
-        } else {
-          event.target.classList.add('w-64', 'truncate');
+          event.target.classList.remove('w-64', 'truncate', 'cursor-pointer');
         }
       },
 
       editQuery() {
         this.$store.commit("queryedit/ADD_QUERY_EDIT", this.query);
         this.$router.push({name: 'query'});
+      },
+
+      copyQuery() {
+        const el = document.createElement('textarea');
+        el.value = this.query;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      },
+
+      removeQuery() {
+        this.query = null;
       }
     }
 
