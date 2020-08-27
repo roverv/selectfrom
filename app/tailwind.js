@@ -2,6 +2,13 @@ module.exports = {
   prefix: '',
   important: false,
   separator: ':',
+  purge: {
+    // enabled: true, // for debugging purge on dev
+    content: [
+      './src/**/*.html',
+      './src/**/*.vue',
+    ]
+  },
   theme: {
     // colors: {},
     extend: {
