@@ -22,7 +22,7 @@
     </div>
 
     <div class="app-sidebar-navigation h-screen">
-      <HeaderTopBar v-on:SwitchTheme="SwitchTheme"></HeaderTopBar>
+      <MainNavigation v-on:SwitchTheme="SwitchTheme"></MainNavigation>
     </div>
 
     <div class="app-sidebar-tables py-5 h-screen">
@@ -50,7 +50,7 @@
   import TableListSidebar from "./components/TableListSidebar";
   import RecentTables from "./components/RecentTables";
   import QueryHistory from "./components/QueryHistory";
-  import HeaderTopBar from "./components/HeaderTopBar";
+  import MainNavigation from "./components/MainNavigation";
   import ApiError from "./components/ApiError";
 
   // use this to reload the main component
@@ -92,7 +92,7 @@
 
     components: {
       ApiError,
-      HeaderTopBar,
+      MainNavigation,
       TableListSidebar,
       RecentTables,
       SearchModal,

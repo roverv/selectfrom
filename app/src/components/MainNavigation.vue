@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar-navigation">
+  <div class="main-navigation">
 
     <div class="px-5 py-2 text-center border-light-200 mb-4 ">
       <h2 class="font-bold m-0 p-0">SAKOJA</h2>
@@ -86,7 +86,7 @@
 <script>
 
 export default {
-  name: 'HeaderTopBar',
+  name: 'MainNavigation',
 
   data() {
     return {}
@@ -115,12 +115,12 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-.sidebar-navigation {
+.main-navigation {
   @apply border-r border-light-100 z-20 w-56 h-full absolute;
   margin-left: -215px;
 }
 
-.sidebar-navigation:hover {
+.main-navigation:hover {
   @apply ml-0 bg-dark-400 border-0;
   transition: all 0.3s ease;
 }
