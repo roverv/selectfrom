@@ -64,16 +64,17 @@
   import TableNav from '@/components/TableNav.vue'
   import sqlFormatter from "sql-formatter";
   import HandleApiError from '@/mixins/HandleApiError.js'
+  import ApiUrl from "@/mixins/ApiUrl";
 
   export default {
     name: 'editrow',
     props: ['tableid', 'column', 'rowid'],
     data() {
       return {
-        endpoint_table_structure: 'table_structure.php?db=',
-        endpoint_row_data: 'rowdata.php?db=',
-        endpoint_insert_row: 'insertrow.php?db=',
-        endpoint_update_row: 'updaterow.php?db=',
+        endpoint_table_structure: 'table_structure.php',
+        endpoint_row_data: 'rowdata.php',
+        endpoint_insert_row: 'insertrow.php',
+        endpoint_update_row: 'updaterow.php',
         columns: [],
         row_data: {},
         columns_null: {},
@@ -86,7 +87,8 @@
     },
 
     mixins: [
-      HandleApiError
+      HandleApiError,
+      ApiUrl
     ],
 
     mounted() {
@@ -101,9 +103,6 @@
       active_database() {
         return this.$store.state.activeDatabase;
       },
-      api_endpoint() {
-        return this.$store.state.apiEndPoint;
-      },
     },
 
     filters: {
@@ -115,10 +114,8 @@
     methods: {
 
       getTableStructure() {
-        let api_url = this.api_endpoint;
-        if (this.tableid) {
-          api_url += this.endpoint_table_structure + this.active_database + '&tablename=' + this.tableid;
-        }
+        let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
+        let api_url = this.buildApiUrl(this.endpoint_table_structure, api_url_params);
 
         axios.get(api_url).then(response => {
           this.columns = response.data;
@@ -132,10 +129,13 @@
       },
 
       getRowData() {
-
-        let api_url = this.api_endpoint;
-        api_url += this.endpoint_row_data + this.active_database + '&tablename=' + this.tableid;
-        api_url += '&column=' + this.column + '&value=' + this.rowid;
+        let api_url_params = {
+          'db': this.active_database,
+          'tablename': this.tableid,
+          'column': this.column,
+          'value': this.rowid
+        };
+        let api_url = this.buildApiUrl(this.endpoint_row_data, api_url_params);
 
         axios.get(api_url).then(response => {
           this.row_data = response.data.data;
@@ -152,10 +152,21 @@
       },
 
       saveRow() {
-        let api_url = this.api_endpoint;
-        api_url += (this.$route.name == 'addrow') ? this.endpoint_insert_row : this.endpoint_update_row;
-        api_url += this.active_database + '&tablename=' + this.tableid;
-        api_url += '&column=' + this.column + '&value=' + this.rowid;
+
+        let api_url_params = {
+          'db': this.active_database,
+          'tablename': this.tableid,
+          'column': this.column,
+          'value': this.rowid
+        };
+
+        let api_url = '';
+        if(this.$route.name == 'addrow') {
+          api_url = this.buildApiUrl(this.endpoint_insert_row, api_url_params);
+        }
+        else {
+          api_url = this.buildApiUrl(this.endpoint_update_row, api_url_params);
+        }
 
         let vue_instance = this;
 

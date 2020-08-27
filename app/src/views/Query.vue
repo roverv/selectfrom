@@ -103,6 +103,7 @@
   import {number_format} from '../util';
   import HandleApiError from '@/mixins/HandleApiError.js';
   import Spinner from "@/components/Spinner";
+  import ApiUrl from "@/mixins/ApiUrl";
 
 
   export default {
@@ -110,7 +111,7 @@
     props: ['historyindex'],
     data() {
       return {
-        endpoint: 'query.php?db=',
+        endpoint: 'query.php',
         query_results: {},
         sidebarisopen: false,
         sidebar_row_data: [],
@@ -127,7 +128,8 @@
 
     mixins: [
       TableKeyNavigation,
-      HandleApiError
+      HandleApiError,
+      ApiUrl
     ],
 
     filters: {
@@ -188,10 +190,6 @@
         return this.$store.getters["tables/tablesWithColumns"];
       },
 
-      api_endpoint() {
-        return this.$store.state.apiEndPoint;
-      },
-
       query_history() {
         return this.$store.getters["queryhistory/queries"];
       },
@@ -201,7 +199,9 @@
 
       runQuery() {
         this.fetching_query_results = true;
-        let api_url = this.api_endpoint + this.endpoint + this.active_database;
+
+        let api_url_params = {'db': this.active_database};
+        let api_url        = this.buildApiUrl(this.endpoint, api_url_params);
 
         let query         = window.editor.getValue();
         const querystring = require('querystring');

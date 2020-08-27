@@ -6,13 +6,13 @@
     //  $rows = $pdo->query("SELECT * FROM " . $_GET['tablename']. " LIMIT 30")->fetchAll();
     // no need to get columns if we are retrieving more rows, they are already retrieved on the first call
     if(empty($_GET['offset'])) {
-        $rows                  = $pdo->query("SHOW FULL COLUMNS FROM ".$_GET['tablename'])->fetchAll();
+        $rows                  = $pdo->query("SHOW FULL COLUMNS FROM ".escape_mysql_identifier($_GET['tablename']))->fetchAll();
         $table_data['columns'] = $rows;
     }
 
     $amount_rows_per_page = 30; //todo: instelbaar maken
 
-    $query                 = "SELECT * FROM ".$_GET['tablename']." ";
+    $query                 = "SELECT * FROM ".escape_mysql_identifier($_GET['tablename'])." ";
 
     $filter_query = '';
     if (!empty($_GET['column']) && !empty($_GET['value']) && !empty($_GET['comparetype'])) {
@@ -54,7 +54,7 @@
         $query .= " OFFSET " . $offset . " ";
     }
 
-    $count_query = "SELECT COUNT(*) as amount_rows FROM " . $_GET['tablename'] . " "  . $filter_query;
+    $count_query = "SELECT COUNT(*) as amount_rows FROM " . escape_mysql_identifier($_GET['tablename']) . " "  . $filter_query;
     $count_result  = $pdo->query($count_query)->fetch();
 
     $table_data['amount_rows'] = $count_result['amount_rows'] ?? 0;

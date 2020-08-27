@@ -223,6 +223,7 @@
   import sqlFormatter from "sql-formatter";
   import HandleApiError from '@/mixins/HandleApiError.js'
   import {clone} from '../util'
+  import ApiUrl from "@/mixins/ApiUrl";
 
   var default_column_row = {
     name: '',
@@ -240,9 +241,9 @@
     props: ['tableid'],
     data() {
       return {
-        endpoint_create_table: 'createtable.php?db=',
-        endpoint_alter_table: 'altertable.php?db=',
-        endpoint_table_creation_data: 'table_creation_data.php?db=',
+        endpoint_create_table: 'createtable.php',
+        endpoint_alter_table: 'altertable.php',
+        endpoint_table_creation_data: 'table_creation_data.php',
         collations: [],
         engines: [],
         data_types: [],
@@ -263,7 +264,8 @@
     },
 
     mixins: [
-      HandleApiError
+      HandleApiError,
+      ApiUrl
     ],
 
     mounted() {
@@ -273,9 +275,6 @@
     computed: {
       active_database() {
         return this.$store.state.activeDatabase;
-      },
-      api_endpoint() {
-        return this.$store.state.apiEndPoint;
       },
       page_is_create() {
         return (this.$route.name == 'addtable');
@@ -294,10 +293,12 @@
     methods: {
 
       getTableCreationData() {
-        let api_url = this.api_endpoint + this.endpoint_table_creation_data + this.active_database;
+
+        let api_url_params = { 'db': this.active_database };
         if (this.page_is_edit) {
-          api_url += '&tablename=' + this.tableid;
+          api_url_params.tablename = this.tableid;
         }
+        let api_url = this.buildApiUrl(this.endpoint_table_creation_data, api_url_params);
 
         axios.get(api_url).then(response => {
           this.collations           = response.data.collations;
@@ -355,11 +356,18 @@
       },
 
       saveTable() {
-        let api_url = this.api_endpoint;
-        api_url += (this.page_is_create) ? this.endpoint_create_table : this.endpoint_alter_table;
-        api_url += this.active_database;
+
+        let api_url_params = { 'db': this.active_database };
         if (this.page_is_edit) {
-          api_url += '&tablename=' + this.tableid;
+          api_url_params.tablename = this.tableid;
+        }
+
+        let api_url = '';
+        if(this.page_is_create) {
+          api_url = this.buildApiUrl(this.endpoint_create_table, api_url_params);
+        }
+        else {
+          api_url = this.buildApiUrl(this.endpoint_alter_table, api_url_params);
         }
 
         let vue_instance = this;

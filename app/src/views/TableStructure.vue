@@ -46,6 +46,7 @@
 import axios from 'axios'
 import TableNav from '@/components/TableNav.vue'
 import HandleApiError from '@/mixins/HandleApiError.js'
+import ApiUrl from "@/mixins/ApiUrl";
 
 export default {
   name: 'TableStructure',
@@ -53,7 +54,7 @@ export default {
   data() {
     return {
       columns: [],
-      endpoint: 'table_structure.php?db=',
+      endpoint: 'table_structure.php',
     }
   },
 
@@ -62,7 +63,8 @@ export default {
   },
 
   mixins: [
-    HandleApiError
+    HandleApiError,
+    ApiUrl
   ],
 
   mounted() {
@@ -72,10 +74,6 @@ export default {
   computed: {
     active_database() {
       return this.$store.state.activeDatabase;
-    },
-
-    api_endpoint() {
-      return this.$store.state.apiEndPoint;
     },
   },
 
@@ -95,12 +93,8 @@ export default {
   methods: {
     getTableStructure() {
 
-      let api_url = this.api_endpoint;
-      if (this.tableid) {
-        api_url += this.endpoint + this.active_database + '&tablename=' + this.tableid;
-      }
-
-      let vue_instance = this;
+      let api_url_params = {'db': this.active_database, 'tablename' : this.tableid};
+      let api_url        = this.buildApiUrl(this.endpoint, api_url_params);
 
       axios.get(api_url).then(response => {
         this.columns = response.data;

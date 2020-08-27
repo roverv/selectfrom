@@ -52,3 +52,7 @@ export function uuidv4() {
 export function clone(variable) {
   return JSON.parse(JSON.stringify(variable));
 }
+
+export function urlencode(string) {
+  return encodeURIComponent(string);
+}

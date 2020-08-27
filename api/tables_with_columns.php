@@ -2,7 +2,7 @@
 
     require_once '_header.php';
 
-    $rows = $pdo->query("SELECT * FROM information_schema.columns WHERE table_schema = '" . $_GET['db'] . "' ORDER BY table_name,ordinal_position")->fetchAll();
+    $rows = $pdo->query("SELECT * FROM information_schema.columns WHERE table_schema = DATABASE() ORDER BY table_name,ordinal_position")->fetchAll();
 
     $tables_with_columns = [];
     foreach ($rows as $_row) {

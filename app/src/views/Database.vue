@@ -117,6 +117,7 @@ import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import HandleApiError from "@/mixins/HandleApiError";
 import FlashMessage from "@/components/FlashMessage";
 import axios from "axios";
+import ApiUrl from "@/mixins/ApiUrl";
 
 export default {
   name: 'TableList',
@@ -126,8 +127,8 @@ export default {
       selected_rows: [],
       order_by: 'name',
       order_direction: 'asc',
-      endpoint_truncate_tables: 'truncate_tables.php?db=',
-      endpoint_drop_tables: 'drop_tables.php?db=',
+      endpoint_truncate_tables: 'truncate_tables.php',
+      endpoint_drop_tables: 'drop_tables.php',
     }
   },
 
@@ -139,7 +140,8 @@ export default {
 
   mixins: [
     ConfirmModalMixin,
-    HandleApiError
+    HandleApiError,
+    ApiUrl
   ],
 
   filters: {
@@ -173,10 +175,6 @@ export default {
 
     active_database() {
       return this.$store.state.activeDatabase;
-    },
-
-    api_endpoint() {
-      return this.$store.state.apiEndPoint;
     },
 
     tables() {
@@ -280,7 +278,9 @@ export default {
       }
 
       let vue_instance = this;
-      let api_url      = this.api_endpoint;
+      let api_url_params = {'db': this.active_database};
+      let api_url        = this.buildApiUrl(this.endpoint_truncate_tables, api_url_params);
+
       api_url += this.endpoint_truncate_tables + this.active_database;
       axios.post(api_url, params).then(response => {
         let message = response.data.affected_tables;
@@ -301,8 +301,8 @@ export default {
       }
 
       let vue_instance = this;
-      let api_url      = this.api_endpoint;
-      api_url += this.endpoint_drop_tables + this.active_database;
+      let api_url_params = {'db': this.active_database};
+      let api_url        = this.buildApiUrl(this.endpoint_drop_tables, api_url_params);
       axios.post(api_url, params).then(response => {
         let message = response.data.affected_tables;
         message += (response.data.affected_tables == 1) ? ' table dropped.' : ' tables dropped.';
