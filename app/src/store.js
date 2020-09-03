@@ -29,7 +29,6 @@ export default new Vuex.Store({
   },
 
   state: {
-    apiEndPoint: 'http://localhost/rove/api/',
     activeDatabase: '',
     reloadMainComponentKey: 0
   },

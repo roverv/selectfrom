@@ -3,6 +3,6 @@ import store from "../store";
 
 export default {
   get() {
-    return axios.get(store.state.apiEndPoint + 'databases.php');
+    return axios.get(process.env.VUE_APP_API_ENDPOINT + 'databases.php');
   }
 };

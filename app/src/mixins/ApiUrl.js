@@ -2,16 +2,10 @@ import {urlencode} from "@/util";
 
 export default {
 
-  computed: {
-    api_endpoint() {
-      return this.$store.state.apiEndPoint;
-    },
-  },
-
   methods: {
     buildApiUrl(endpoint_url, params) {
 
-      let api_url = this.api_endpoint;
+      let api_url = process.env.VUE_APP_API_ENDPOINT;
       api_url += endpoint_url;
 
       let url_params_array = Object.entries(params);

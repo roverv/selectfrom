@@ -1,4 +1,4 @@
 module.exports = {
   lintOnSave: false,
-  publicPath: process.env.NODE_ENV === 'production' ? '/rove/' : '/'
+  publicPath: './' // relative path, see: https://cli.vuejs.org/config/#publicpath
 }

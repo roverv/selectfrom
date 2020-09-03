@@ -54,16 +54,10 @@ export default {
     }
   },
 
-  computed: {
-    api_endpoint() {
-      return this.$store.state.apiEndPoint;
-    },
-  },
-
   methods: {
 
     submitLogin() {
-      let api_url        = this.api_endpoint + this.endpoint;
+      let api_url        = process.env.VUE_APP_API_ENDPOINT + this.endpoint;
 
       let params = new URLSearchParams();
       params.append('server', this.server);
