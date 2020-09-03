@@ -35,6 +35,11 @@ $container = $containerBuilder->build();
 // Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
+
+/** !IMPORTANT */
+/** point to the index.php, we removed the .htaccess so we can also support nginx */
+$app->setBasePath('/rove/slimapi/public/index.php');
+
 $callableResolver = $app->getCallableResolver();
 
 // Register middleware
