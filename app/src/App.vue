@@ -30,9 +30,7 @@
     </div>
 
     <div class="app-body">
-      <div class="py-5 pb-5 mr-5">
-        <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" />
-      </div>
+      <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" />
     </div>
 
   </div>

@@ -201,7 +201,7 @@ a:hover {
  *********************/
 
 .page-content-container {
-  @apply flex justify-center;
+  @apply flex justify-center py-5 pb-5 mr-5;
   min-width: 900px;
 }
 
