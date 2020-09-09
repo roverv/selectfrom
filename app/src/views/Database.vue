@@ -116,7 +116,6 @@ import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import HandleApiError from "@/mixins/HandleApiError";
 import FlashMessage from "@/components/FlashMessage";
-import axios from "axios";
 import ApiUrl from "@/mixins/ApiUrl";
 
 export default {

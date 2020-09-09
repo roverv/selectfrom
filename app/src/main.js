@@ -2,8 +2,11 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import axios from 'axios'
 import '@/assets/css/main.css'
 
+// true, to sent along cookies for cross domain requests
+axios.defaults.withCredentials = true;
 
 Vue.config.productionTip = false
 

@@ -297,7 +297,6 @@
 
 <script>
 
-import axios from 'axios'
 import TableNav from '@/components/TableNav.vue'
 import TableDataMeta from '@/components/TableDataMeta.vue'
 import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'

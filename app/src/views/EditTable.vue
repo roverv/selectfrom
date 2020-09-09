@@ -218,7 +218,6 @@
 
 <script>
 
-  import axios from "axios";
   import TableNav from '@/components/TableNav.vue'
   import sqlFormatter from "sql-formatter";
   import HandleApiError from '@/mixins/HandleApiError.js'

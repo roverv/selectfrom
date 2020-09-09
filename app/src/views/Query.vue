@@ -90,7 +90,6 @@
 
 <script>
 
-  import axios from 'axios';
   import RowSidebar from "@/components/RowSidebar";
   import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
   import CodeMirror from 'codemirror/lib/codemirror.js';

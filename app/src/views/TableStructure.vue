@@ -43,7 +43,6 @@
 
 <script>
 
-import axios from 'axios'
 import TableNav from '@/components/TableNav.vue'
 import HandleApiError from '@/mixins/HandleApiError.js'
 import ApiUrl from "@/mixins/ApiUrl";
