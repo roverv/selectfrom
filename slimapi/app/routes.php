@@ -5,8 +5,10 @@ declare(strict_types=1);
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
+use App\Application\Actions\Table\DropTableAction;
 use App\Application\Actions\Table\ListTableAction;
 use App\Application\Actions\Table\ListWithColumnsTableAction;
+use App\Application\Actions\Table\TruncateTableAction;
 use App\Application\Middleware\AuthMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -36,6 +38,8 @@ return function (App $app) {
       function (Group $group) {
           $group->get('/list', ListTableAction::class);
           $group->get('/listwithcolumns', ListWithColumnsTableAction::class);
+          $group->post('/truncate', TruncateTableAction::class);
+          $group->post('/drop', DropTableAction::class);
       }
     )->add(AuthMiddleware::class);
 };

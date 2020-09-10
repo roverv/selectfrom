@@ -126,8 +126,6 @@ export default {
       selected_rows: [],
       order_by: 'name',
       order_direction: 'asc',
-      endpoint_truncate_tables: 'truncate_tables.php',
-      endpoint_drop_tables: 'drop_tables.php',
     }
   },
 
@@ -278,14 +276,12 @@ export default {
 
       let vue_instance = this;
       let api_url_params = {'db': this.active_database};
-      let api_url        = this.buildApiUrl(this.endpoint_truncate_tables, api_url_params);
-
-      api_url += this.endpoint_truncate_tables + this.active_database;
-      axios.post(api_url, params).then(response => {
-        let message = response.data.affected_tables;
-        message += (response.data.affected_tables == 1) ? ' table truncated.' : ' tables truncated.';
+      let api_url        = this.buildApiUrl('table/truncate', api_url_params);
+      this.$http.post(api_url, params).then(response => {
+        let message = response.data.data.affected_tables;
+        message += (response.data.data.affected_tables == 1) ? ' table truncated.' : ' tables truncated.';
         this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
-        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.data.query);
         this.$store.dispatch('refreshTables');
         vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
       }).catch(error => {
@@ -301,12 +297,12 @@ export default {
 
       let vue_instance = this;
       let api_url_params = {'db': this.active_database};
-      let api_url        = this.buildApiUrl(this.endpoint_drop_tables, api_url_params);
-      axios.post(api_url, params).then(response => {
-        let message = response.data.affected_tables;
-        message += (response.data.affected_tables == 1) ? ' table dropped.' : ' tables dropped.';
+      let api_url        = this.buildApiUrl('table/drop', api_url_params);
+      this.$http.post(api_url, params).then(response => {
+        let message = response.data.data.affected_tables;
+        message += (response.data.data.affected_tables == 1) ? ' table dropped.' : ' tables dropped.';
         this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
-        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.data.query);
         this.$store.dispatch('refreshTables');
         vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
       }).catch(error => {
