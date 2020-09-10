@@ -100,6 +100,12 @@ export default {
     }
   },
 
+  created() {
+    if(this.$store.getters["databases/hasDatabases"] === false) {
+      this.$store.dispatch('databases/get');
+    }
+  },
+
   computed: {
     database_list_headers: function () {
       return ["name", "collation"];

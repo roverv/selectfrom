@@ -24,8 +24,12 @@ class AuthMiddleware implements Middleware
         $password = $session['password'] ?? '';
         $charset  = 'utf8mb4';
 
-        //        $dsn     = "mysql:host=$host;dbname=$db;charset=$charset";
-        $dsn     = "mysql:host=$host;charset=$charset";
+        $query_parameters = $request->getQueryParams();
+
+        $dsn = "mysql:host=$host;charset=$charset";
+        if (!empty($query_parameters['db'])) {
+            $dsn = "mysql:host=$host;dbname=" . $query_parameters['db'] . ";charset=$charset";
+        }
         $options = [
           PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
           PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
