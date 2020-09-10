@@ -1,8 +1,10 @@
 <template>
   <div class="flex justify-center items-center w-full h-screen">
 
-    <div class="max-w-sm">
-      <div class="bg-dark-600">
+    <div id="login-background" class="fixed z-0 justify-center items-center w-full h-screen"></div>
+
+    <div class="max-w-sm relative" id="login-box">
+      <div>
         <div class="header-bar px-6 py-3 text-center font-semibold" style="background: rgba(33, 32, 63, 0.6);">
           Rove - Login
         </div>
@@ -11,19 +13,19 @@
         </div>
         <form @submit.prevent="submitLogin()" ref="loginform" class="form px-6 py-5">
           <div class="flex items-center mb-4">
-            <label for="" class="w-32">Host</label>
+            <label class="w-32">Host</label>
             <input type="text" name="host" v-model="host"
                    class="border border-gray-500 py-1 px-2 placeholder-gray-400 focus:outline-none"
                    placeholder="localhost" style="background-color: rgba(255,255,255,0.3);">
           </div>
           <div class="flex items-center mb-4">
-            <label for="" class="w-32">Username</label>
+            <label class="w-32">Username</label>
             <input type="text" name="username" v-model="username"
                    class="border border-gray-500 py-1 px-2 placeholder-gray-400 focus:outline-none"
                    style="background-color: rgba(255,255,255,0.3);">
           </div>
           <div class="flex items-center mb-4">
-            <label for="" class="w-32">Password</label>
+            <label class="w-32">Password</label>
             <input type="password" name="password" v-model="password"
                    class="border border-gray-500 py-1 px-2 placeholder-gray-400 focus:outline-none"
                    style="background-color: rgba(255,255,255,0.3);">
@@ -89,5 +91,41 @@ export default {
 </script>
 
 <style scoped>
+#login-background {
+  /*background-position-y: -220px;*/
+  background-image:      url('../assets/images/login-background.jpg');
+  background-position: center center;
+  background-size: cover;
+  animation: 10s ease-in 0s 1 fadeBackgroundIn;
+  animation-fill-mode: forwards; /** stop at 100% keyframe **/
+}
+
+@keyframes fadeBackgroundIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+#login-box {
+
+  background: linear-gradient(45deg, hsl(242, 25%, 25%), hsl(242, 25%, 25%), #536D92, #5A4688);
+  background-size: 400% 400%;
+  animation: 10s ease-in 0s 1 fadeBackgroundOut;
+  animation-fill-mode: forwards; /** stop at 100% keyframe **/
+}
+
+@keyframes fadeBackgroundOut {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+
+}
+
 
 </style>
