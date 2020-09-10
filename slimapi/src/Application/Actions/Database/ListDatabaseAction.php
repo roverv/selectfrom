@@ -25,10 +25,6 @@ class ListDatabaseAction extends Action
           $rows
         );
 
-        $payload = json_encode($databases);
-
-        $this->response->getBody()->write($payload);
-
-        return $this->response->withHeader('Content-Type', 'application/json');
+        return $this->respondWithData($databases);
     }
 }

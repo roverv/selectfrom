@@ -32,15 +32,11 @@ class ListWithColumnsTableAction extends Action
             }
         }
 
-        $payload = json_encode(
-          [
-            'tables_with_columns'      => $tables_with_columns,
-            'tables_with_primary_keys' => $tables_with_primary_keys,
-          ]
-        );
+        $payload = [
+          'tables_with_columns'      => $tables_with_columns,
+          'tables_with_primary_keys' => $tables_with_primary_keys,
+        ];
 
-        $this->response->getBody()->write($payload);
-
-        return $this->response->withHeader('Content-Type', 'application/json');
+        return $this->respondWithData($payload);
     }
 }

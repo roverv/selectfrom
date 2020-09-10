@@ -53,8 +53,8 @@ export default {
       commit(FETCHING_DATABASES);
       try {
         let response = await DatabaseAPI.get();
-        commit(FETCHING_DATABASES_SUCCESS, response.data);
-        return response.data;
+        commit(FETCHING_DATABASES_SUCCESS, response.data.data);
+        return response.data.data;
       } catch (error) {
         commit(FETCHING_DATABASES_ERROR, error);
         return null;

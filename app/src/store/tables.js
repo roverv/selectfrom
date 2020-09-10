@@ -96,8 +96,8 @@ export default {
       commit(FETCHING_TABLES);
       try {
         let response = await TablesAPI.get();
-        commit(FETCHING_TABLES_SUCCESS, response.data);
-        return response.data;
+        commit(FETCHING_TABLES_SUCCESS, response.data.data);
+        return response.data.data;
       } catch (error) {
         commit(FETCHING_TABLES_ERROR, error);
         return null;
@@ -108,9 +108,9 @@ export default {
       commit(FETCHING_TABLES_WITH_COLUMNS);
       try {
         let response = await TablesAPI.getWithColumns();
-        commit(FETCHING_TABLES_WITH_COLUMNS_SUCCESS, response.data.tables_with_columns);
-        commit(FETCHING_TABLES_WITH_PRIMARY_KEYS, response.data.tables_with_primary_keys);
-        return response.data;
+        commit(FETCHING_TABLES_WITH_COLUMNS_SUCCESS, response.data.data.tables_with_columns);
+        commit(FETCHING_TABLES_WITH_PRIMARY_KEYS, response.data.data.tables_with_primary_keys);
+        return response.data.data;
       } catch (error) {
         commit(FETCHING_TABLES_WITH_COLUMNS_ERROR, error);
         return null;
