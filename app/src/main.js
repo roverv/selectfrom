@@ -4,9 +4,18 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import '@/assets/css/main.css'
+import Vuex from "vuex";
 
-// true, to sent along cookies for cross domain requests
-axios.defaults.withCredentials = true;
+const axios_instance =  axios.create({
+  baseURL: process.env.VUE_APP_API_ENDPOINT,
+  // true, to sent along cookies for cross domain requests
+  withCredentials: true,
+ })
+
+// make axios available on VUE object
+Vue.prototype.$http = axios_instance;
+// make axios available on VUEX STORE object
+Vuex.Store.prototype.$axios = axios_instance;
 
 Vue.config.productionTip = false
 
@@ -19,6 +28,7 @@ Vue.config.keyCodes = {
   "refresh-page": 82, // r
   "to-query": 81, // q
 }
+
 //before `new Vue`
 // Vue.config.devtools = true;
 // Vue.config.performance = true;

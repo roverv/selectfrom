@@ -4,9 +4,7 @@ export default {
 
   methods: {
     buildApiUrl(endpoint_url, params) {
-
-      let api_url = process.env.VUE_APP_API_ENDPOINT;
-      api_url += endpoint_url;
+      let api_url = endpoint_url;
 
       let url_params_array = Object.entries(params);
       if(url_params_array.length == 0) return api_url;
