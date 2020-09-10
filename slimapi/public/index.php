@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+// protection for session hijacking, see: https://stackoverflow.com/questions/5081025/php-session-fixation-hijacking
+@ini_set("session.use_trans_sid", "0");
+@ini_set("session.use_only_cookies", "1");
+
 use App\Application\Handlers\HttpErrorHandler;
 use App\Application\Handlers\ShutdownHandler;
 use App\Application\ResponseEmitter\ResponseEmitter;
