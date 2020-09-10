@@ -12,7 +12,10 @@ const router = new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "server" */ './views/Login.vue')
+      component: () => import(/* webpackChunkName: "server" */ './views/Login.vue'),
+      meta: {
+        requiresNoAuthentication: true
+      }
     },
     {
       path: '/server',
@@ -93,5 +96,18 @@ const router = new Router({
     },
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresNoAuthentication)) {
+    next()
+  } else {
+    // redirect if not logged in
+    if (typeof Store.state.authenticated === 'undefined' || Store.state.authenticated !== true) {
+      next({name: 'login'});
+    } else {
+      next()
+    }
+  }
+})
 
 export default router;

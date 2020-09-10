@@ -30,7 +30,8 @@ export default new Vuex.Store({
 
   state: {
     activeDatabase: '',
-    reloadMainComponentKey: 0
+    reloadMainComponentKey: 0,
+    authenticated: false,
   },
 
   mutations: {
@@ -39,6 +40,9 @@ export default new Vuex.Store({
       this.dispatch("tables/get");
       this.dispatch("tables/getWithColumns");
     },
+    setAuthenticated(state, authenticated) {
+      state.authenticated = authenticated;
+    }
   },
 
   actions: {
