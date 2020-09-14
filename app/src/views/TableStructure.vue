@@ -15,7 +15,7 @@
         <div class="relative w-full">
           <table cellspacing="0" class="flex-grow  bg-light-100 relative"
                  style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
-                 v-if="columns.length > 1">
+                 v-if="columns.length > 0">
             <thead class="bg-dark-400 text-gray-200">
             <tr class="font-normal">
               <th class="sticky top-0 z-20 bg-dark-400 text-gray-200 px-2 py-3"

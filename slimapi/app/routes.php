@@ -10,6 +10,9 @@ use App\Application\Actions\Row\GetRowAction;
 use App\Application\Actions\Row\InsertRowAction;
 use App\Application\Actions\Row\ListRowAction;
 use App\Application\Actions\Row\UpdateRowAction;
+use App\Application\Actions\Table\AlterTableAction;
+use App\Application\Actions\Table\CreateTableAction;
+use App\Application\Actions\Table\CreationDataTableAction;
 use App\Application\Actions\Table\DropTableAction;
 use App\Application\Actions\Table\ListTableAction;
 use App\Application\Actions\Table\ListWithColumnsTableAction;
@@ -48,6 +51,9 @@ return function (App $app) {
           $group->post('/truncate', TruncateTableAction::class);
           $group->post('/drop', DropTableAction::class);
           $group->get('/structure', StructureTableAction::class);
+          $group->get('/creationdata', CreationDataTableAction::class);
+          $group->post('/create', CreateTableAction::class);
+          $group->post('/alter', AlterTableAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 

@@ -240,9 +240,9 @@
     props: ['tableid'],
     data() {
       return {
-        endpoint_create_table: 'createtable.php',
-        endpoint_alter_table: 'altertable.php',
-        endpoint_table_creation_data: 'table_creation_data.php',
+        endpoint_create_table: 'table/create',
+        endpoint_alter_table: 'table/alter',
+        endpoint_table_creation_data: 'table/creationdata',
         collations: [],
         engines: [],
         data_types: [],
@@ -299,24 +299,25 @@
         }
         let api_url = this.buildApiUrl(this.endpoint_table_creation_data, api_url_params);
 
-        axios.get(api_url).then(response => {
-          this.collations           = response.data.collations;
-          this.engines              = response.data.engines;
-          this.data_types           = response.data.data_types;
-          this.data_type_attributes = response.data.data_type_attributes;
+        this.$http.get(api_url).then(response => {
+          let reponse_data = response.data.data;
+          this.collations           = reponse_data.collations;
+          this.engines              = reponse_data.engines;
+          this.data_types           = reponse_data.data_types;
+          this.data_type_attributes = reponse_data.data_type_attributes;
           if (this.page_is_edit) {
-            this.table_name                      = response.data.table_data.name;
-            this.engine                          = response.data.table_data.engine;
-            this.collation                       = response.data.table_data.collation;
-            this.comment                         = response.data.table_data.comment;
-            this.auto_increment_value            = response.data.table_data.auto_increment_value;
+            this.table_name                      = reponse_data.table_data.name;
+            this.engine                          = reponse_data.table_data.engine;
+            this.collation                       = reponse_data.table_data.collation;
+            this.comment                         = reponse_data.table_data.comment;
+            this.auto_increment_value            = reponse_data.table_data.auto_increment_value;
             this.auto_increment_column_row_index = false;
-            for (let column_index in response.data.table_data.columns) {
-              if (response.data.table_data.columns[column_index].hasOwnProperty('is_auto_increment') && response.data.table_data.columns[column_index].is_auto_increment === true) {
+            for (let column_index in reponse_data.table_data.columns) {
+              if (reponse_data.table_data.columns[column_index].hasOwnProperty('is_auto_increment') && reponse_data.table_data.columns[column_index].is_auto_increment === true) {
                 this.auto_increment_column_row_index = parseInt(column_index);
               }
             }
-            this.column_rows = response.data.table_data.columns;
+            this.column_rows = reponse_data.table_data.columns;
             this.column_rows.map(function (column_row) {
               column_row.original_field_name = column_row.name;
               return column_row;
@@ -390,8 +391,8 @@
           }
         }
 
-        axios.post(api_url, params).then(response => {
-          vue_instance.query_result = response.data;
+        this.$http.post(api_url, params).then(response => {
+          vue_instance.query_result = response.data.data;
           if (vue_instance.query_result.result == 'success' && this.$route.name == 'addtable') {
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table created.');
             this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
