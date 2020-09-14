@@ -321,9 +321,9 @@ export default {
       offset_rows: 0,
       api_error: '',
       endpoint_table_data: 'row/list',
-      endpoint_delete_rows: 'delete_rows.php',
-      endpoint_truncate_tables: 'truncate_tables.php',
-      endpoint_drop_tables: 'drop_tables.php',
+      endpoint_delete_rows: 'row/delete',
+      endpoint_truncate_tables: 'table/truncate',
+      endpoint_drop_tables: 'table/drop',
       order_by: '',
       order_direction: '',
       sidebarisopen: false,
@@ -639,7 +639,7 @@ export default {
       let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
       let api_url = this.buildApiUrl(this.endpoint_delete_rows, api_url_params);
 
-      axios.post(api_url, params).then(response => {
+      this.$http.post(api_url, params).then(response => {
         // remove the selected rows from the data, sort by highest number first, else we will remove the wrong rows because of numerical order
         let selected_rows_sorted = this.selected_rows.sort(function (a, b) {
           return b - a
@@ -671,11 +671,8 @@ export default {
 
       let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
       let api_url = this.buildApiUrl(this.endpoint_delete_rows, api_url_params);
-      axios.post(api_url, params).then(response => {
-        vue_instance.query_result = response.data;
-        if(vue_instance.query_result.result == 'success') {
-          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Row deleted.');
-        }
+      this.$http.post(api_url, params).then(response => {
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Row deleted.');
         this.$store.state.reloadMainComponentKey += 1;
       }).catch(error => {
         this.handleApiError(error);
@@ -763,9 +760,9 @@ export default {
       let vue_instance = this;
       let api_url_params = {'db': this.active_database};
       let api_url = this.buildApiUrl(this.endpoint_drop_tables, api_url_params);
-      axios.post(api_url, params).then(response => {
+      this.$http.post(api_url, params).then(response => {
         this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' dropped.');
-        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.data.query);
         this.$store.dispatch('refreshTables');
         vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
       }).catch(error => {
@@ -787,7 +784,7 @@ export default {
       let api_url_params = {'db': this.active_database};
       let api_url = this.buildApiUrl(this.endpoint_truncate_tables, api_url_params);
 
-      axios.post(api_url, params).then(response => {
+      this.$http.post(api_url, params).then(response => {
         this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' truncated.');
         this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
         this.$store.dispatch('refreshTables');

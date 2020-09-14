@@ -43,12 +43,12 @@ class ListRowAction extends Action
                   }
                 );
                 if (count($primary_key_column) == 0) {
-                    echo json_encode(
+                    return $this->respondWithData(
                       [
                         'result'  => 'error',
                         'message' => 'Table has no PRIMARY KEY',
                       ]
-                    );
+                    ); //todo: this is not yet processed on front end side
                 }
                 $filter_query .= "WHERE `".$primary_key_column[0]['Field']."` = '".$query_params['value']."' ";
             } elseif ($query_params['comparetype'] == 'is') {

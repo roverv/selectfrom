@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
+use App\Application\Actions\Row\DeleteRowAction;
 use App\Application\Actions\Row\ListRowAction;
 use App\Application\Actions\Table\DropTableAction;
 use App\Application\Actions\Table\ListTableAction;
@@ -49,6 +50,7 @@ return function (App $app) {
       '/row',
       function (Group $group) {
           $group->get('/list', ListRowAction::class);
+          $group->post('/delete', DeleteRowAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 };
