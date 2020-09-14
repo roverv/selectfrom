@@ -70,10 +70,10 @@
     props: ['tableid', 'column', 'rowid'],
     data() {
       return {
-        endpoint_table_structure: 'table_structure.php',
-        endpoint_row_data: 'rowdata.php',
-        endpoint_insert_row: 'insertrow.php',
-        endpoint_update_row: 'updaterow.php',
+        endpoint_table_structure: 'table/structure',
+        endpoint_row_data: 'row/get',
+        endpoint_insert_row: 'row/insert',
+        endpoint_update_row: 'row/update',
         columns: [],
         row_data: {},
         columns_null: {},
@@ -116,8 +116,8 @@
         let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
         let api_url = this.buildApiUrl(this.endpoint_table_structure, api_url_params);
 
-        axios.get(api_url).then(response => {
-          this.columns = response.data;
+        this.$http.get(api_url).then(response => {
+          this.columns = response.data.data;
           if(this.$route.name == 'addrow') {
             this.fillDefaults();
           }
@@ -136,8 +136,8 @@
         };
         let api_url = this.buildApiUrl(this.endpoint_row_data, api_url_params);
 
-        axios.get(api_url).then(response => {
-          this.row_data = response.data.data;
+        this.$http.get(api_url).then(response => {
+          this.row_data = response.data.data.data;
           for (let column_name in this.row_data) {
             this.columns_null[column_name] = (this.row_data[column_name] === null) ? true : false;
           }
@@ -174,8 +174,8 @@
           params.append(column_name, (this.columns_null[column_name] === true && this.row_data[column_name] == '') ? null : this.row_data[column_name]);
         }
 
-        axios.post(api_url, params).then(response => {
-          vue_instance.query_result = response.data;
+        this.$http.post(api_url, params).then(response => {
+          vue_instance.query_result = response.data.data;
           if(vue_instance.query_result.result == 'success' && typeof vue_instance.query_result.inserted_row_id !== 'undefined') {
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Row added.');
             this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);

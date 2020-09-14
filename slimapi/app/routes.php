@@ -6,7 +6,10 @@ use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
 use App\Application\Actions\Row\DeleteRowAction;
+use App\Application\Actions\Row\GetRowAction;
+use App\Application\Actions\Row\InsertRowAction;
 use App\Application\Actions\Row\ListRowAction;
+use App\Application\Actions\Row\UpdateRowAction;
 use App\Application\Actions\Table\DropTableAction;
 use App\Application\Actions\Table\ListTableAction;
 use App\Application\Actions\Table\ListWithColumnsTableAction;
@@ -53,6 +56,9 @@ return function (App $app) {
       function (Group $group) {
           $group->get('/list', ListRowAction::class);
           $group->post('/delete', DeleteRowAction::class);
+          $group->get('/get', GetRowAction::class);
+          $group->post('/insert', InsertRowAction::class);
+          $group->post('/update', UpdateRowAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 };
