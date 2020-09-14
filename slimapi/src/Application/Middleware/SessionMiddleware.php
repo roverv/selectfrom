@@ -16,7 +16,7 @@ class SessionMiddleware implements Middleware
      */
     public function process(Request $request, RequestHandler $handler): Response
     {
-        session_start();
+        session_start(['cookie_httponly' => true]); // cookie_httponly helps against XSS attacks
         $request = $request->withAttribute('session', $_SESSION);
 
         return $handler->handle($request);
