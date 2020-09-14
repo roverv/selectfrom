@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
+use App\Application\Actions\Query\QueryAction;
 use App\Application\Actions\Row\DeleteRowAction;
 use App\Application\Actions\Row\GetRowAction;
 use App\Application\Actions\Row\InsertRowAction;
@@ -42,6 +43,8 @@ return function (App $app) {
           $group->get('/list', ListDatabaseAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
+
+     $app->post('/query', QueryAction::class)->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 
     $app->group(
       '/table',

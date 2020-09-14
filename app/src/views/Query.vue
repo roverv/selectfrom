@@ -110,7 +110,7 @@
     props: ['historyindex'],
     data() {
       return {
-        endpoint: 'query.php',
+        endpoint: '/query',
         query_results: {},
         sidebarisopen: false,
         sidebar_row_data: [],
@@ -204,8 +204,8 @@
 
         let query         = window.editor.getValue();
         const querystring = require('querystring');
-        axios.post(api_url, querystring.stringify({query: query})).then(response => {
-          this.query_results = response.data.query_results;
+        this.$http.post(api_url, querystring.stringify({query: query})).then(response => {
+          this.query_results = response.data.data.query_results;
           if (this.query_history.includes(query) === false) {
             this.$store.commit("queryhistory/ADD_QUERY", query);
           }
@@ -213,7 +213,7 @@
             // todo: navigation on query results???
             // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
           });
-          if(response.data.refresh_cache === true) {
+          if(response.data.data.refresh_cache === true) {
             // a query has changed the cached data, refresh the cache
             this.$store.dispatch('refreshTables');
           }
