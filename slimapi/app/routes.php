@@ -10,6 +10,7 @@ use App\Application\Actions\Row\ListRowAction;
 use App\Application\Actions\Table\DropTableAction;
 use App\Application\Actions\Table\ListTableAction;
 use App\Application\Actions\Table\ListWithColumnsTableAction;
+use App\Application\Actions\Table\StructureTableAction;
 use App\Application\Actions\Table\TruncateTableAction;
 use App\Application\Middleware\AuthMiddleware;
 use App\Application\Middleware\CsrfMiddleware;
@@ -43,6 +44,7 @@ return function (App $app) {
           $group->get('/listwithcolumns', ListWithColumnsTableAction::class);
           $group->post('/truncate', TruncateTableAction::class);
           $group->post('/drop', DropTableAction::class);
+          $group->get('/structure', StructureTableAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 

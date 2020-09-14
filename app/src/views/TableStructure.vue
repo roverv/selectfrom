@@ -53,7 +53,6 @@ export default {
   data() {
     return {
       columns: [],
-      endpoint: 'table_structure.php',
     }
   },
 
@@ -93,10 +92,10 @@ export default {
     getTableStructure() {
 
       let api_url_params = {'db': this.active_database, 'tablename' : this.tableid};
-      let api_url        = this.buildApiUrl(this.endpoint, api_url_params);
+      let api_url        = this.buildApiUrl('table/structure', api_url_params);
 
-      axios.get(api_url).then(response => {
-        this.columns = response.data;
+      this.$http.get(api_url).then(response => {
+        this.columns = response.data.data;
 
       }).catch(error => {
         this.handleApiError(error);
