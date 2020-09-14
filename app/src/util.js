@@ -56,3 +56,9 @@ export function clone(variable) {
 export function urlencode(string) {
   return encodeURIComponent(string);
 }
+
+export function has_deep_property(obj, level,  ...rest) {
+    if (obj === undefined) return false;
+    if (rest.length == 0 && obj.hasOwnProperty(level)) return true
+    return has_deep_property(obj[level], ...rest)
+}

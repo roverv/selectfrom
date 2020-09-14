@@ -1,12 +1,14 @@
+import {has_deep_property} from '../util';
+
 export default {
   methods: {
     handleApiError(error) {
       if (error.response && error.response.status && error.response.status == 400 && error.response.error == 'Invalid CSRF') {
         this.$store.commit("apierror/add_error_message", '400 - Invalid CSRF token, please login again');
       }
-      else if (error.response && error.response.status && error.response.status == 500 && error.response.data.data.message) {
+      else if (error.response && error.response.status && error.response.status == 500 && has_deep_property(error.response, 'data', 'data', 'message')) {
         // specific message returned from server side
-        this.$store.commit("apierror/add_error_message", 'Error 500 - ' + error.response.data.data.message);
+        this.$store.commit("apierror/add_error_message", 'Error 500 - ' + error.data.data.message);
       }
       else if (error.response) {
         // Request made and server responded
