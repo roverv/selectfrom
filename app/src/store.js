@@ -32,6 +32,7 @@ export default new Vuex.Store({
     activeDatabase: '',
     reloadMainComponentKey: 0,
     authenticated: false,
+    csrf_token : {},
   },
 
   mutations: {
@@ -42,6 +43,9 @@ export default new Vuex.Store({
     },
     setAuthenticated(state, authenticated) {
       state.authenticated = authenticated;
+    },
+    setCsrfToken(state, csrf_token) {
+      state.csrf_token = csrf_token;
     }
   },
 

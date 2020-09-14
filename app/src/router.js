@@ -101,8 +101,9 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresNoAuthentication)) {
     next()
   } else {
-    // redirect if not logged in
-    if (typeof Store.state.authenticated === 'undefined' || Store.state.authenticated !== true) {
+    // redirect if not logged in or no csrf token is set
+    if (typeof Store.state.authenticated === 'undefined' || Store.state.authenticated !== true
+      || typeof Store.state.csrf_token === 'undefined' || Object.keys(Store.state.csrf_token).length === 0) {
       next({name: 'login'});
     } else {
       next()

@@ -70,7 +70,15 @@ export default {
       this.$http.post('connect', params).then(response => {
         if (response.data.data.result == 'success') {
           this.$store.commit("setAuthenticated", true);
-          this.$router.push({name: 'server'});
+          this.$store.commit("setCsrfToken", response.data.data.csrf_token);
+          this.$http.defaults.headers.post['X-CSRF-NAME'] = response.data.data.csrf_token.csrf_name;
+          this.$http.defaults.headers.post['X-CSRF-VALUE'] = response.data.data.csrf_token.csrf_value;
+
+          // we need to use nexttick because the redirect might be faster then the commit
+          let vue_instance = this;
+          this.$nextTick().then(function() {
+            vue_instance.$router.push({name: 'server'});
+          });
         } else if (response.data.data.result == 'error') {
           this.login_error = response.data.data.message;
         }

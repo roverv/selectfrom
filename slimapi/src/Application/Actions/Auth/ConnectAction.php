@@ -6,10 +6,28 @@ namespace App\Application\Actions\Auth;
 
 use App\Application\Actions\Action;
 use PDO;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Log\LoggerInterface;
 
 class ConnectAction extends Action
 {
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * @param  LoggerInterface  $logger
+     * @param  ContainerInterface  $container
+     */
+    public function __construct(LoggerInterface $logger, ContainerInterface $container)
+    {
+        parent::__construct($logger);
+        $this->container = $container;
+    }
+
+
     /**
      * {@inheritdoc}
      */
@@ -50,8 +68,13 @@ class ConnectAction extends Action
         $_SESSION['username'] = $username;
         $_SESSION['password'] = $password; // @todo: encrypt this
 
+        // generate CSRF token
+        $csrf = $this->container->get('csrf');
+        $keyPair = $csrf->generateToken();
+
         $payload = [
           'result' => 'success',
+          'csrf_token' => $keyPair,
         ];
 
         return $this->respondWithData($payload);

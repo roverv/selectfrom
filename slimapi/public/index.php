@@ -11,6 +11,7 @@ use App\Application\ResponseEmitter\ResponseEmitter;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
+use Slim\Csrf\Guard;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -64,6 +65,14 @@ $request = $serverRequestCreator->createServerRequestFromGlobals();
 // Create Error Handler
 $responseFactory = $app->getResponseFactory();
 $errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+
+// Register Middleware On Container
+$container->set('csrf', function () use ($responseFactory) {
+    $csrf_guard = new Guard($responseFactory);
+    // required for ajax, if this would be false, we would need to generate a new CSRF token for every request
+    $csrf_guard->setPersistentTokenMode(true);
+    return $csrf_guard;
+});
 
 // Create Shutdown Handler
 $shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);

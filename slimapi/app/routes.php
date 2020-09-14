@@ -10,6 +10,7 @@ use App\Application\Actions\Table\ListTableAction;
 use App\Application\Actions\Table\ListWithColumnsTableAction;
 use App\Application\Actions\Table\TruncateTableAction;
 use App\Application\Middleware\AuthMiddleware;
+use App\Application\Middleware\CsrfMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -31,7 +32,7 @@ return function (App $app) {
       function (Group $group) {
           $group->get('/list', ListDatabaseAction::class);
       }
-    )->add(AuthMiddleware::class);
+    )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 
     $app->group(
       '/table',
@@ -41,5 +42,5 @@ return function (App $app) {
           $group->post('/truncate', TruncateTableAction::class);
           $group->post('/drop', DropTableAction::class);
       }
-    )->add(AuthMiddleware::class);
+    )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 };

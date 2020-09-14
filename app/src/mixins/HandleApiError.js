@@ -1,7 +1,10 @@
 export default {
   methods: {
     handleApiError(error) {
-      if (error.response) {
+      if (error.response && error.response.status && error.response.status == 400 && error.response.error == 'Invalid CSRF') {
+        this.$store.commit("apierror/add_error_message", '400 - Invalid CSRF token, please login again');
+      }
+      else if (error.response) {
         // Request made and server responded
         console.log(error.response.data);
         console.log(error.response.status);

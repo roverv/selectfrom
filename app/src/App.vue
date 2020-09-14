@@ -68,6 +68,7 @@
 
     created() {
       this.$store.dispatch("databases/get");
+      this.setCsrfTokenOnRequests();
     },
 
     watch: {
@@ -170,6 +171,14 @@
       refreshPage() {
         this.$store.state.reloadMainComponentKey += 1;
       },
+
+      setCsrfTokenOnRequests() {
+        if(typeof this.$store.state.csrf_token !== 'undefined' || Object.keys(this.$store.state.csrf_token).length !== 0) {
+          // if the csrf token is set, send it along with all axios requests
+          this.$http.defaults.headers.post['X-CSRF-NAME'] = this.$store.state.csrf_token.csrf_name;
+          this.$http.defaults.headers.post['X-CSRF-VALUE'] = this.$store.state.csrf_token.csrf_value;
+        }
+      }
 
     }
   }
