@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
+use App\Application\Actions\Row\ListRowAction;
 use App\Application\Actions\Table\DropTableAction;
 use App\Application\Actions\Table\ListTableAction;
 use App\Application\Actions\Table\ListWithColumnsTableAction;
@@ -41,6 +42,13 @@ return function (App $app) {
           $group->get('/listwithcolumns', ListWithColumnsTableAction::class);
           $group->post('/truncate', TruncateTableAction::class);
           $group->post('/drop', DropTableAction::class);
+      }
+    )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
+
+    $app->group(
+      '/row',
+      function (Group $group) {
+          $group->get('/list', ListRowAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 };

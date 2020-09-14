@@ -320,7 +320,7 @@ export default {
       total_amount_rows: 0,
       offset_rows: 0,
       api_error: '',
-      endpoint_table_data: 'tabledata.php',
+      endpoint_table_data: 'row/list',
       endpoint_delete_rows: 'delete_rows.php',
       endpoint_truncate_tables: 'truncate_tables.php',
       endpoint_drop_tables: 'drop_tables.php',
@@ -445,13 +445,15 @@ export default {
 
       this.is_fetching_data = true;
 
-      axios.get(api_url).then(response => {
-        let data = response.data.data.map(item => {
+      this.$http.get(api_url).then(response => {
+
+        let response_data = response.data.data;
+        let data = response_data.data.map(item => {
           return Object.freeze(item);
         });
         this.tabledata         = data;
-        this.columns           = Object.freeze(response.data.columns);
-        this.total_amount_rows = response.data.amount_rows;
+        this.columns           = Object.freeze(response_data.columns);
+        this.total_amount_rows = response_data.amount_rows;
         if (this.tabledata.length == 1) {
           this.page_view = 'single';
         }
@@ -551,12 +553,12 @@ export default {
 
       let vue_instance              = this;
       vue_instance.is_fetching_data = true;
-      axios.get(api_url).then(response => {
+      this.$http.get(api_url).then(response => {
         if(action == 'prevpage' || action == 'nextpage') {
-          vue_instance.tabledata        = Object.freeze(response.data.data);
+          vue_instance.tabledata        = Object.freeze(response.data.data.data);
         }
         else {
-          let extended_tabledata        = Object.freeze(this.tabledata.concat(response.data.data));
+          let extended_tabledata        = Object.freeze(this.tabledata.concat(response.data.data.data));
           vue_instance.tabledata        = Object.freeze(extended_tabledata);
         }
 
@@ -590,8 +592,8 @@ export default {
         let vue_instance = this;
 
         vue_instance.is_fetching_data = true;
-        axios.get(api_url).then(response => {
-          let data = response.data.data.map(item => {
+        this.$http.get(api_url).then(response => {
+          let data = response.data.data.data.map(item => {
             return Object.freeze(item);
           });
           vue_instance.tabledata        = data;
