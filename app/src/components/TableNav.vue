@@ -1,12 +1,12 @@
 <template>
   <div>
     <router-link :to="{ name: 'table', params: { database: active_database, tableid: tableid } }" class="subnav-item"
-                 :class="{ 'active' : (['table', 'tablewithcolumn', 'tablewithcolumnvalue'].includes($route.name)) }">
+                 :class="{ 'active' : (['table', 'tablewithcolumn', 'tablewithcolumnvalue', 'editrow'].includes($route.name)) }">
       Data
     </router-link>
 
     <router-link :to="{ name: 'structure', params: { database: active_database, tableid: tableid } }" class="subnav-item"
-                 :class="{ 'active' : ($route.name == 'structure') }">
+                 :class="{ 'active' : (['structure', 'edittable'].includes($route.name)) }">
       Structure
     </router-link>
     <a class="subnav-item">
@@ -33,9 +33,31 @@
       return {}
     },
 
+    created() {
+      document.addEventListener('keydown', this.triggerKeyDown);
+    },
+
+    destroyed() {
+      document.removeEventListener("keydown", this.triggerKeyDown);
+    },
+
     computed: {
       active_database() {
         return this.$store.state.activeDatabase;
+      },
+    },
+
+    methods : {
+      triggerKeyDown: function (evt) {
+        if (evt.key === '1') {
+          this.$router.push({name: 'table', params: { database: this.active_database, tableid: this.tableid }});
+        }
+        else if (evt.key === '2') {
+          this.$router.push({name: 'structure', params: { database: this.active_database, tableid: this.tableid }});
+        }
+        else if (evt.key === '5') {
+          this.$router.push({name: 'addrow', params: { database: this.active_database, tableid: this.tableid }});
+        }
       },
     }
 
