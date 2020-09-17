@@ -1,6 +1,9 @@
 <template>
   <div class="page-content-container">
-    <div>
+
+    <spinner v-if="fetching_databases" delay="200"></spinner>
+
+    <div v-if="!fetching_databases">
 
       <h2 class="mb-2 text-xl">
         <span class="text-gray-500 text-lg">{{ databases.length }}</span>
@@ -89,6 +92,8 @@
 
 <script>
 
+import Spinner from "@/components/Spinner";
+
 export default {
   name: 'DatabaseList',
 
@@ -98,6 +103,10 @@ export default {
       order_by: 'name',
       order_direction: 'asc',
     }
+  },
+
+  components: {
+    Spinner,
   },
 
   created() {
@@ -113,6 +122,10 @@ export default {
 
     databases() {
       return this.$store.getters["databases/databases"];
+    },
+
+    fetching_databases() {
+      return this.$store.getters["databases/isLoading"];
     },
 
     ordered_databases() {

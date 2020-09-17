@@ -77,6 +77,7 @@ export default {
           // we need to use nexttick because the redirect might be faster then the commit
           let vue_instance = this;
           this.$nextTick().then(function() {
+            vue_instance.$store.dispatch('databases/get');
             vue_instance.$router.push({name: 'server'});
           });
         } else if (response.data.data.result == 'error') {

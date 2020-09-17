@@ -102,10 +102,13 @@ router.beforeEach((to, from, next) => {
     next()
   } else {
     // redirect if not logged in or no csrf token is set
-    if (typeof Store.state.authenticated === 'undefined' || Store.state.authenticated !== true
-      || typeof Store.state.csrf_token === 'undefined' || Object.keys(Store.state.csrf_token).length === 0) {
+    if (typeof Store.state.authenticated === 'undefined' || Store.state.authenticated !== true) {
       next({name: 'login'});
-    } else {
+    // redirect if no csrf token is set
+    } else if(typeof Store.state.csrf_token === 'undefined' || Object.keys(Store.state.csrf_token).length === 0) {
+      next({name: 'login'});
+    }
+    else {
       next()
     }
   }
