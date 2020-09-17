@@ -27,6 +27,7 @@ Vue.config.keyCodes = {
   "open-query-history": 72, // h
   "refresh-page": 82, // r
   "to-query": 81, // q
+  "level-up": 85, // u
 }
 
 //before `new Vue`

@@ -2,6 +2,7 @@
   <div id="app" class="grid-container-app" v-on:keyup.self.open-search="openSearchModal" v-on:keyup.self.open-recent-tables="openRecentTables"
        v-on:keyup.self.to-query="goToQuery" v-on:keyup.self.open-database-list="openDatabasesModal"
        v-on:keyup.self.open-query-history="openQueryHistory"
+       v-on:keyup.self.level-up="moveLevelUp"
        v-on:keyup.self.refresh-page="refreshPage" tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
@@ -153,6 +154,33 @@
         this.queryhistoryopen = false;
         // when the modal is closed, we need to set the focus back on the app
         document.getElementById('app').focus();
+      },
+
+      moveLevelUp() {
+        switch (this.$route.name) {
+          case 'database':
+            this.$router.push({name: 'server'});
+            break;
+
+          case 'query':
+          case 'queryhistory':
+            this.$router.push({name: 'database'});
+            break;
+
+          case 'addrow':
+          case 'editrow':
+          case 'edittable':
+            this.$router.push({name: 'table', params: {database: this.$route.params.database, tableid: this.$route.params.tableid}});
+            break;
+
+          case 'table':
+          case 'tablewithcolumn':
+          case 'tablewithcolumnvalue':
+          case 'structure':
+          case 'addtable':
+            this.$router.push({name: 'database'});
+            break;
+        }
       },
 
       forceupdate() {
