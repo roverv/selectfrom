@@ -53,8 +53,14 @@ class UpdateRowAction extends Action
             $pdo_statement->execute($prepare_values);
             $result_data['result']  = 'success';
             $result_data['affected_rows'] = $pdo_statement->rowCount();
-        } catch (Exception $e) {
-            return $this->respondWithData(['message' => $e->getMessage()], 500);
+        } catch (\PDOException $e) {
+            $payload = [
+              'result'  => 'error',
+              'message' => $e->getMessage(),
+              'code'    => $e->getCode(),
+            ];
+
+            return $this->respondWithData($payload);
         }
 
         return $this->respondWithData($result_data);

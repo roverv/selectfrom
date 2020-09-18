@@ -31,8 +31,14 @@ class DeleteRowAction extends Action
                 $query .= "WHERE " . QueryHelper::escapeMysqlId($delete_by_column) . " = '" . $row_value . "' LIMIT 1";
                 $q = $pdo->query($query);
                 $affected_rows += $q->rowCount();
-            } catch (Exception $e) {
-                return $this->respondWithData(['message' => $e->getMessage()], 500);
+            } catch (\PDOException $e) {
+                $payload = [
+                  'result'  => 'error',
+                  'message' => $e->getMessage(),
+                  'code'    => $e->getCode(),
+                ];
+
+                return $this->respondWithData($payload);
             }
         }
 

@@ -6,6 +6,7 @@ namespace App\Application\Actions\Query;
 
 use App\Application\Actions\Action;
 use App\Application\Helpers\QueryHelper;
+use PDOException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class QueryAction extends Action
@@ -46,7 +47,7 @@ class QueryAction extends Action
                 $query_result                  = $pdo->query($query);
                 $execution_end                 = microtime(true);
                 $result_data['execution_time'] = $execution_end - $execution_start;
-            } catch (Exception $e) {
+            } catch (PDOException $e) {
                 $result_data['result']          = 'error';
                 $result_data['message']         = $e->getMessage();
                 $return_data['query_results'][] = $result_data;

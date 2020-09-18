@@ -61,8 +61,14 @@ class InsertRowAction extends Action
             $pdo_statement->execute($prepare_values);
             $result_data['result']          = 'success';
             $result_data['inserted_row_id'] = $pdo->lastInsertId();
-        } catch (Exception $e) {
-            return $this->respondWithData(['message' => $e->getMessage()], 500);
+        } catch (\PDOException $e) {
+            $payload = [
+              'result'  => 'error',
+              'message' => $e->getMessage(),
+              'code'    => $e->getCode(),
+            ];
+
+            return $this->respondWithData($payload);
         }
 
         return $this->respondWithData($result_data);
