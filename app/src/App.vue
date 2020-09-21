@@ -1,9 +1,9 @@
 <template>
-  <div id="app" class="grid-container-app" v-on:keyup.self.open-search="openSearchModal" v-on:keyup.self.open-recent-tables="openRecentTables"
-       v-on:keyup.self.to-query="goToQuery" v-on:keyup.self.open-database-list="openDatabasesModal"
-       v-on:keyup.self.open-query-history="openQueryHistory"
-       v-on:keyup.self.level-up="moveLevelUp"
-       v-on:keyup.self.refresh-page="refreshPage" tabindex="0">
+  <div id="app" class="grid-container-app" v-on:keydown.self.stop.prevent.open-search="openSearchModal" v-on:keydown.self.stop.prevent.open-recent-tables="openRecentTables"
+       v-on:keydown.self.stop.prevent.to-query="goToQuery" v-on:keydown.self.stop.prevent.open-database-list="openDatabasesModal"
+       v-on:keydown.self.stop.prevent.open-query-history="openQueryHistory"
+       v-on:keydown.self.stop.prevent.level-up="moveLevelUp"
+       v-on:keydown.self.stop.prevent.refresh-page="refreshPage" tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
                  v-on:closesearchmodal="closeSearchModal()" />

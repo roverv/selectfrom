@@ -407,6 +407,9 @@ export default {
 
     rows_limit_end() {
       return ((this.offset_rows + 1) * 30 > this.total_amount_rows) ? this.total_amount_rows : ((this.offset_rows + 1) * 30);
+    },
+    nodes_skip_on_key() {
+      return this.$store.state.nodes_skip_on_key;
     }
   },
 
@@ -803,6 +806,9 @@ export default {
     },
 
     triggerKeyDown: function (evt) {
+      const { nodeName } = document.activeElement;
+      if (this.nodes_skip_on_key.includes(nodeName)) return;
+
       if (evt.key === 'v') {
         this.togglePageView();
       }

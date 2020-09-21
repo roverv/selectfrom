@@ -45,10 +45,16 @@
       active_database() {
         return this.$store.state.activeDatabase;
       },
+      nodes_skip_on_key() {
+        return this.$store.state.nodes_skip_on_key;
+      }
     },
 
     methods : {
       triggerKeyDown: function (evt) {
+        const { nodeName } = document.activeElement;
+        if (this.nodes_skip_on_key.includes(nodeName)) return;
+
         if (evt.key === '1') {
           this.$router.push({name: 'table', params: { database: this.active_database, tableid: this.tableid }});
         }
