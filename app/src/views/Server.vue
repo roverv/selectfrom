@@ -85,6 +85,10 @@
             {{ selected_rows.length }} databases
           </div>
 
+          <a class="rows-action" v-if="selected_rows.length == 1" @click="editDatabase()">
+            <span>Edit</span>
+          </a>
+
           <a class="rows-action">
             <span>Drop</span>
           </a>
@@ -173,6 +177,15 @@ export default {
       // undo selection because of indexes
       this.selected_rows = [];
     },
+
+    editDatabase() {
+      let selected_database_name = this.ordered_databases[this.selected_rows[0]].name;
+
+      this.$router.push({
+        name: 'editdatabase',
+        params: { database: selected_database_name }
+      });
+    }
 
   },
 }

@@ -6,17 +6,10 @@ namespace App\Application\Actions\Database;
 
 use App\Application\Actions\Action;
 use App\Application\Helpers\QueryHelper;
-use App\Domain\Driver\Mysql\Mysql;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Log\LoggerInterface;
 
 class CreateDatabaseAction extends Action
 {
-    public function __construct(LoggerInterface $logger, Mysql $mysql_driver)
-    {
-        parent::__construct($logger);
-        $this->mysql_driver = $mysql_driver;
-    }
 
     /**
      * {@inheritdoc}

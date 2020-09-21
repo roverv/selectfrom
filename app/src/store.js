@@ -55,5 +55,8 @@ export default new Vuex.Store({
       this.dispatch("tables/get");
       this.dispatch("tables/getWithColumns");
     },
+    refreshDatabases() {
+      this.dispatch("databases/get");
+    },
   }
 })
