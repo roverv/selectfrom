@@ -16,6 +16,8 @@
         </router-link>
       </div>
 
+      <flash-message></flash-message>
+
       <table cellspacing="0" class="table-data" v-if="databases.length > 1">
         <thead>
         <tr>
@@ -89,12 +91,17 @@
             <span>Edit</span>
           </a>
 
-          <a class="rows-action">
+          <a class="rows-action" @click="confirmDropDatabases()">
             <span>Drop</span>
           </a>
 
         </div>
       </div>
+
+      <confirm-modal v-if="confirm_modal_open" v-on:close="closeConfirmModal()"
+                     v-on:confirm="confirmConfirmModal()">
+        {{ confirm_modal_message }}
+      </confirm-modal>
 
     </div>
   </div>
@@ -103,6 +110,11 @@
 <script>
 
 import Spinner from "@/components/Spinner";
+import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModalMixin from "@/mixins/ConfirmModal";
+import FlashMessage from "@/components/FlashMessage";
+import ApiUrl from "@/mixins/ApiUrl";
+import HandleApiError from "@/mixins/HandleApiError";
 
 export default {
   name: 'DatabaseList',
@@ -117,7 +129,15 @@ export default {
 
   components: {
     Spinner,
+    ConfirmModal,
+    FlashMessage,
   },
+
+  mixins: [
+    ConfirmModalMixin,
+    HandleApiError,
+    ApiUrl
+  ],
 
   created() {
     if(this.$store.getters["databases/hasDatabases"] === false) {
@@ -185,7 +205,37 @@ export default {
         name: 'editdatabase',
         params: { database: selected_database_name }
       });
-    }
+    },
+
+    confirmDropDatabases() {
+      this.confirm_modal_message = 'Drop ' + this.selected_rows.length + ' database';
+      if (this.selected_rows.length > 1) {
+        this.confirm_modal_message += 's';
+      }
+      this.confirm_modal_open   = true;
+      this.confirm_modal_action = 'dropDatabases';
+    },
+
+    dropDatabases() {
+      let params = new URLSearchParams();
+      for (let row_index in this.selected_rows) {
+        params.append('databases[]', this.ordered_databases[this.selected_rows[row_index]].name);
+      }
+
+      let vue_instance = this;
+      let api_url        = this.buildApiUrl('database/drop', {});
+      this.$http.post(api_url, params).then(response => {
+        let message = response.data.data.affected_databases;
+        message += (response.data.data.affected_databases == 1) ? ' database dropped.' : ' databases dropped.';
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
+        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.data.query);
+        this.$store.dispatch('refreshDatabases');
+        this.selected_rows = [];
+        vue_instance.$router.push({name: 'server'});
+      }).catch(error => {
+        this.handleApiError(error);
+      })
+    },
 
   },
 }
