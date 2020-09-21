@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\Database\CreateDatabaseAction;
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
@@ -11,6 +12,7 @@ use App\Application\Actions\Row\GetRowAction;
 use App\Application\Actions\Row\InsertRowAction;
 use App\Application\Actions\Row\ListRowAction;
 use App\Application\Actions\Row\UpdateRowAction;
+use App\Application\Actions\Server\CollationsServerAction;
 use App\Application\Actions\Table\AlterTableAction;
 use App\Application\Actions\Table\CreateTableAction;
 use App\Application\Actions\Table\CreationDataTableAction;
@@ -38,9 +40,17 @@ return function (App $app) {
     $app->post('/connect', ConnectAction::class);
 
     $app->group(
+      '/server',
+      function (Group $group) {
+          $group->get('/collations', CollationsServerAction::class);
+      }
+    )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
+
+    $app->group(
       '/database',
       function (Group $group) {
           $group->get('/list', ListDatabaseAction::class);
+          $group->post('/create', CreateDatabaseAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 

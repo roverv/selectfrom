@@ -5,10 +5,16 @@
 
     <div v-if="!fetching_databases">
 
-      <h2 class="mb-2 text-xl">
-        <span class="text-gray-500 text-lg">{{ databases.length }}</span>
-        Databases
-      </h2>
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-xl">
+          <span class="text-gray-500 text-lg">{{ databases.length }}</span>
+          Databases
+        </h2>
+
+        <router-link :to="{ name: 'adddatabase'}" class="btn">
+          Create database
+        </router-link>
+      </div>
 
       <table cellspacing="0" class="table-data" v-if="databases.length > 1">
         <thead>

@@ -34,28 +34,7 @@ class CreationDataTableAction extends Action
 
         $query_params = $this->request->getQueryParams();
 
-        $collations = $pdo->query("SHOW COLLATION")->fetchAll();
-
-        // sort by the ones which are default, first
-        uasort(
-          $collations,
-          function ($a, $b) {
-              return $a['Collation'] <=> $b['Collation'];
-          }
-        );
-
-        // group by charset, only get the names
-        $collations = array_reduce(
-          $collations,
-          function ($collations_grouped, $collation) {
-              $collations_grouped[$collation['Charset']][] = $collation['Collation'];
-
-              return $collations_grouped;
-          }
-        );
-
-        // sort alphabetically by key
-        ksort($collations);
+        $collations = $this->mysql_driver->getCollations($pdo);
 
         $engines = $pdo->query("SHOW ENGINES")->fetchAll();
         // filter out not supported engines

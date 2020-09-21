@@ -6,10 +6,16 @@
 
       <div v-if="!fetching_tables">
 
-        <h2 class="mb-2 text-xl">
-          <span class="text-gray-500 text-lg">{{ tables.length }}</span>
-          Tables
-        </h2>
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xl">
+            <span class="text-gray-500 text-lg">{{ tables.length }}</span>
+            Tables
+          </h2>
+
+          <router-link :to="{ name: 'addtable', params: { database: active_database } }" class="btn">
+            Create table
+          </router-link>
+        </div>
 
         <flash-message></flash-message>
 

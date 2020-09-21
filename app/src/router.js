@@ -34,6 +34,16 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "database" */ './views/Database.vue'),
       props: true,
     },
+
+    {
+      path: '/adddatabase',
+      name: 'adddatabase',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "database" */ './views/EditDatabase.vue'),
+      props: true,
+    },
     {
       path: '/:database/table/:tableid',
       name: 'table',
