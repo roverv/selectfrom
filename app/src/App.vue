@@ -80,6 +80,9 @@
             this.$store.commit("setActiveDatabase", this.$route.params.database);
           }
         }
+        else if(['adddatabase', 'server', 'login'].includes(to.name)) {
+          this.$store.commit("setActiveDatabase", '');
+        }
 
         this.searchmodalopen   = false;
         this.recenttablesopen  = false;
@@ -159,6 +162,8 @@
       moveLevelUp() {
         switch (this.$route.name) {
           case 'database':
+          case 'adddatabase':
+          case 'editdatabase':
             this.$router.push({name: 'server'});
             break;
 

@@ -102,6 +102,7 @@ export default {
 
     refreshCache() {
       this.$store.dispatch('refreshTables')
+      this.$store.dispatch('refreshDatabases')
     },
 
     refreshPage() {
