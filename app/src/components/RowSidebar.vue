@@ -29,7 +29,7 @@
     </div>
 
 
-    <div class="row-data overflow-y-scroll overflow-x-hidden pl-2 -ml-2">
+    <div class="row-data scroll-bar overflow-y-scroll overflow-x-hidden pl-2 -ml-2">
       <div>
 
         <table class="w-full">
@@ -174,26 +174,6 @@
   html {
     --scrollbarBG: transparent;
     --thumbBG:     #90A4AE;
-  }
-
-  .row-data::-webkit-scrollbar {
-    width:  7px;
-    height: 7px;
-  }
-
-  .row-data {
-    scrollbar-width: 7px;
-    scrollbar-color: var(--thumbBG) var(transparent);
-  }
-
-  .row-data::-webkit-scrollbar-track {
-    background: var(transparent);
-  }
-
-  .row-data::-webkit-scrollbar-thumb {
-    background-color: var(--thumbBG);
-    border-radius:    5px;
-    border:           3px solid var(transparent);
   }
 
   .sidebar.width-1 {

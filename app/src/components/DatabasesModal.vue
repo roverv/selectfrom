@@ -5,11 +5,12 @@
       <div class="px-8 py-4">
         <form method="post" @submit.prevent="submitSearch" ref="searchform">
 
-          <input v-model="search_value"
-                 type="text" name="searchany" id="searchany" ref="searchany"
-                 class="input-search" placeholder="Go to database" autocomplete="off">
+          <div class="input-search">
+            <input v-model="search_value" type="text" name="searchany" id="searchany" ref="searchany"
+                   placeholder="Go to database" autocomplete="off">
+          </div>
           <div class="autocomplete-container" v-if="openAutocomplete">
-            <ul class="autocomplete-list">
+            <ul class="autocomplete-list scroll-bar">
               <li v-for="(database_name, index) in matches" :id="'match-' + index"
                   v-bind:class="{'active': isActive(index)}"
                   class="autocomplete-row">

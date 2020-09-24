@@ -70,7 +70,7 @@
                 <h3 class="mr-8 bg-dark-400 px-3 py-1">
                   {{ columns[column_for_list].Field }}
                 </h3>
-                <div class="single-view-sidebar-scrollable mr-5 ">
+                <div class="single-view-sidebar-scrollable scroll-bar mr-5 ">
                   <a v-for="(row, row_index) in tabledata"
                      class="block bg-light-100 border-b border-light-300 px-3 py-1 mr-1"
                      @click="row_pointer = row_index">
@@ -909,26 +909,6 @@ div.column-row .data {
 .single-view-sidebar-scrollable {
   overflow: auto;
   height:   100%;
-}
-
-.single-view-sidebar-scrollable::-webkit-scrollbar {
-  width:  7px;
-  height: 7px;
-}
-
-.single-view-sidebar-scrollable {
-  scrollbar-width: 7px;
-  scrollbar-color: var(--thumbBG) var(transparent);
-}
-
-.single-view-sidebar-scrollable::-webkit-scrollbar-track {
-  background: var(transparent);
-}
-
-.single-view-sidebar-scrollable::-webkit-scrollbar-thumb {
-  background-color: var(--thumbBG);
-  border-radius:    5px;
-  border:           3px solid var(transparent);
 }
 
 .view-page-multi.active .primary,

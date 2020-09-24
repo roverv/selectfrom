@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div v-if="tables_list_is_open" class="sidebar-scrollable table-list">
+    <div v-if="tables_list_is_open" class="sidebar-scrollable table-list scroll-bar">
         <ul class="pr-2">
           <li v-for="(table_data) in tables_filtered"
               :class="{active: table_data.Name == $route.params.tableid}">
@@ -113,26 +113,6 @@
   html {
     --scrollbarBG: transparent;
     --thumbBG:     #90A4AE;
-  }
-
-  .table-list::-webkit-scrollbar {
-    width:  7px;
-    height: 7px;
-  }
-
-  .table-list {
-    scrollbar-width: 7px;
-    scrollbar-color: var(--thumbBG) var(transparent);
-  }
-
-  .table-list::-webkit-scrollbar-track {
-    background: var(transparent);
-  }
-
-  .table-list::-webkit-scrollbar-thumb {
-    background-color: var(--thumbBG);
-    border-radius:    5px;
-    border:           3px solid var(transparent);
   }
 
   .sidebar {

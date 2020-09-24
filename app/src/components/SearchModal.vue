@@ -5,10 +5,51 @@
       <div class="px-8 py-4">
         <form method="post" @submit.prevent="submitSearch" ref="searchform">
 
-          <input v-model="search_value" type="text" name="searchany" id="searchany" ref="searchany"
-                 class="input-search" placeholder="Go to table, column or row" autocomplete="off">
+          <div class="bg-dark-600 text-white px-4 py-3 border-b border-light-100" v-if="show_help_text">
+            <h2 class="text-xl mb-2">Search options</h2>
+            <div class="flex">
+              <div class="w-48">table</div>
+              <div class="text-light-300">Go to table</div>
+            </div>
+            <div class="flex">
+              <div class="w-48">table.column</div>
+              <div class="text-light-300">Go to table and focus on column</div>
+            </div>
+            <div class="flex">
+              <div class="w-48">table.column%value</div>
+              <div class="text-light-300">Find rows where column is LIKE value</div>
+            </div>
+            <div class="flex">
+              <div class="w-48">table.column=value</div>
+              <div class="text-light-300">Find rows where column is value</div>
+            </div>
+            <div class="flex">
+              <div class="w-48">table#id</div>
+              <div class="text-light-300">Find row where the primary key is id</div>
+            </div>
+            <div class="flex">
+              <div class="w-48">table|column</div>
+              <div class="text-light-300">Find all values of a column (group by column)</div>
+            </div>
+
+            <p class="mt-2">Use the arrow keys to navigate between autocomplete items. Use right arrow or Enter to fill autocomplete. With fuzzy search you can easily filter down results, eg: ppr &gt; product_price.</p>
+          </div>
+
+          <div class="input-search">
+            <input v-model="search_value" type="text" name="searchany" id="searchany" ref="searchany"
+                   placeholder="Go to table, column or row" autocomplete="off">
+
+            <a @click="show_help_text = !show_help_text" class="text-gray-500 hover:text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 absolute right-0 top-0 mt-3 fill-current">
+                <path
+                      d="M12 19.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm1-5.5a1 1 0 0 1-2 0v-1.41a1 1 0 0 1 .55-.9L14 10.5C14.64 10.08 15 9.53 15 9c0-1.03-1.3-2-3-2-1.35 0-2.49.62-2.87 1.43a1 1 0 0 1-1.8-.86C8.05 6.01 9.92 5 12 5c2.7 0 5 1.72 5 4 0 1.3-.76 2.46-2.05 3.24L13 13.2V14z"></path>
+              </svg>
+            </a>
+
+          </div>
+
           <div class="autocomplete-container" v-if="openAutocomplete">
-            <ul class="autocomplete-list">
+            <ul class="autocomplete-list scroll-bar">
               <li v-for="(table_name, index) in matches" :id="'match-' + index"
                   v-bind:class="{'active': isActive(index)}"
                   class="autocomplete-row">
@@ -30,7 +71,8 @@
     data() {
       return {
         search_value: '',
-        current: -1
+        current: -1,
+        show_help_text: false
       }
     },
 
@@ -127,6 +169,10 @@
 
       searches() {
         return this.$store.getters["searches/searches"];
+      },
+
+      rows_per_page() {
+        return this.$store.getters["settings/getSetting"]('default_rows_per_page');
       },
     },
 
@@ -282,8 +328,7 @@
 
             // query for the group by of a column: "user|sex"
           } else if (this.column_split_value == '|') {
-            // @todo: limit instelbaar maken
-            let flash_query = "SELECT COUNT(*) as amount, " + column + " FROM " + table_id + " GROUP BY " + column + " LIMIT 50";
+            let flash_query = "SELECT COUNT(*) as amount, " + column + " FROM " + table_id + " GROUP BY " + column + " LIMIT " . this.rows_per_page();
             this.$store.commit("queryedit/ADD_QUERY_EDIT", flash_query);
             this.$store.commit("queryedit/ACTIVATE_DIRECT_EXECUTION");
             if(this.$route.name == 'query') {

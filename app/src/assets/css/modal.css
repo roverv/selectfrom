@@ -18,8 +18,11 @@
 }
 
 .input-search {
-  @apply block w-full mt-3 px-4 py-3 text-xl border-8 border-dark-600;
+  @apply block w-full border-8 border-dark-600 relative;
   box-shadow: 0 15px 35px hsla(0, 0%, 0%, .2);
+}
+.input-search input {
+  @apply block w-full px-4 py-3 text-xl;
 }
 .input-search:focus {
   @apply outline-none;
