@@ -328,7 +328,7 @@
 
             // query for the group by of a column: "user|sex"
           } else if (this.column_split_value == '|') {
-            let flash_query = "SELECT COUNT(*) as amount, " + column + " FROM " + table_id + " GROUP BY " + column + " LIMIT " . this.rows_per_page();
+            let flash_query = "SELECT COUNT(*) as amount, " + column + " FROM " + table_id + " GROUP BY " + column + " LIMIT " + this.rows_per_page;
             this.$store.commit("queryedit/ADD_QUERY_EDIT", flash_query);
             this.$store.commit("queryedit/ACTIVATE_DIRECT_EXECUTION");
             if(this.$route.name == 'query') {
