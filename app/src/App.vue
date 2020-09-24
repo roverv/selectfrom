@@ -80,7 +80,7 @@
             this.$store.commit("setActiveDatabase", this.$route.params.database);
           }
         }
-        else if(['adddatabase', 'server', 'login'].includes(to.name)) {
+        else if(['adddatabase', 'server', 'login', 'settings'].includes(to.name)) {
           this.$store.commit("setActiveDatabase", '');
         }
 

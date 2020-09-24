@@ -17,7 +17,7 @@ export default {
       if(cell_value == null) {
         cell_value = 'NULL';
       }
-      else if(cell_value && cell_value.length > context.props.truncateAmount) {
+      else if(cell_value && context.props.truncateAmount > 0 && cell_value.length > context.props.truncateAmount) {
         cell_value = cell_value.replace(/(\r\n|\n|\r)/gm, "");
         cell_value = cell_value.substring(0, context.props.truncateAmount) + '...';
       }

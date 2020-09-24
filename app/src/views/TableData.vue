@@ -212,7 +212,7 @@
                     </svg>
                   </label>
                 </td>
-                <TableDataRow v-bind:row="row" v-bind:truncate-amount="30"></TableDataRow>
+                <TableDataRow v-bind:row="row" v-bind:truncate-amount="cell_text_display_limit"></TableDataRow>
               </tr>
               </tbody>
 
@@ -366,10 +366,9 @@ export default {
   },
 
   mounted() {
-    // @todo: make this configurable
-    if (this.primary_key !== false) {
+    if (this.default_table_column_order != '' && this.primary_key !== false) {
       this.order_by        = this.primary_key;
-      this.order_direction = 'desc';
+      this.order_direction = (this.default_table_column_order == 'primary_desc') ? 'desc' : 'asc';
     }
     this.getTableData();
   },
@@ -401,13 +400,26 @@ export default {
       return this.$store.getters["tables/primaryKeyOfTable"](this.tableid);
     },
 
+    rows_per_page() {
+      return this.$store.getters["settings/getSetting"]('default_rows_per_page');
+    },
+
     rows_limit_start() {
-      return (30 * this.offset_rows) + 1;
+      return (this.rows_per_page * this.offset_rows) + 1;
     },
 
     rows_limit_end() {
-      return ((this.offset_rows + 1) * 30 > this.total_amount_rows) ? this.total_amount_rows : ((this.offset_rows + 1) * 30);
+      return ((this.offset_rows + 1) * this.rows_per_page > this.total_amount_rows) ? this.total_amount_rows : ((this.offset_rows + 1) * this.rows_per_page);
     },
+
+    cell_text_display_limit() {
+      return this.$store.getters["settings/getSetting"]('cell_text_display_limit');
+    },
+
+    default_table_column_order() {
+      return this.$store.getters["settings/getSetting"]('default_table_column_order');
+    },
+
     nodes_skip_on_key() {
       return this.$store.state.nodes_skip_on_key;
     }
@@ -431,7 +443,7 @@ export default {
 
     getTableData() {
 
-      let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
+      let api_url_params = {'db': this.active_database, 'tablename': this.tableid, 'limit' : this.rows_per_page };
       if (this.column && this.value && this.comparetype) {
         api_url_params.column = this.column;
         api_url_params.comparetype = this.comparetype;
@@ -538,7 +550,7 @@ export default {
         this.offset_rows += 1;
       }
 
-      let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
+      let api_url_params = {'db': this.active_database, 'tablename': this.tableid, 'limit' : this.rows_per_page };
       if (this.column && this.value && this.comparetype) {
         api_url_params.column = this.column;
         api_url_params.comparetype = this.comparetype;
@@ -578,7 +590,7 @@ export default {
       }
       if (ask_confirm) {
 
-        let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
+        let api_url_params = {'db': this.active_database, 'tablename': this.tableid, 'limit' : this.rows_per_page };
         if (this.column && this.value && this.comparetype) {
           api_url_params.column = this.column;
           api_url_params.comparetype = this.comparetype;
@@ -588,7 +600,7 @@ export default {
           api_url_params.orderby = this.order_by;
           api_url_params.orderdirection = this.order_direction;
         }
-        api_url_params.limit = 'none';
+        api_url_params.limit = '0';
 
         let api_url = this.buildApiUrl(this.endpoint_table_data, api_url_params);
 

@@ -70,9 +70,9 @@
         <a @click="refreshPage()" class="btn-link">
           Refresh page
         </a>
-        <a href="" class="btn-link">
+        <router-link :to="{ name: 'settings' }" class="btn-link">
           Settings
-        </a>
+        </router-link>
         <a href="" class="btn-link">
           Logout
         </a>

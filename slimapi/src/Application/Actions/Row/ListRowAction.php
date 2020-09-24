@@ -20,7 +20,6 @@ class ListRowAction extends Action
 
         $table_data = [];
 
-        //  $rows = $pdo->query("SELECT * FROM " . $_GET['tablename']. " LIMIT 30")->fetchAll();
         // no need to get columns if we are retrieving more rows, they are already retrieved on the first call
         if (empty($query_params['offset'])) {
             $query                 = "SHOW FULL COLUMNS FROM ".QueryHelper::escapeMysqlId($query_params['tablename']);
@@ -28,7 +27,7 @@ class ListRowAction extends Action
             $table_data['columns'] = $rows;
         }
 
-        $amount_rows_per_page = 30; //todo: instelbaar maken
+        $amount_rows_per_page = (!empty($query_params['limit'])) ? (int) $query_params['limit'] : 0;
 
         $query = "SELECT * FROM ".QueryHelper::escapeMysqlId($query_params['tablename'])." ";
 
@@ -64,9 +63,7 @@ class ListRowAction extends Action
             $query .= "ORDER BY `".$query_params['orderby']."` ".$query_params['orderdirection']." ";
         }
 
-        if (!empty($query_params['column']) && $query_params['column'] == 'primarykey') {
-        } elseif (!empty($query_params['limit']) && $query_params['limit'] == 'none') {
-        } else {
+        if ($amount_rows_per_page > 0) {
             $query .= " LIMIT ".(int)$amount_rows_per_page." ";
         }
 
