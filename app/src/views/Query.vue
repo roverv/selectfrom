@@ -64,13 +64,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(row, row_index) in query_result.rows" :key="row_index">
-                  <td class="table-data-row" v-for="(cell, index) in row" :key="index"
-                      @click.ctrl="toggleRowSidebar(query_result_index, row_index)"
-                      :class="{ ' sticky-first-row-cell' : (index == 0)}" @click.exact="$event.target.focus()" tabindex="1">
-                    <span v-if="cell === null" class="null-value"><i>NULL</i></span>
-                    <span v-else>{{ cell }}</span>
-                  </td>
+                <tr v-for="(row, row_index) in query_result.rows" :key="row_index" @click.ctrl="toggleRowSidebar(query_result_index, row_index)">
+                  <TableDataRow v-bind:row="row" v-bind:truncate-amount="cell_text_display_limit"></TableDataRow>
                 </tr>
                 </tbody>
               </table>
@@ -103,6 +98,7 @@
   import HandleApiError from '@/mixins/HandleApiError.js';
   import Spinner from "@/components/Spinner";
   import ApiUrl from "@/mixins/ApiUrl";
+  import TableDataRow from "@/components/TableDataRow";
 
 
   export default {
@@ -123,6 +119,7 @@
     components: {
       RowSidebar,
       Spinner,
+      TableDataRow,
     },
 
     mixins: [
@@ -192,6 +189,10 @@
       query_history() {
         return this.$store.getters["queryhistory/queries"];
       },
+
+      cell_text_display_limit() {
+        return this.$store.getters["settings/getSetting"]('cell_text_display_limit');
+      },
     },
 
     methods: {
@@ -205,7 +206,7 @@
         let query         = window.editor.getValue();
         const querystring = require('querystring');
         this.$http.post(api_url, querystring.stringify({query: query})).then(response => {
-          this.query_results = response.data.data.query_results;
+          this.query_results = Object.freeze(response.data.data.query_results);
           if (this.query_history.includes(query) === false) {
             this.$store.commit("queryhistory/ADD_QUERY", query);
           }
