@@ -71,7 +71,7 @@
           Refresh page
         </a>
         <router-link :to="{ name: 'settings' }" class="btn-link">
-          Settings
+          Settings &amp; help
         </router-link>
         <a href="" class="btn-link">
           Logout
@@ -117,7 +117,7 @@ export default {
 <style scoped>
 
 .main-navigation {
-  @apply border-r border-light-100 z-20 w-56 h-full absolute;
+  @apply border-r border-light-100 z-40 w-56 h-full absolute;
   margin-left: -215px;
 }
 

@@ -20,7 +20,7 @@
           </div>
           <div class="flex items-center mb-4">
             <label class="w-32">Username</label>
-            <input type="text" name="username" v-model="username"
+            <input type="text" name="username" v-model="username" ref="username"
                    class="border border-gray-500 py-1 px-2 placeholder-gray-400 focus:outline-none"
                    style="background-color: rgba(255,255,255,0.3);">
           </div>
@@ -57,6 +57,10 @@ export default {
       password: '',
       login_error: ''
     }
+  },
+
+  mounted() {
+    this.$refs.username.focus();
   },
 
   methods: {
