@@ -9,7 +9,7 @@ class QueryHelper
 
     /**
      * Escape query identifiers like tablename, table column or database name
-     * use as: UPDATE user SET escape_mysql_identifier('name') = :name
+     * use as: UPDATE user SET QueryHelper::escapeMysqlId('name') = :name
      * See: https://phpdelusions.net/pdo/sql_injection_example and https://phpdelusions.net/pdo_examples/insert_helper
      * NOTE: MYSQL ONLY!
      *

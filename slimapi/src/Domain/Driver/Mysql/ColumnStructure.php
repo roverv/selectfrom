@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Driver\Mysql;
 
+use App\Application\Helpers\QueryHelper;
+
 class ColumnStructure implements \JsonSerializable
 {
 
@@ -140,7 +142,7 @@ class ColumnStructure implements \JsonSerializable
             if (strtolower($this->after_column) == 'first') {
                 $structure_query .= 'FIRST ';
             } else {
-                $structure_query .= "AFTER ".escape_mysql_identifier($this->after_column)." ";
+                $structure_query .= "AFTER ". QueryHelper::escapeMysqlId($this->after_column)." ";
             }
         }
 
