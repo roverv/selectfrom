@@ -41,8 +41,10 @@ export default new Vuex.Store({
   mutations: {
     setActiveDatabase(state, database) {
       state.activeDatabase = database;
-      this.dispatch("tables/get");
-      this.dispatch("tables/getWithColumns");
+      if(database != '') {
+        this.dispatch("tables/get");
+        this.dispatch("tables/getWithColumns");
+      }
     },
     setAuthenticated(state, authenticated) {
       state.authenticated = authenticated;

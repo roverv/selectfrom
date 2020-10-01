@@ -116,6 +116,7 @@
     methods: {
 
       openSearchModal() {
+        if(!this.active_database) return;
         if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
         this.searchmodalopen = true;
       },
@@ -126,11 +127,13 @@
       },
 
       openRecentTables() {
+        if(!this.active_database) return;
         if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
         this.recenttablesopen = true;
       },
 
       openQueryHistory() {
+        if(!this.active_database) return;
         if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
         this.queryhistoryopen = true;
       },
