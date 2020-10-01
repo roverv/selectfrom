@@ -61,7 +61,7 @@
 
         <div v-if="page_view == 'single'">
 
-          <p class="text-center mb-2">Showing row {{ row_pointer + 1 }} of {{ this.tabledata.length }}</p>
+          <p class="text-center mb-2">Showing row {{ row_pointer + 1 + (offset_rows * rows_per_page) }} of {{ rows_limit_end }}</p>
 
           <div class="single-row-view" v-if="tabledata.length > 0">
 
@@ -113,19 +113,9 @@
                 </div>
               </div>
 
-              <div class="flex items-start justify-between pr-4">
+              <div class="flex items-start justify-center pr-4">
 
-                <div class="inline-flex w-1/3">
-                  <div v-if="showLoadMoreDataButtons()">
-                    <button class="btn mr-3" @click="loadRows('add')">Load 50 more rows</button>
-                    <button class="btn mr-3" @click="loadAllRows()">
-                      Load all rows ({{ total_amount_rows }})
-                    </button>
-                    <spinner v-if="is_fetching_data === true"></spinner>
-                  </div>
-                </div>
-
-                <div class="inline-flex items-center justify-center w-1/3">
+                <div class="inline-flex items-center justify-center">
                   <a class="btn mx-1" @click="editRowFromSingleView()">
                     <span>Edit</span>
                   </a>
@@ -133,8 +123,6 @@
                     <span>Delete</span>
                   </a>
                 </div>
-
-                <div class="w-1/3">&nbsp;</div>
               </div>
 
             </div>
@@ -248,20 +236,15 @@
 
             <br>
 
-            <div class="flex items-center" v-if="showLoadMoreDataButtons()">
-              <button class="btn mr-3" @click="loadRows('add')">Load 50 more rows</button>
-              <button class="btn mr-3" @click="loadAllRows()">
-                Load all rows ({{ total_amount_rows }})
-              </button>
-
-              <button class="btn icon p-2 mr-3" @click="loadRows('prevpage')" v-if="offset_rows > 0">
+            <div class="flex items-center" v-if="this.tabledata.length > 1">
+              <button class="btn icon p-2 mr-3" @click="prevPage()" v-if="offset_rows > 0">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current text-light-200" style="transform: rotate(-90deg);">
                   <path class="text-light-200"
                         d="M12 20.1L3.4 21.9a1 1 0 0 1-1.3-1.36l9-18a1 1 0 0 1 1.8 0l9 18a1 1 0 0 1-1.3 1.36L12 20.1z"></path>
                   <path class="text-light-200" d="M12 2c.36 0 .71.18.9.55l9 18a1 1 0 0 1-1.3 1.36L12 20.1V2z"></path>
                 </svg>
               </button>
-              <button class="btn icon p-2 mr-3" @click="loadRows('nextpage')">
+              <button class="btn icon p-2 mr-3" @click="nextPage()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current text-light-200" style="transform: rotate(90deg);">
                   <path class="text-light-200"
                         d="M12 20.1L3.4 21.9a1 1 0 0 1-1.3-1.36l9-18a1 1 0 0 1 1.8 0l9 18a1 1 0 0 1-1.3 1.36L12 20.1z"></path>
@@ -536,20 +519,19 @@ export default {
       this.sidebarisopen       = true;
     },
 
-    showLoadMoreDataButtons() {
-      return (this.tabledata.length > 1 && this.total_amount_rows > this.tabledata.length);
+    nextPage() {
+      this.offset_rows += 1;
+      this.loadRows();
+      this.row_pointer = 0;
     },
 
-    //@ todo: change this function to proper functions when decided on pagination/paging
-    loadRows(action) {
+    prevPage() {
+      this.offset_rows -= 1;
+      this.loadRows();
+      this.row_pointer = this.rows_per_page - 1;
+    },
 
-      if(action == 'prevpage') {
-        this.offset_rows -= 1;
-      }
-      else {
-        this.offset_rows += 1;
-      }
-
+    loadRows() {
       let api_url_params = {'db': this.active_database, 'tablename': this.tableid, 'limit' : this.rows_per_page };
       if (this.column && this.value && this.comparetype) {
         api_url_params.column = this.column;
@@ -569,54 +551,11 @@ export default {
       let vue_instance              = this;
       vue_instance.is_fetching_data = true;
       this.$http.get(api_url).then(response => {
-        if(action == 'prevpage' || action == 'nextpage') {
-          vue_instance.tabledata        = Object.freeze(response.data.data.data);
-        }
-        else {
-          let extended_tabledata        = Object.freeze(this.tabledata.concat(response.data.data.data));
-          vue_instance.tabledata        = Object.freeze(extended_tabledata);
-        }
-
+        vue_instance.tabledata        = Object.freeze(response.data.data.data);
         vue_instance.is_fetching_data = false;
       }).catch(error => {
         this.handleApiError(error);
       })
-    },
-
-    loadAllRows() {
-      let ask_confirm = true;
-      if (this.total_amount_rows > 1000) {
-        ask_confirm = confirm('Are you sure you want to load all rows?');
-      }
-      if (ask_confirm) {
-
-        let api_url_params = {'db': this.active_database, 'tablename': this.tableid, 'limit' : this.rows_per_page };
-        if (this.column && this.value && this.comparetype) {
-          api_url_params.column = this.column;
-          api_url_params.comparetype = this.comparetype;
-          api_url_params.value = this.value;
-        }
-        if (this.order_by && this.order_direction) {
-          api_url_params.orderby = this.order_by;
-          api_url_params.orderdirection = this.order_direction;
-        }
-        api_url_params.limit = '0';
-
-        let api_url = this.buildApiUrl(this.endpoint_table_data, api_url_params);
-
-        let vue_instance = this;
-
-        vue_instance.is_fetching_data = true;
-        this.$http.get(api_url).then(response => {
-          let data = response.data.data.data.map(item => {
-            return Object.freeze(item);
-          });
-          vue_instance.tabledata        = data;
-          vue_instance.is_fetching_data = false;
-        }).catch(error => {
-          this.handleApiError(error);
-        })
-      }
     },
 
     toggleAllRows($event) {
@@ -827,11 +766,27 @@ export default {
     },
 
     rowPointerUp() {
+      if(this.is_fetching_data === true) return;
+      if((this.row_pointer + 1 + (this.offset_rows * this.rows_per_page)) >= this.total_amount_rows) return;
       this.row_pointer += 1;
+      if(this.row_pointer >= this.rows_per_page) {
+        this.nextPage();
+      }
     },
 
     rowPointerDown() {
-      this.row_pointer -= 1;
+      if(this.is_fetching_data === true) return;
+      if(this.row_pointer <= 0) {
+        if(this.offset_rows > 0) {
+          this.prevPage();
+        }
+        else {
+          this.row_pointer = 0;
+        }
+      }
+      else {
+        this.row_pointer -= 1;
+      }
     },
 
     addScrollingEvent() {
