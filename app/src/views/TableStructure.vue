@@ -13,24 +13,21 @@
       <div class="w-full flex items-start">
 
         <div class="relative w-full">
-          <table cellspacing="0" class="flex-grow  bg-light-100 relative"
-                 style="box-shadow: 0 2px 3px 2px rgba(0,0,0,.03);"
-                 v-if="columns.length > 0">
-            <thead class="bg-dark-400 text-gray-200">
-            <tr class="font-normal">
-              <th class="sticky top-0 z-20 bg-dark-400 text-gray-200 px-2 py-3"
-                  v-for="(column_header) in Object.keys(columns[0])">{{ column_header }}
-              </th>
+          <table cellspacing="0" class="table-data" v-if="columns.length > 0">
+            <thead>
+            <tr>
+              <th v-for="(column_header) in Object.keys(columns[0])">{{ column_header }}</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="column_fields in columns">
-              <td class="whitespace-pre px-2 py-1" v-for="column_field in column_fields">{{ column_field }}</td>
+              <td class="py-1" v-for="column_field in column_fields">{{ column_field }}</td>
             </tr>
             </tbody>
           </table>
 
-          <router-link :to="{ name: 'edittable', params: { database: active_database, tableid: tableid } }" class="btn mt-4">Edit table
+          <router-link :to="{ name: 'edittable', params: { database: active_database, tableid: tableid } }"
+                       class="btn mt-4">Edit table
           </router-link>
 
         </div>
@@ -91,7 +88,7 @@ export default {
   methods: {
     getTableStructure() {
 
-      let api_url_params = {'db': this.active_database, 'tablename' : this.tableid};
+      let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
       let api_url        = this.buildApiUrl('table/structure', api_url_params);
 
       this.$http.get(api_url).then(response => {
@@ -108,20 +105,9 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-table tbody td {
-  @apply text-gray-300 border-b border-light-300;
-}
-
-tbody tr:hover td {
-  @apply bg-light-200;
-}
-
-tbody td:hover {
-  @apply bg-highlight-400 !important;
-}
-
+/* highlight column name */
 tbody td:first-child {
-  @apply text-white;
+  @apply text-white font-medium;
 }
 
 </style>
