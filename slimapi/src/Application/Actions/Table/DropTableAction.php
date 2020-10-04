@@ -33,7 +33,7 @@ class DropTableAction extends Action
                 $pdo->query($drop_table_query);
                 $result_data['query'] .= $drop_table_query;
                 $affected_tables++;
-            } catch (Exception $e) {
+            } catch (\PDOException $e) {
                 $payload = [
                   'result'  => 'error',
                   'message' => $e->getMessage(),

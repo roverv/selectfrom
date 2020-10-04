@@ -79,8 +79,13 @@ class CreateTableAction extends Action
         try {
             $pdo->query($query);
             $result_data['result'] = 'success';
-        } catch (Exception $e) {
-            return $this->respondWithData(['message' => $e->getMessage()], 500);
+        } catch (\PDOException $e) {
+            $payload = [
+              'result'  => 'error',
+              'message' => $e->getMessage(),
+            ];
+
+            return $this->respondWithData($payload);
         }
 
         return $this->respondWithData($result_data);

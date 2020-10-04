@@ -33,7 +33,7 @@ class TruncateTableAction extends Action
                 $pdo->query($truncate_table_query);
                 $result_data['query'] .= $truncate_table_query;
                 $affected_tables++;
-            } catch (Exception $e) {
+            } catch (\PDOException $e) {
                 $payload = [
                   'result'  => 'error',
                   'message' => $e->getMessage(),
