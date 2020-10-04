@@ -20,6 +20,8 @@
         {{ query_result.message }}
       </div>
 
+      <spinner v-if="is_fetching_data"></spinner>
+
       <form method="post" autocomplete="off">
 
         <div class="mb-8">
@@ -134,15 +136,20 @@
               </select>
 
               <select class="default-select w-48" v-model="column_row.attribute"
-                      v-if="columnHasCollation(column_row.type)">
+                      v-if="columnHasCollation(column_row.type)" @focus="select_focus = index">
+                <optgroup v-if="column_row.attribute" label="Current">
+                  <option>{{ column_row.attribute }}</option>
+                </optgroup>
+
                 <option value=""></option>
 
-                <optgroup v-for="(collation_group, charset) in collations" :label="charset">
+                <optgroup v-for="(collation_group, charset) in collations" :label="charset" v-show="select_focus == index">
                   <option v-for="collation in collation_group">
                     {{ collation }}
                   </option>
                 </optgroup>
               </select>
+
             </div>
 
             <div class="columns-table-cell justify-center">
@@ -223,6 +230,7 @@
   import HandleApiError from '@/mixins/HandleApiError.js'
   import {clone} from '../util'
   import ApiUrl from "@/mixins/ApiUrl";
+  import Spinner from "@/components/Spinner";
 
   var default_column_row = {
     name: '',
@@ -254,12 +262,17 @@
         comment: '',
         auto_increment_value: '',
         query_result: {},
+        is_fetching_data: false,
         column_rows: [clone(default_column_row)],
+        // we keep an index on the select that is focused, because there are around 200 collations, which means on big tables
+        // the page becomes incredibly slow to render because of the amount of huge selects
+        select_focus: 0,
       }
     },
 
     components: {
       TableNav,
+      Spinner,
     },
 
     mixins: [
@@ -292,6 +305,7 @@
     methods: {
 
       getTableCreationData() {
+        this.is_fetching_data = true;
 
         let api_url_params = { 'db': this.active_database };
         if (this.page_is_edit) {
@@ -323,6 +337,7 @@
               return column_row;
             });
           }
+          this.is_fetching_data = false;
         }).catch(error => {
           this.handleApiError(error);
         })
