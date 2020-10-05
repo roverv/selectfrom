@@ -40,6 +40,8 @@ class AlterTableAction extends Action
         $query = "SHOW FULL COLUMNS FROM ".QueryHelper::escapeMysqlId($_GET['tablename']).";";
         $columns_data         = $pdo->query($query)->fetchAll();
 
+        $table_indexes = $pdo->query("SHOW INDEX FROM " . QueryHelper::escapeMysqlId($_GET['tablename']))->fetchAll();
+
         $original_table_status = TableStatus::createFromDatabase(
           $table_status_data,
           $columns_data,
@@ -52,7 +54,7 @@ class AlterTableAction extends Action
 
         $changed_columns = array_filter(
           $new_table_status->getColumns(),
-          function (ColumnStructure $column) use ($pdo, $original_table_status) {
+          function (ColumnStructure $column) use ($pdo, $original_table_status, $table_indexes) {
               // new column, skip
               if (empty($column->getOriginalFieldName())) {
                   return false;
@@ -69,8 +71,8 @@ class AlterTableAction extends Action
               $original_column = $original_table_status->getColumnByName($column->getOriginalFieldName());
 
               if ($original_column) {
-                  $old_structure = $original_column->asQueryWithoutName($pdo);
-                  $new_structure = $column->asQueryWithoutName($pdo);
+                  $old_structure = $original_column->asQueryWithoutName($pdo, $table_indexes);
+                  $new_structure = $column->asQueryWithoutName($pdo, $table_indexes);
 
                   // structure has changed
                   if ($old_structure != $new_structure) {
@@ -115,9 +117,9 @@ class AlterTableAction extends Action
 
         array_walk(
           $new_columns,
-          function (ColumnStructure $new_column) use (&$query, $pdo) {
+          function (ColumnStructure $new_column) use (&$query, $pdo, $table_indexes) {
               $query .= 'ADD '.QueryHelper::escapeMysqlId($new_column->getName()).' '.$new_column->asQueryWithoutName(
-                  $pdo
+                  $pdo, $table_indexes
                 ).", ";
           }
         );
@@ -131,10 +133,10 @@ class AlterTableAction extends Action
 
         array_walk(
           $changed_columns,
-          function (ColumnStructure $changed_column) use (&$query, $pdo) {
+          function (ColumnStructure $changed_column) use (&$query, $pdo, $table_indexes) {
               $query .= 'CHANGE '.QueryHelper::escapeMysqlId($changed_column->getOriginalFieldName()).' ';
               $query .= QueryHelper::escapeMysqlId($changed_column->getName()).' ';
-              $query .= $changed_column->asQueryWithoutName($pdo).', ';
+              $query .= $changed_column->asQueryWithoutName($pdo, $table_indexes).', ';
           }
         );
 

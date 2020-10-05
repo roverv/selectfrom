@@ -107,7 +107,7 @@ class ColumnStructure implements \JsonSerializable
         return $vars;
     }
 
-    public function asQueryWithoutName($pdo)
+    public function asQueryWithoutName($pdo, array $table_indexes)
     {
         $structure_query = $this->type;
         $structure_query .= (!empty($this->length)) ? "(".$this->length.") " : " ";
@@ -135,7 +135,34 @@ class ColumnStructure implements \JsonSerializable
         }
 
         if ($this->is_auto_increment) {
-            $structure_query .= "AUTO_INCREMENT ";
+            $column_name = $this->name;
+            // check if this column has a primary key index or unique index
+            $column_index_key = array_filter(
+              $table_indexes,
+              function (array $table_index) use ($column_name) {
+                  return ($table_index['Column_name'] == $column_name && ($table_index['Key_name'] === 'PRIMARY' || $table_index['Non_unique'] == '0'));
+              }
+            );
+
+            if (count($column_index_key) > 0) {
+                $structure_query .= "AUTO_INCREMENT ";
+            } else {
+                // find primary key from indexes
+                $primary_key_index = array_filter(
+                  $table_indexes,
+                  function (array $table_index) {
+                      return $table_index['Key_name'] === 'PRIMARY';
+                  }
+                );
+
+                // this table has a primary key
+                if (count($primary_key_index) > 0) {
+                    // add unique key
+                    $structure_query .= "AUTO_INCREMENT UNIQUE ";
+                } else {
+                    $structure_query .= "AUTO_INCREMENT PRIMARY KEY ";
+                }
+            }
         }
 
         if (!empty($this->after_column)) {

@@ -195,7 +195,7 @@
             </div>
 
             <div class="flex items-start pt-1">
-              <button @click="addColumn(index)" class="btn btn-icon ml-2" type="button">
+              <button @click="addColumn(index)" class="btn btn-icon ml-2 show-focus" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                   <path class="text-light-300" fill-rule="evenodd"
                         d="M17 11a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H7a1 1 0 0 1 0-2h4V7a1 1 0 0 1 2 0v4h4z"></path>
@@ -395,7 +395,7 @@
         params.append('auto_increment_value', this.auto_increment_value);
 
         let auto_increment_field = 'false';
-        if (typeof parseInt(this.auto_increment_column_row_index) == 'number') {
+        if (typeof this.auto_increment_column_row_index == 'number') {
           auto_increment_field = this.column_rows[this.auto_increment_column_row_index]['name'];
         }
 

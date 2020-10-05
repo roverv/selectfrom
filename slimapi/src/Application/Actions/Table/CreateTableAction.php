@@ -39,7 +39,8 @@ class CreateTableAction extends Action
         foreach ($table_status->getColumns() as $column_index => $column) {
             $query .= QueryHelper::escapeMysqlId($column->getName()).' ';
 
-            $query .= $column->asQueryWithoutName($pdo);
+            // new table has no indexes, so use empty array
+            $query .= $column->asQueryWithoutName($pdo, []);
 
             if ($column_counter < count($table_status->getColumns())) {
                 $query .= ', ';
