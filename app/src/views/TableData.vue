@@ -50,7 +50,7 @@
         <div v-cloak v-if="is_fetching_data === false">
           <table-data-meta v-if="meta_box_open" v-on:confirmDropTable="confirmDropTable"
                            v-on:confirmTruncateTable="confirmTruncateTable" :totalrows="total_amount_rows"
-                           :rows="tabledata.length" :columns="columns.length"></table-data-meta>
+                           :rows="tabledata.length" :columns="columns.length" :query="query"></table-data-meta>
         </div>
 
         <flash-message></flash-message>
@@ -244,7 +244,7 @@
                   <path class="text-light-200" d="M12 2c.36 0 .71.18.9.55l9 18a1 1 0 0 1-1.3 1.36L12 20.1V2z"></path>
                 </svg>
               </button>
-              <button class="btn icon p-2 mr-3" @click="nextPage()">
+              <button class="btn icon p-2 mr-3" @click="nextPage()" v-if="rows_limit_end < total_amount_rows">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current text-light-200" style="transform: rotate(90deg);">
                   <path class="text-light-200"
                         d="M12 20.1L3.4 21.9a1 1 0 0 1-1.3-1.36l9-18a1 1 0 0 1 1.8 0l9 18a1 1 0 0 1-1.3 1.36L12 20.1z"></path>
@@ -307,6 +307,7 @@ export default {
       endpoint_delete_rows: 'row/delete',
       endpoint_truncate_tables: 'table/truncate',
       endpoint_drop_tables: 'table/drop',
+      query: '',
       order_by: '',
       order_direction: '',
       sidebarisopen: false,
@@ -452,6 +453,7 @@ export default {
         this.tabledata         = data;
         this.columns           = Object.freeze(response_data.columns);
         this.total_amount_rows = response_data.amount_rows;
+        this.query = response_data.query;
         if (this.tabledata.length == 1) {
           this.page_view = 'single';
         }

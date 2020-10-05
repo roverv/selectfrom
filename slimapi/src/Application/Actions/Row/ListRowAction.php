@@ -80,6 +80,7 @@ class ListRowAction extends Action
 
         $rows               = $pdo->query($query)->fetchAll();
         $table_data['data'] = $rows;
+        $table_data['query'] = $query;
 
         return $this->respondWithData($table_data);
     }

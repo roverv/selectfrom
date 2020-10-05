@@ -16,19 +16,19 @@
         <div class="statistic-value text-2xl text-gray-100">{{ columns }}</div>
       </div>
 
-      <div class="inline-flex flex-col items-center mr-16">
-        <div class="statistic-key text-normal text-gray-300 ">Indexes</div>
-        <div class="statistic-value text-2xl text-gray-100">3</div>
-      </div>
+<!--      <div class="inline-flex flex-col items-center mr-16">-->
+<!--        <div class="statistic-key text-normal text-gray-300 ">Indexes</div>-->
+<!--        <div class="statistic-value text-2xl text-gray-100">3</div>-->
+<!--      </div>-->
 
-      <div class="inline-flex flex-col items-center mr-16">
-        <div class="statistic-key text-normal text-gray-300 ">Foreign keys</div>
-        <div class="statistic-value text-2xl text-gray-100">6</div>
-      </div>
+<!--      <div class="inline-flex flex-col items-center mr-16">-->
+<!--        <div class="statistic-key text-normal text-gray-300 ">Foreign keys</div>-->
+<!--        <div class="statistic-value text-2xl text-gray-100">6</div>-->
+<!--      </div>-->
     </div>
 
     <div class="my-6 query-message">
-      <div class="query-sql">SELECT * FROM user LIMIT 50</div>
+      <div class="query-sql">{{ query }}</div>
       <a class="edit-query">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path class="primary"
@@ -39,7 +39,7 @@
     </div>
 
     <div class="flex mt-6 ">
-      <a class="btn mr-6">Export all</a>
+<!--      <a class="btn mr-6">Export all</a>-->
       <a class="btn mr-6" @click="$emit('confirmTruncateTable')">Truncate</a>
       <a class="btn mr-6" @click="$emit('confirmDropTable')">Drop</a>
     </div>
@@ -54,6 +54,7 @@
       'totalrows',
       'rows',
       'columns',
+      'query',
     ]
   }
 </script>
