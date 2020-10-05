@@ -17,7 +17,7 @@ class ListWithColumnsTableAction extends Action
         $pdo = $this->request->getAttribute('pdo_instance');
 
         $rows = $pdo->query(
-          "SELECT * FROM information_schema.columns WHERE table_schema = DATABASE() ORDER BY table_name,ordinal_position"
+          "SELECT TABLE_NAME, COLUMN_NAME, COLUMN_KEY FROM information_schema.columns WHERE table_schema = DATABASE() ORDER BY table_name,ordinal_position"
         )->fetchAll();
 
         $tables_with_columns = [];
