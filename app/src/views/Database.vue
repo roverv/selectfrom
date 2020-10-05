@@ -19,7 +19,7 @@
 
         <flash-message></flash-message>
 
-        <table cellspacing="0" class="table-data" v-if="tables.length > 1">
+        <table cellspacing="0" class="table-data" v-if="tables.length > 0">
           <thead>
           <tr>
             <th class="toggle-row">
@@ -84,7 +84,7 @@
         </table>
 
         <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
-             v-if="tables.length > 1 && selected_rows.length > 0">
+             v-if="tables.length > 0 && selected_rows.length > 0">
 
           <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
 

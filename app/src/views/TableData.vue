@@ -236,7 +236,7 @@
 
             <br>
 
-            <div class="flex items-center" v-if="this.tabledata.length > 1">
+            <div class="flex items-center" v-if="this.tabledata.length > 0">
               <button class="btn icon p-2 mr-3" @click="prevPage()" v-if="offset_rows > 0">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current text-light-200" style="transform: rotate(-90deg);">
                   <path class="text-light-200"
