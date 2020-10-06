@@ -219,17 +219,17 @@
                   <span>Edit</span>
                 </a>
 
-                <a class="rows-action" href="">
-                  <span>Duplicate</span>
-                </a>
+<!--                <a class="rows-action" href="">-->
+<!--                  <span>Duplicate</span>-->
+<!--                </a>-->
 
                 <a class="rows-action" @click="confirmDeleteRows()">
                   <span>Delete</span>
                 </a>
 
-                <a class="rows-action" href="">
-                  <span>Export</span>
-                </a>
+<!--                <a class="rows-action" href="">-->
+<!--                  <span>Export</span>-->
+<!--                </a>-->
 
               </div>
             </div>

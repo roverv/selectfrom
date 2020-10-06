@@ -93,6 +93,18 @@ const router = new Router({
       props: true,
     },
     {
+      path: '/:database/indexes/:tableid',
+      name: 'indexes',
+      component: () => import(/* webpackChunkName: "tablestructure" */ './views/TableIndexes.vue'),
+      props: true,
+    },
+    {
+      path: '/:database/foreignkeys/:tableid',
+      name: 'foreignkeys',
+      component: () => import(/* webpackChunkName: "tablestructure" */ './views/TableForeignKeys.vue'),
+      props: true,
+    },
+    {
       path: '/:database/editrow/:tableid/:column/:rowid',
       name: 'editrow',
       component: () => import(/* webpackChunkName: "editrow" */ './views/EditRow.vue'),

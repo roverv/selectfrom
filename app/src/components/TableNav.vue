@@ -9,12 +9,14 @@
                  :class="{ 'active' : (['structure', 'edittable'].includes($route.name)) }">
       Structure
     </router-link>
-    <a class="subnav-item">
+    <router-link :to="{ name: 'indexes', params: { database: active_database, tableid: tableid } }" class="subnav-item"
+                 :class="{ 'active' : (['indexes'].includes($route.name)) }">
       Indexes
-    </a>
-    <a class="subnav-item">
+    </router-link>
+    <router-link :to="{ name: 'foreignkeys', params: { database: active_database, tableid: tableid } }" class="subnav-item"
+                 :class="{ 'active' : (['foreignkeys'].includes($route.name)) }">
       Foreign keys
-    </a>
+    </router-link>
 
     <router-link :to="{ name: 'addrow', params: { database: active_database, tableid: tableid } }" class="subnav-item"
                  :class="{ 'active' : ($route.name == 'addrow') }">
@@ -60,6 +62,12 @@
         }
         else if (evt.key === '2') {
           this.$router.push({name: 'structure', params: { database: this.active_database, tableid: this.tableid }});
+        }
+        else if (evt.key === '3') {
+          this.$router.push({name: 'indexes', params: { database: this.active_database, tableid: this.tableid }});
+        }
+        else if (evt.key === '4') {
+          this.$router.push({name: 'foreignkeys', params: { database: this.active_database, tableid: this.tableid }});
         }
         else if (evt.key === '5') {
           this.$router.push({name: 'addrow', params: { database: this.active_database, tableid: this.tableid }});

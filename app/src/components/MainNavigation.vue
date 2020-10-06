@@ -90,15 +90,15 @@
         <router-link :to="{ name: 'query' }" class="btn-link">
           Query
         </router-link>
-        <router-link :to="{ name: 'query' }" class="btn-link">
-          Search
-        </router-link>
-        <router-link :to="{ name: 'query' }" class="btn-link">
-          Import
-        </router-link>
-        <router-link :to="{ name: 'query' }" class="btn-link">
-          Export
-        </router-link>
+<!--        <router-link :to="{ name: 'query' }" class="btn-link">-->
+<!--          Search-->
+<!--        </router-link>-->
+<!--        <router-link :to="{ name: 'query' }" class="btn-link">-->
+<!--          Import-->
+<!--        </router-link>-->
+<!--        <router-link :to="{ name: 'query' }" class="btn-link">-->
+<!--          Export-->
+<!--        </router-link>-->
       </div>
 
       <hr class="border-light-200 my-3">
