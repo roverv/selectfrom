@@ -1,7 +1,26 @@
-import {has_deep_property} from '../util';
+import {has_deep_property, urlencode} from "@/util";
 
 export default {
+
   methods: {
+    buildApiUrl(endpoint_url, params) {
+      let api_url = endpoint_url;
+
+      let url_params_array = Object.entries(params);
+      if(url_params_array.length == 0) return api_url;
+
+      api_url += '?';
+      for(const [key, value] of url_params_array) {
+        api_url += key + '=' + urlencode(value);
+        api_url += '&';
+      }
+
+      // remove the last &
+      api_url = api_url.substring(0, api_url.length -1);
+
+      return api_url;
+    },
+
     handleApiError(error) {
       if (error.response && error.response.status && error.response.status == 400 && error.response.error == 'Invalid CSRF') {
         this.$store.commit("apierror/add_error_message", '400 - Invalid CSRF token, please login again');
@@ -26,5 +45,15 @@ export default {
         this.$store.commit("apierror/add_error_message", error.message);
       }
     },
+
+    validateApiResponse(response) {
+      if(has_deep_property(response, 'data', 'data', 'result') === false) {
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'error', message: 'Invalid response'});
+        this.refreshPage();
+        return false;
+      }
+      return true;
+    },
+
   }
 }

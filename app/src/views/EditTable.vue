@@ -227,10 +227,9 @@
 
   import TableNav from '@/components/TableNav.vue'
   import sqlFormatter from "sql-formatter";
-  import HandleApiError from '@/mixins/HandleApiError.js'
   import {clone} from '../util'
-  import ApiUrl from "@/mixins/ApiUrl";
   import Spinner from "@/components/Spinner";
+  import ApiMixin from "@/mixins/Api";
 
   var default_column_row = {
     name: '',
@@ -276,8 +275,7 @@
     },
 
     mixins: [
-      HandleApiError,
-      ApiUrl
+      ApiMixin
     ],
 
     mounted() {

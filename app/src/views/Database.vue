@@ -120,9 +120,8 @@ import {number_format} from '@/util'
 import Spinner from "@/components/Spinner";
 import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
-import HandleApiError from "@/mixins/HandleApiError";
 import FlashMessage from "@/components/FlashMessage";
-import ApiUrl from "@/mixins/ApiUrl";
+import ApiMixin from "@/mixins/Api";
 
 export default {
   name: 'TableList',
@@ -143,8 +142,7 @@ export default {
 
   mixins: [
     ConfirmModalMixin,
-    HandleApiError,
-    ApiUrl
+    ApiMixin
   ],
 
   filters: {

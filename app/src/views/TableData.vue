@@ -283,15 +283,13 @@
 import TableNav from '@/components/TableNav.vue'
 import TableDataMeta from '@/components/TableDataMeta.vue'
 import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
-import HandleApiError from '@/mixins/HandleApiError.js'
 import RowSidebar from "@/components/RowSidebar";
 import FlashMessage from "@/components/FlashMessage";
 import Spinner from "@/components/Spinner";
 import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import TableDataRow from "@/components/TableDataRow";
-import ApiUrl from "@/mixins/ApiUrl";
-import HandleApiResult from "@/mixins/HandleApiResult";
+import ApiMixin from "@/mixins/Api";
 
 export default {
   name: 'TableData',
@@ -336,10 +334,8 @@ export default {
 
   mixins: [
     TableKeyNavigation,
-    HandleApiError,
     ConfirmModalMixin,
-    ApiUrl,
-    HandleApiResult
+    ApiMixin,
   ],
 
   created() {

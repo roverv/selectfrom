@@ -27,8 +27,7 @@
 <script>
 
 import TableNav from '@/components/TableNav.vue'
-import HandleApiError from '@/mixins/HandleApiError.js'
-import ApiUrl from "@/mixins/ApiUrl";
+import ApiMixin from "@/mixins/Api";
 
 export default {
   name: 'TableForeignKeys',
@@ -44,8 +43,7 @@ export default {
   },
 
   mixins: [
-    HandleApiError,
-    ApiUrl
+    ApiMixin
   ],
 
   computed: {

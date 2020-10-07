@@ -62,8 +62,7 @@
 
   import TableNav from '@/components/TableNav.vue'
   import sqlFormatter from "sql-formatter";
-  import HandleApiError from '@/mixins/HandleApiError.js'
-  import ApiUrl from "@/mixins/ApiUrl";
+  import ApiMixin from "@/mixins/Api";
 
   export default {
     name: 'editrow',
@@ -86,8 +85,7 @@
     },
 
     mixins: [
-      HandleApiError,
-      ApiUrl
+      ApiMixin
     ],
 
     mounted() {

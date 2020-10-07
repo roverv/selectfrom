@@ -95,10 +95,9 @@
   import "codemirror/addon/hint/sql-hint";
   import sqlFormatter from "sql-formatter";
   import {number_format} from '../util';
-  import HandleApiError from '@/mixins/HandleApiError.js';
   import Spinner from "@/components/Spinner";
-  import ApiUrl from "@/mixins/ApiUrl";
   import TableDataRow from "@/components/TableDataRow";
+  import ApiMixin from "@/mixins/Api";
 
 
   export default {
@@ -124,8 +123,7 @@
 
     mixins: [
       TableKeyNavigation,
-      HandleApiError,
-      ApiUrl
+      ApiMixin
     ],
 
     filters: {

@@ -113,8 +113,7 @@ import Spinner from "@/components/Spinner";
 import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import FlashMessage from "@/components/FlashMessage";
-import ApiUrl from "@/mixins/ApiUrl";
-import HandleApiError from "@/mixins/HandleApiError";
+import ApiMixin from "@/mixins/Api";
 
 export default {
   name: 'DatabaseList',
@@ -135,8 +134,7 @@ export default {
 
   mixins: [
     ConfirmModalMixin,
-    HandleApiError,
-    ApiUrl
+    ApiMixin
   ],
 
   created() {
