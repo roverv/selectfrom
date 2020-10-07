@@ -5,6 +5,7 @@ import store from './store'
 import axios from 'axios'
 import '@/assets/css/main.css'
 import Vuex from "vuex";
+import '@/mixins/global';
 
 const axios_instance =  axios.create({
   baseURL: process.env.VUE_APP_API_ENDPOINT,
