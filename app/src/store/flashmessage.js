@@ -1,34 +1,25 @@
 const ADD_FLASH_MESSAGE = "ADD_FLASH_MESSAGE";
-const ADD_FLASH_QUERY   = "ADD_FLASH_QUERY";
 
 export default {
   namespaced: true,
   state: {
-    message: null,
-    query: null,
+    messages: [],
+    // query: null,
   },
   getters: {
     isset(state) {
-      return state.message !== null;
+      return state.messages !== null && state.messages.length > 0;
     },
-    message(state) {
-      return state.message;
-    },
-    query(state) {
-      return state.query;
+    messages(state) {
+      return state.messages;
     },
   },
   mutations: {
     [ADD_FLASH_MESSAGE](state, flash_message) {
-      state.message = flash_message;
-    },
-
-    [ADD_FLASH_QUERY](state, flash_query) {
-      state.query = flash_query;
+      state.messages.push(flash_message);
     },
     empty(state) {
-      state.message = null;
-      state.query   = null;
+      state.messages = [];
     }
   },
 };
