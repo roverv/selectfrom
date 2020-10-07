@@ -569,21 +569,7 @@ export default {
       }
     },
 
-    deleteRows() {
-      let unique_columns = this.getUniqueColumns();
-
-      if (unique_columns.length == 0) {
-        alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
-        return;
-      }
-
-      let delete_by_column = unique_columns[0].Field;
-
-      let vue_instance   = this;
-      let delete_by_rows = this.selected_rows.map(function (row_index) {
-        return vue_instance.tabledata[row_index][delete_by_column];
-      });
-
+    handleDeleteRows(delete_by_rows, delete_by_column) {
       let params = new URLSearchParams();
       params.append('delete_by_column', delete_by_column);
       for (let row_index in delete_by_rows) {
@@ -624,18 +610,24 @@ export default {
 
       let delete_by_column = unique_columns[0].Field;
 
-      let params = new URLSearchParams();
-      params.append('delete_by_column', delete_by_column);
-      params.append('delete_by_rows[]', this.tabledata[this.row_pointer][delete_by_column]);
+      let delete_by_rows = [this.tabledata[this.row_pointer][delete_by_column]];
+      this.handleDeleteRows(delete_by_rows, delete_by_column);
+    },
 
-      let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
-      let api_url = this.buildApiUrl(this.endpoint_delete_rows, api_url_params);
-      this.$http.post(api_url, params).then(response => {
-        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Row deleted.');
-        this.$store.state.reloadMainComponentKey += 1;
-      }).catch(error => {
-        this.handleApiError(error);
-      })
+    deleteRows() {
+      let unique_columns = this.getUniqueColumns();
+
+      if (unique_columns.length == 0) {
+        alert('The table has no primary or unique column. This is not yet supported.'); // todo: support this
+        return;
+      }
+
+      let delete_by_column = unique_columns[0].Field;
+      let vue_instance   = this;
+      let delete_by_rows = this.selected_rows.map(function (row_index) {
+        return vue_instance.tabledata[row_index][delete_by_column];
+      });
+      this.handleDeleteRows(delete_by_rows, delete_by_column);
     },
 
     confirmDeleteRows() {
