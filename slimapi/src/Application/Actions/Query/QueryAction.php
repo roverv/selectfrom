@@ -71,9 +71,8 @@ class QueryAction extends Action
                     $columns_meta[] = $query_result->getColumnMeta($column_index);
                 }
                 $result_data['columns_meta'] = $columns_meta;
-                $result_data['rows']         = $query_result->fetchAll(
-                  \PDO::FETCH_NUM
-                ); // fetch as num, because of possible joins with the same column names
+                // fetch as num, because of possible joins with the same column names
+                $result_data['rows'] = $query_result->fetchAll(\PDO::FETCH_NUM);
                 $result_data['row_count']    = $query_result->rowCount();
                 $result_data['type']         = 'data';
             } else {

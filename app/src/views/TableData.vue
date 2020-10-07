@@ -291,6 +291,7 @@ import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import TableDataRow from "@/components/TableDataRow";
 import ApiUrl from "@/mixins/ApiUrl";
+import HandleApiResult from "@/mixins/HandleApiResult";
 
 export default {
   name: 'TableData',
@@ -337,7 +338,8 @@ export default {
     TableKeyNavigation,
     HandleApiError,
     ConfirmModalMixin,
-    ApiUrl
+    ApiUrl,
+    HandleApiResult
   ],
 
   created() {
@@ -596,14 +598,21 @@ export default {
       let api_url = this.buildApiUrl(this.endpoint_delete_rows, api_url_params);
 
       this.$http.post(api_url, params).then(response => {
-        // remove the selected rows from the data, sort by highest number first, else we will remove the wrong rows because of numerical order
-        let selected_rows_sorted = this.selected_rows.sort(function (a, b) {
-          return b - a
-        });
-        for (let row_index in selected_rows_sorted) {
-          this.tabledata.splice(selected_rows_sorted[row_index], 1);
+        if(this.validateApiResponse(response) === false) return;
+
+        if(response.data.data.result == 'error') {
+          if(response.data.data.affected_rows > 0) {
+            let msg = response.data.data.affected_rows + 'row' + (response.data.data.affected_rows > 1 ? 's' : '') + ' deleted';
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'success', message: msg });
+          }
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'error', message: response.data.data.message});
+          this.refreshPage();
         }
-        this.selected_rows = [];
+        else if(response.data.data.result == 'success') {
+          let msg = response.data.data.affected_rows + ' row' + (response.data.data.affected_rows > 1 ? 's' : '') + ' deleted';
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'success', message: msg });
+          this.refreshPage();
+        }
       }).catch(error => {
         this.handleApiError(error);
       })
@@ -618,8 +627,6 @@ export default {
       }
 
       let delete_by_column = unique_columns[0].Field;
-
-      let vue_instance   = this;
 
       let params = new URLSearchParams();
       params.append('delete_by_column', delete_by_column);

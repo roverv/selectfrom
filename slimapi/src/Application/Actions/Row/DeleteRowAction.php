@@ -33,15 +33,16 @@ class DeleteRowAction extends Action
                 $affected_rows += $q->rowCount();
             } catch (\PDOException $e) {
                 $payload = [
-                  'result'  => 'error',
-                  'message' => $e->getMessage(),
-                  'code'    => $e->getCode(),
+                  'result'        => 'error',
+                  'message'       => $e->getMessage(),
+                  'code'          => $e->getCode(),
+                  'affected_rows' => $affected_rows,
                 ];
 
                 return $this->respondWithData($payload);
             }
         }
 
-        return $this->respondWithData(['affected_rows' => $affected_rows]);
+        return $this->respondWithData(['result' => 'success', 'affected_rows' => $affected_rows]);
     }
 }
