@@ -36,7 +36,7 @@ class DeleteRowAction extends Action
                   'result'        => 'error',
                   'message'       => $e->getMessage(),
                   'code'          => $e->getCode(),
-                  'affected_rows' => $affected_rows,
+                  'affected_rows' => $affected_rows, // some rows might have been successfully deleted
                 ];
 
                 return $this->respondWithData($payload);

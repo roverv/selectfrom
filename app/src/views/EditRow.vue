@@ -14,11 +14,9 @@
       <h1 class="text-xl mb-4">
         <span v-if="$route.name == 'addrow'">Add row</span>
         <span v-else>Edit row</span>
-        </h1>
+      </h1>
 
-      <div v-if="query_result.result == 'error'" class="error-box mb-4">
-        {{ query_result.message }}
-      </div>
+      <result-message :message="query_result"></result-message>
 
       <form method="post" @submit.prevent="saveRow()" autocomplete="off">
 
@@ -63,6 +61,8 @@
   import TableNav from '@/components/TableNav.vue'
   import sqlFormatter from "sql-formatter";
   import ApiMixin from "@/mixins/Api";
+  import {has_deep_property} from "@/util";
+  import ResultMessage from "@/components/ResultMessage";
 
   export default {
     name: 'editrow',
@@ -81,6 +81,7 @@
     },
 
     components: {
+      ResultMessage,
       TableNav,
     },
 
@@ -135,7 +136,26 @@
         let api_url = this.buildApiUrl(this.endpoint_row_data, api_url_params);
 
         this.$http.get(api_url).then(response => {
-          this.row_data = response.data.data.data;
+          if(has_deep_property(response, 'data', 'data', 'result') === false) {
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'error', message: 'Invalid response'});
+            this.$router.push({name: 'table', params: {database: this.active_database, 'tableid': this.tableid}});
+            return false;
+          }
+
+          if(response.data.data.result == 'error') {
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'error', message: response.data.data.message});
+            this.$router.push({name: 'table', params: {database: this.active_database, 'tableid': this.tableid}});
+            return;
+          }
+
+          if(response.data.data.row == false) {
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'error', message: 'Row not found'});
+            this.$router.push({name: 'table', params: {database: this.active_database, 'tableid': this.tableid}});
+            return;
+          }
+
+          this.row_data = response.data.data.row;
+
           for (let column_name in this.row_data) {
             this.columns_null[column_name] = (this.row_data[column_name] === null) ? true : false;
           }
@@ -173,10 +193,20 @@
         }
 
         this.$http.post(api_url, params).then(response => {
-          vue_instance.query_result = response.data.data;
+          if(this.validateApiResponse(response) === false) return;
+
+          if(response.data.data.result == 'error') {
+            vue_instance.query_result = {type: 'error', message: response.data.data.message};
+            scroll(0,0);
+            return;
+          }
+
           if(vue_instance.query_result.result == 'success' && typeof vue_instance.query_result.inserted_row_id !== 'undefined') {
-            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Row added.');
-            this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+              message: 'Row added.',
+              type: 'success',
+              query: vue_instance.query_result.query
+            });
             vue_instance.$router.push({name: 'table', params: {database: this.active_database, tableid : vue_instance.tableid }});
           }
           else if(vue_instance.query_result.result == 'success') {
@@ -185,8 +215,11 @@
               message += ', no data was changed';
             }
             message += '.';
-            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
-            this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+              message: message,
+              type: 'success',
+              query: vue_instance.query_result.query
+            });
             vue_instance.$router.push({name: 'table', params: {database: this.active_database, tableid : vue_instance.tableid }});
           }
           scroll(0,0);

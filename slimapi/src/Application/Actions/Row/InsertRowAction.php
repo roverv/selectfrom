@@ -16,11 +16,6 @@ class InsertRowAction extends Action
      */
     protected function action(): Response
     {
-        //    $_POST = ['id' => '1964', 'lastname' => 'Bob en Susan2']; // test data
-
-        //    INSERT INTO `site` (`id`, `organisation_id`, `type`, `online`, `abo_end`) VALUES
-        //    (1, 1, 'standard', 1, '2013-04-19');
-
         $pdo          = $this->request->getAttribute('pdo_instance');
         $query_params = $this->request->getQueryParams();
 

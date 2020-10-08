@@ -22,12 +22,20 @@ class GetRowAction extends Action
         $query .= "WHERE ".QueryHelper::escapeMysqlId($query_params['column'])." = ? ";
         $query .= " LIMIT 1 ";
 
-        $pdo_statement = $pdo->prepare($query);
-        $pdo_statement->execute([$query_params['value']]);
+        try {
+            $pdo_statement = $pdo->prepare($query);
+            $pdo_statement->execute([$query_params['value']]);
+            $row                = $pdo_statement->fetch();
+        } catch (\PDOException $e) {
+            $payload = [
+              'result'        => 'error',
+              'message'       => $e->getMessage(),
+              'code'          => $e->getCode(),
+            ];
 
-        $row                = $pdo_statement->fetch();
-        $table_data['data'] = $row;
+            return $this->respondWithData($payload);
+        }
 
-        return $this->respondWithData($table_data);
+        return $this->respondWithData(['result' => 'success', 'row' => $row]);
     }
 }

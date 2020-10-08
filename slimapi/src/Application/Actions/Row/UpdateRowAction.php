@@ -16,8 +16,6 @@ class UpdateRowAction extends Action
      */
     protected function action(): Response
     {
-        //    $_POST = ['id' => '1964', 'lastname' => 'Bob en Susan2']; // test data
-
         $pdo          = $this->request->getAttribute('pdo_instance');
         $query_params = $this->request->getQueryParams();
 
