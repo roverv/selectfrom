@@ -28,9 +28,10 @@ class DeleteRowAction extends Action
         foreach($delete_by_rows as $row_value) {
             try {
                 $query = "DELETE FROM " . QueryHelper::escapeMysqlId($query_params['tablename']) . " ";
-                $query .= "WHERE " . QueryHelper::escapeMysqlId($delete_by_column) . " = '" . $row_value . "' LIMIT 1";
-                $q = $pdo->query($query);
-                $affected_rows += $q->rowCount();
+                $query .= "WHERE " . QueryHelper::escapeMysqlId($delete_by_column) . " = ? LIMIT 1";
+                $pdo_statement = $pdo->prepare($query);
+                $pdo_statement->execute([$row_value]);
+                $affected_rows += $pdo_statement->rowCount();
             } catch (\PDOException $e) {
                 $payload = [
                   'result'        => 'error',
