@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Actions\Row;
 
 use App\Application\Actions\Action;
+use App\Application\Helpers\PdoHelper;
 use App\Application\Helpers\QueryHelper;
+use PDO;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ListRowAction extends Action
@@ -22,9 +24,18 @@ class ListRowAction extends Action
 
         // no need to get columns if we are retrieving more rows, they are already retrieved on the first call
         if (empty($query_params['offset'])) {
-            $query                 = "SHOW FULL COLUMNS FROM ".QueryHelper::escapeMysqlId($query_params['tablename']);
-            $rows                  = $pdo->query($query)->fetchAll();
-            $table_data['columns'] = $rows;
+            try {
+                $query = "SHOW FULL COLUMNS FROM ".QueryHelper::escapeMysqlId($query_params['tablename']);
+                $rows                  = $pdo->query($query)->fetchAll();
+                $table_data['columns'] = $rows;
+            } catch (\PDOException $e) {
+                $payload = [
+                  'result'  => 'error',
+                  'message' => $e->getMessage(),
+                  'code'    => $e->getCode(),
+                ];
+                return $this->respondWithData($payload);
+            }
         }
 
         $amount_rows_per_page = (!empty($query_params['limit'])) ? (int) $query_params['limit'] : 0;
@@ -32,8 +43,8 @@ class ListRowAction extends Action
         $query = "SELECT * FROM ".QueryHelper::escapeMysqlId($query_params['tablename'])." ";
 
         $filter_query = '';
+        $binded_values = [];
         if (!empty($query_params['column']) && !empty($query_params['value']) && !empty($query_params['comparetype'])) {
-            //todo: escape, duh
             if ($query_params['column'] == 'primarykey') {
                 $primary_key_column = array_filter(
                   $table_data['columns'],
@@ -49,38 +60,88 @@ class ListRowAction extends Action
                       ]
                     ); //todo: this is not yet processed on front end side
                 }
-                $filter_query .= "WHERE `".$primary_key_column[0]['Field']."` = '".$query_params['value']."' ";
+                $filter_query .= "WHERE ".QueryHelper::escapeMysqlId($primary_key_column[0]['Field'])." = :primarykeyvalue ";
+                $binded_values['primarykeyvalue'] = $query_params['value'];
             } elseif ($query_params['comparetype'] == 'is') {
-                $filter_query .= "WHERE `".$query_params['column']."` = '".$query_params['value']."' ";
+                $filter_query .= "WHERE ".QueryHelper::escapeMysqlId($query_params['column'])." = :isvalue ";
+                $binded_values['isvalue'] = $query_params['value'];
             } elseif ($query_params['comparetype'] == 'like') {
-                $filter_query .= "WHERE `".$query_params['column']."` LIKE '%".$query_params['value']."%' ";
+                $filter_query .= "WHERE ".QueryHelper::escapeMysqlId($query_params['column'])." LIKE :likevalue ";
+                $binded_values['likevalue'] = "%".$query_params['value']."%";
             }
         }
 
         $query .= $filter_query;
 
         if (!empty($query_params['orderby']) && !empty($query_params['orderdirection'])) {
-            $query .= "ORDER BY `".$query_params['orderby']."` ".$query_params['orderdirection']." ";
+            $order_by_direction = (strtolower($query_params['orderdirection']) === 'desc') ? 'DESC' : 'ASC';
+            $query .= "ORDER BY ".QueryHelper::escapeMysqlId($query_params['orderby'])." ".$order_by_direction." ";
         }
 
         if ($amount_rows_per_page > 0) {
-            $query .= " LIMIT ".(int)$amount_rows_per_page." ";
+            $query .= " LIMIT :limit ";
+            $limit_bind = (int) $amount_rows_per_page;
         }
 
         if (!empty($query_params['offset'])) {
-            $offset = $amount_rows_per_page * (int)$query_params['offset'];
-            $query  .= " OFFSET ".$offset." ";
+            $query  .= " OFFSET :offset ";
+            $offset_bind = (int)$amount_rows_per_page * (int)$query_params['offset'];
         }
 
-        $count_query  = "SELECT COUNT(*) as amount_rows FROM ".QueryHelper::escapeMysqlId($query_params['tablename']);
-        $count_query  .= " ".$filter_query;
-        $count_result = $pdo->query($count_query)->fetch();
+        try {
+            $count_query  = "SELECT COUNT(*) as amount_rows FROM ".QueryHelper::escapeMysqlId($query_params['tablename']);
+            $count_query  .= " ".$filter_query;
+            $pdo_statement = $pdo->prepare($count_query);
+            $pdo_statement->execute($binded_values);
+            $table_data['amount_rows'] = $pdo_statement->fetchColumn();
+        } catch (\PDOException $e) {
+            $payload = [
+              'result'  => 'error',
+              'message' => $e->getMessage(),
+              'code'    => $e->getCode(),
+            ];
 
-        $table_data['amount_rows'] = $count_result['amount_rows'] ?? 0;
+            return $this->respondWithData($payload);
+        }
 
-        $rows               = $pdo->query($query)->fetchAll();
-        $table_data['data'] = $rows;
-        $table_data['query'] = $query;
+        $pdo_statement         = $pdo->prepare($query);
+        $emulated_query_string = $pdo_statement->queryString;
+
+        try {
+
+            if($amount_rows_per_page > 0) {
+                // we have to bind these seperately as int, see: https://phpdelusions.net/pdo#limit
+                $pdo_statement->bindValue(':limit', (int) $limit_bind, PDO::PARAM_INT);
+            }
+            if (!empty($query_params['offset'])) {
+                $pdo_statement->bindValue(':offset', (int) $offset_bind, PDO::PARAM_INT);
+            }
+            foreach($binded_values as $value_key => $value) {
+                $pdo_statement->bindValue(':' . $value_key, $value);
+            }
+            $pdo_statement->execute();
+            $table_data['data'] = $pdo_statement->fetchAll();
+        } catch (\PDOException $e) {
+            $payload = [
+              'result'  => 'error',
+              'message' => $e->getMessage(),
+              'code'    => $e->getCode(),
+            ];
+
+            return $this->respondWithData($payload);
+        }
+
+        $prepare_values = $binded_values;
+        if($amount_rows_per_page > 0) {
+            $prepare_values['limit'] = $limit_bind;
+        }
+        if (!empty($query_params['offset'])) {
+            $prepare_values['offset'] = $offset_bind;
+        }
+        $emulated_query = PdoHelper::emulateSqlString($emulated_query_string, $prepare_values);
+
+        $table_data['result'] = 'success';
+        $table_data['query'] = $emulated_query;
 
         return $this->respondWithData($table_data);
     }

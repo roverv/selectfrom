@@ -54,6 +54,8 @@
         </div>
 
         <flash-message></flash-message>
+
+        <result-message :message="query_result"></result-message>
       </div>
 
 
@@ -290,6 +292,7 @@ import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import TableDataRow from "@/components/TableDataRow";
 import ApiMixin from "@/mixins/Api";
+import ResultMessage from "@/components/ResultMessage";
 
 export default {
   name: 'TableData',
@@ -319,10 +322,12 @@ export default {
       initial_loading: true,
       row_pointer: 0,
       column_for_list: 0,
+      query_result: {}
     }
   },
 
   components: {
+    ResultMessage,
     Spinner,
     FlashMessage,
     RowSidebar,
@@ -444,6 +449,16 @@ export default {
 
       this.$http.get(api_url).then(response => {
 
+        if(this.validateApiResponse(response) === false) return;
+
+        if(response.data.data.result == 'error') {
+          this.initial_loading  = false;
+          this.is_fetching_data = false;
+          vue_instance.query_result = {type: 'error', message: response.data.data.message};
+          scroll(0,0);
+          return;
+        }
+
         let response_data = response.data.data;
         let data = response_data.data.map(item => {
           return Object.freeze(item);
@@ -551,6 +566,17 @@ export default {
       let vue_instance              = this;
       vue_instance.is_fetching_data = true;
       this.$http.get(api_url).then(response => {
+
+        if(this.validateApiResponse(response) === false) return;
+
+        if (response.data.data.result == 'error') {
+          this.initial_loading      = false;
+          this.is_fetching_data     = false;
+          vue_instance.query_result = {type: 'error', message: response.data.data.message};
+          scroll(0, 0);
+          return;
+        }
+
         vue_instance.tabledata        = Object.freeze(response.data.data.data);
         vue_instance.is_fetching_data = false;
       }).catch(error => {
