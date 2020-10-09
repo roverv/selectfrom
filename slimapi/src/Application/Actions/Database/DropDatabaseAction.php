@@ -35,6 +35,8 @@ class DropDatabaseAction extends Action
                 $payload = [
                   'result'  => 'error',
                   'message' => $e->getMessage(),
+                  'code'    => $e->getCode(),
+                  'affected_databases' => $affected_databases, // some databases might have been successfully deleted
                 ];
 
                 return $this->respondWithData($payload);

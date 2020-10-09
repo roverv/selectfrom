@@ -610,7 +610,7 @@ export default {
 
         if(response.data.data.result == 'error') {
           if(response.data.data.affected_rows > 0) {
-            let msg = response.data.data.affected_rows + 'row' + (response.data.data.affected_rows > 1 ? 's' : '') + ' deleted';
+            let msg = response.data.data.affected_rows + ' row' + (response.data.data.affected_rows > 1 ? 's' : '') + ' deleted';
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'success', message: msg });
           }
           this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'error', message: response.data.data.message});

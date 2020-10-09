@@ -14,9 +14,7 @@
         <span v-else>Edit database</span>
       </h1>
 
-      <div v-if="query_result.result == 'error'" class="error-box mb-4">
-        {{ query_result.message }}
-      </div>
+      <result-message :message="query_result"></result-message>
 
       <form method="post" autocomplete="off">
 
@@ -62,9 +60,11 @@
 
   import sqlFormatter from "sql-formatter";
   import ApiMixin from "@/mixins/Api";
+  import ResultMessage from "@/components/ResultMessage";
 
   export default {
     name: 'editdatabase',
+    components: {ResultMessage},
     props: ['database'],
     data() {
       return {
@@ -72,7 +72,7 @@
         endpoint_alter_database: 'database/alter',
         endpoint_databbase_creation_data: 'database/creationdata',
         collations: [],
-        database_name: this.database,
+        database_name: ((typeof this.database !== 'undefined') ? this.database : ''),
         collation: '',
         query_result: {},
       }
@@ -150,22 +150,37 @@
         params.append('collation', this.collation);
 
         this.$http.post(api_url, params).then(response => {
+
+          if(this.validateApiResponse(response) === false) return;
+
+          if(response.data.data.result == 'error') {
+            vue_instance.query_result = {type: 'error', message: response.data.data.message};
+            scroll(0,0);
+            return;
+          }
+
           vue_instance.query_result = response.data.data;
           if (vue_instance.query_result.result == 'success' && this.$route.name == 'adddatabase') {
-            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Database created.');
-            this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+              type: 'success',
+              message: 'Database created.',
+              query: vue_instance.query_result.query
+            });
             this.$store.dispatch('refreshDatabases');
             vue_instance.$router.push({name: 'database', params: {'database': vue_instance.database_name}});
           } else if (vue_instance.query_result.result == 'success' && this.$route.name == 'editdatabase') {
             if(vue_instance.query_result.query == '') {
-              this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'No changes');
+              this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {type: 'success', message: 'No changes'});
               vue_instance.$router.push({name: 'database', params: {'database': vue_instance.database_name}});
               return;
             }
             else {
               let message = 'Database updated';
-              this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
-              this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
+              this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+                type: 'success',
+                message: message,
+                query: vue_instance.query_result.query
+              });
               this.$store.dispatch('refreshDatabases');
               // tables will be refreshed upon page visit
               vue_instance.$router.push({name: 'database', params: {'database': vue_instance.database_name}});

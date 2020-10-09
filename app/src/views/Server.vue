@@ -220,16 +220,31 @@ export default {
         params.append('databases[]', this.ordered_databases[this.selected_rows[row_index]].name);
       }
 
-      let vue_instance = this;
       let api_url        = this.buildApiUrl('database/drop', {});
       this.$http.post(api_url, params).then(response => {
+        if(this.validateApiResponse(response) === false) return;
+
+        if(response.data.data.result == 'error') {
+          if(response.data.data.affected_databases > 0) {
+            let message = response.data.data.affected_databases;
+            message += (response.data.data.affected_databases == 1) ? ' database dropped.' : ' databases dropped.';
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'success', message: message });
+          }
+          this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'error', message: response.data.data.message});
+          this.refreshPage();
+          return;
+        }
+
         let message = response.data.data.affected_databases;
         message += (response.data.data.affected_databases == 1) ? ' database dropped.' : ' databases dropped.';
-        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
-        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.data.query);
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+          type: 'success',
+          message: message,
+          query: response.data.data.query
+        });
         this.$store.dispatch('refreshDatabases');
         this.selected_rows = [];
-        vue_instance.$router.push({name: 'server'});
+        this.refreshPage();
       }).catch(error => {
         this.handleApiError(error);
       })
