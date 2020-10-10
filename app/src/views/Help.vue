@@ -148,8 +148,11 @@ export default {
       }
 
       this.$store.commit("settings/SET_SETTINGS", new_settings);
-      this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Settings saved');
-      this.$store.state.reloadMainComponentKey += 1; // refresh page
+      this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+        type: 'success',
+        message: 'Settings saved'
+      });
+      this.refreshPage();
     }
 
   },

@@ -52,9 +52,6 @@
   import MainNavigation from "./components/MainNavigation";
   import ApiError from "./components/ApiError";
 
-  // use this to reload the main component
-  // this.$store.state.reloadMainComponentKey += 1;
-
   export default {
 
     data() {

@@ -333,7 +333,7 @@
             this.$store.commit("queryedit/ACTIVATE_DIRECT_EXECUTION");
             if(this.$route.name == 'query') {
               // if we are already on the query page, just refresh the page
-              this.$store.state.reloadMainComponentKey += 1;
+              this.refreshPage();
             }
             else {
               this.$router.push({name: 'query'});
