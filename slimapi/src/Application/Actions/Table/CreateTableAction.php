@@ -84,6 +84,7 @@ class CreateTableAction extends Action
             $payload = [
               'result'  => 'error',
               'message' => $e->getMessage(),
+              'code'    => $e->getCode(),
             ];
 
             return $this->respondWithData($payload);

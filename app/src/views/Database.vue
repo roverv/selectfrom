@@ -17,6 +17,8 @@
           </router-link>
         </div>
 
+        <result-message :message="query_result"></result-message>
+
         <flash-message></flash-message>
 
         <table cellspacing="0" class="table-data" v-if="tables.length > 0">
@@ -122,6 +124,7 @@ import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import FlashMessage from "@/components/FlashMessage";
 import ApiMixin from "@/mixins/Api";
+import ResultMessage from "@/components/ResultMessage";
 
 export default {
   name: 'TableList',
@@ -131,10 +134,12 @@ export default {
       selected_rows: [],
       order_by: 'name',
       order_direction: 'asc',
+      query_result: {},
     }
   },
 
   components: {
+    ResultMessage,
     Spinner,
     ConfirmModal,
     FlashMessage,
@@ -282,10 +287,22 @@ export default {
       let api_url_params = {'db': this.active_database};
       let api_url        = this.buildApiUrl('table/truncate', api_url_params);
       this.$http.post(api_url, params).then(response => {
+
+        if(this.validateApiResponse(response) === false) return;
+
+        if(response.data.data.result == 'error') {
+          vue_instance.query_result = {type: 'error', message: response.data.data.message};
+          scroll(0,0);
+          return;
+        }
+
         let message = response.data.data.affected_tables;
         message += (response.data.data.affected_tables == 1) ? ' table truncated.' : ' tables truncated.';
-        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
-        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.data.query);
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+          type: 'success',
+          message: message,
+          query: response.data.data.query
+        });
         this.$store.dispatch('refreshTables');
         vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
       }).catch(error => {
@@ -303,10 +320,22 @@ export default {
       let api_url_params = {'db': this.active_database};
       let api_url        = this.buildApiUrl('table/drop', api_url_params);
       this.$http.post(api_url, params).then(response => {
+
+        if(this.validateApiResponse(response) === false) return;
+
+        if(response.data.data.result == 'error') {
+          vue_instance.query_result = {type: 'error', message: response.data.data.message};
+          scroll(0,0);
+          return;
+        }
+
         let message = response.data.data.affected_tables;
         message += (response.data.data.affected_tables == 1) ? ' table dropped.' : ' tables dropped.';
-        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
-        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.data.query);
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+          type: 'success',
+          message: message,
+          query: response.data.data.query
+        });
         this.$store.dispatch('refreshTables');
         vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
       }).catch(error => {

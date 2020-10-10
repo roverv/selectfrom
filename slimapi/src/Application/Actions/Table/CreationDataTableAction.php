@@ -56,7 +56,7 @@ class CreationDataTableAction extends Action
         $data_type_attributes = $this->mysql_driver->getDataTypeAttributes();
 
         if (!empty($query_params['tablename'])) {
-            $query             = "SHOW TABLE STATUS WHERE name = '".$query_params['tablename']."';";
+            $query             = "SHOW TABLE STATUS WHERE name = ".$pdo->quote($query_params['tablename']).";";
             $table_status_data = $pdo->query($query)->fetch();
 
             $query        = "SHOW FULL COLUMNS FROM ".QueryHelper::escapeMysqlId($query_params['tablename']).";";

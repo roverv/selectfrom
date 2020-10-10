@@ -738,8 +738,19 @@ export default {
       let api_url_params = {'db': this.active_database};
       let api_url = this.buildApiUrl(this.endpoint_drop_tables, api_url_params);
       this.$http.post(api_url, params).then(response => {
-        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' dropped.');
-        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.data.query);
+        if(this.validateApiResponse(response) === false) return;
+
+        if(response.data.data.result == 'error') {
+          vue_instance.query_result = {type: 'error', message: response.data.data.message};
+          scroll(0,0);
+          return;
+        }
+
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+          type: 'success',
+          message: 'Table ' + vue_instance.tableid + ' dropped.',
+          query: response.data.data.query
+        });
         this.$store.dispatch('refreshTables');
         vue_instance.$router.push({name: 'database', params: {database: vue_instance.active_database}});
       }).catch(error => {
@@ -762,10 +773,22 @@ export default {
       let api_url = this.buildApiUrl(this.endpoint_truncate_tables, api_url_params);
 
       this.$http.post(api_url, params).then(response => {
-        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table ' + vue_instance.tableid + ' truncated.');
-        this.$store.commit("flashmessage/ADD_FLASH_QUERY", response.data.query);
+
+        if(this.validateApiResponse(response) === false) return;
+
+        if(response.data.data.result == 'error') {
+          vue_instance.query_result = {type: 'error', message: response.data.data.message};
+          scroll(0,0);
+          return;
+        }
+
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+          type: 'success',
+          message: 'Table ' + vue_instance.tableid + ' truncated.',
+          query: response.data.query,
+        });
         this.$store.dispatch('refreshTables');
-        this.$store.state.reloadMainComponentKey += 1; // refresh page
+        this.refreshPage();
       }).catch(error => {
         this.handleApiError(error);
       })

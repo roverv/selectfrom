@@ -16,9 +16,7 @@
         <span v-else>Edit table</span>
       </h1>
 
-      <div v-if="query_result.result == 'error'" class="error-box mb-4">
-        {{ query_result.message }}
-      </div>
+      <result-message :message="query_result"></result-message>
 
       <spinner v-if="is_fetching_data"></spinner>
 
@@ -230,6 +228,7 @@
   import {clone} from '../util'
   import Spinner from "@/components/Spinner";
   import ApiMixin from "@/mixins/Api";
+  import ResultMessage from "@/components/ResultMessage";
 
   var default_column_row = {
     name: '',
@@ -270,6 +269,7 @@
     },
 
     components: {
+      ResultMessage,
       TableNav,
       Spinner,
     },
@@ -405,16 +405,31 @@
         }
 
         this.$http.post(api_url, params).then(response => {
-          vue_instance.query_result = response.data.data;
-          if (vue_instance.query_result.result == 'success' && this.$route.name == 'addtable') {
-            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", 'Table created.');
-            this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
+
+          if(this.validateApiResponse(response) === false) return;
+
+          let api_result = response.data.data;
+
+          if(api_result.result == 'error') {
+            vue_instance.query_result = {type: 'error', message: api_result.message};
+            scroll(0,0);
+            return;
+          }
+
+          if (api_result.result == 'success' && this.$route.name == 'addtable') {
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+              type: 'success',
+              message: 'Table created',
+              query: api_result.query
+            });
             this.$store.dispatch('refreshTables');
             vue_instance.$router.push({name: 'table', params: { database: this.active_database, tableid: vue_instance.table_name}});
-          } else if (vue_instance.query_result.result == 'success') {
-            let message = 'Table updated';
-            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", message);
-            this.$store.commit("flashmessage/ADD_FLASH_QUERY", vue_instance.query_result.query);
+          } else if (api_result.result == 'success') {
+            this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+              type: 'success',
+              message: 'Table updated',
+              query: api_result.query
+            });
             this.$store.dispatch('refreshTables');
             vue_instance.$router.push({name: 'table', params: { database: this.active_database, tableid: vue_instance.table_name}});
           }

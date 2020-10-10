@@ -195,30 +195,32 @@
         this.$http.post(api_url, params).then(response => {
           if(this.validateApiResponse(response) === false) return;
 
-          if(response.data.data.result == 'error') {
-            vue_instance.query_result = {type: 'error', message: response.data.data.message};
+          let api_result = response.data.data;
+
+          if(api_result.result == 'error') {
+            vue_instance.query_result = {type: 'error', message: api_result.message};
             scroll(0,0);
             return;
           }
 
-          if(vue_instance.query_result.result == 'success' && typeof vue_instance.query_result.inserted_row_id !== 'undefined') {
+          if(api_result.result == 'success' && typeof api_result.inserted_row_id !== 'undefined') {
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
-              message: 'Row added.',
+              message: 'Row added',
               type: 'success',
-              query: vue_instance.query_result.query
+              query: api_result.query
             });
             vue_instance.$router.push({name: 'table', params: {database: this.active_database, tableid : vue_instance.tableid }});
           }
-          else if(vue_instance.query_result.result == 'success') {
+          else if(api_result.result == 'success') {
             let message = 'Row updated';
-            if(vue_instance.query_result.affected_rows == 0) {
+            if(api_result.affected_rows == 0) {
               message += ', no data was changed';
             }
             message += '.';
             this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
               message: message,
               type: 'success',
-              query: vue_instance.query_result.query
+              query: api_result.query
             });
             vue_instance.$router.push({name: 'table', params: {database: this.active_database, tableid : vue_instance.tableid }});
           }
