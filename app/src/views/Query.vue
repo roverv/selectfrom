@@ -65,7 +65,7 @@
                 </thead>
                 <tbody>
                 <tr v-for="(row, row_index) in query_result.rows" :key="row_index" @click.ctrl="toggleRowSidebar(query_result_index, row_index)">
-                  <TableDataRow v-bind:row="row" v-bind:truncate-amount="cell_text_display_limit"></TableDataRow>
+                  <TableDataRow v-bind:row="row" :truncate-amount="0"></TableDataRow>
                 </tr>
                 </tbody>
               </table>
@@ -186,10 +186,6 @@
 
       query_history() {
         return this.$store.getters["queryhistory/queries"];
-      },
-
-      cell_text_display_limit() {
-        return this.$store.getters["settings/getSetting"]('cell_text_display_limit');
       },
     },
 
