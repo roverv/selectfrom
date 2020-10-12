@@ -78,10 +78,9 @@ class ColumnStructure implements \JsonSerializable
     /**
      * @param $column_index
      * @param $column_data
-     * @param $is_auto_increment
      * @return ColumnStructure
      */
-    public static function createFromPost($column_index, $column_data, $is_auto_increment)
+    public static function createFromPost($column_index, $column_data)
     {
         $column_structure                      = new self;
         $column_structure->index               = $column_index;
@@ -93,7 +92,7 @@ class ColumnStructure implements \JsonSerializable
         $column_structure->has_default_value   = (!empty($column_data['has_default_value']) && $column_data['has_default_value'] === 'true') ? true : false;
         $column_structure->default_value       = ($column_structure->has_default_value === true) ? $column_data['default_value'] : null;
         $column_structure->comment             = $column_data['comment'];
-        $column_structure->is_auto_increment   = $is_auto_increment;
+        $column_structure->is_auto_increment   = (!empty($column_data['is_auto_increment']) && $column_data['is_auto_increment'] === 'true') ? true : false;
         $column_structure->original_field_name = (isset($column_data['original_field_name'])) ? $column_data['original_field_name'] : null;
         $column_structure->after_column        = (isset($column_data['after_column']) && $column_data['after_column'] !== 'null') ? $column_data['after_column'] : null;
 

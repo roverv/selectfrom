@@ -28,8 +28,6 @@ class CreateTableAction extends Action
 
         $post_params = (array)$this->request->getParsedBody();
 
-        // @todo: moet ik de onderstaande values binden/escapen??
-
         $data_type_attributes = $this->mysql_driver->getDataTypeAttributes();
         $table_status         = TableStatus::createFromPost($post_params, $data_type_attributes);
 
@@ -47,11 +45,6 @@ class CreateTableAction extends Action
             }
 
             $column_counter++;
-        }
-
-        $auto_increment_column = $table_status->getAutoIncrementColumn();
-        if ($auto_increment_column) {
-            $query .= ", PRIMARY KEY (".QueryHelper::escapeMysqlId($auto_increment_column->getName()).") ";
         }
 
         $query .= ") ";

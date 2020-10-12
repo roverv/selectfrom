@@ -30,8 +30,6 @@ class AlterTableAction extends Action
         $query_params = $this->request->getQueryParams();
         $post_params  = (array)$this->request->getParsedBody();
 
-        // @todo: moet ik de onderstaande values binden/escapen??
-
         // get current table data
         $data_type_attributes = $this->mysql_driver->getDataTypeAttributes();
         $query = "SHOW TABLE STATUS WHERE name = '".$query_params['tablename']."';";

@@ -159,9 +159,8 @@
 
             <div class="columns-table-cell justify-center">
               <label class="custom-checkbox no-label">
-                <input type="checkbox" :value="index" autocomplete="off" :true-value="index"
-                       :false-value="!index"
-                       v-model="auto_increment_column_row_index">
+                <input type="checkbox" autocomplete="off"
+                       :checked="column_row.is_auto_increment" @change="autoincrementChanged($event, index)">
                 <span class="input-box"></span>
               </label>
             </div>
@@ -236,6 +235,7 @@
     length: '',
     attribute: '',
     null: false,
+    is_auto_increment: false,
     has_default_value: false,
     default_value: '',
     comment: '',
@@ -254,7 +254,6 @@
         data_types: [],
         data_type_attributes: [],
         table_name: '',
-        auto_increment_column_row_index: false,
         engine: '',
         collation: '',
         comment: '',
@@ -323,12 +322,6 @@
             this.collation                       = reponse_data.table_data.collation;
             this.comment                         = reponse_data.table_data.comment;
             this.auto_increment_value            = reponse_data.table_data.auto_increment_value;
-            this.auto_increment_column_row_index = false;
-            for (let column_index in reponse_data.table_data.columns) {
-              if (reponse_data.table_data.columns[column_index].hasOwnProperty('is_auto_increment') && reponse_data.table_data.columns[column_index].is_auto_increment === true) {
-                this.auto_increment_column_row_index = parseInt(column_index);
-              }
-            }
             this.column_rows = reponse_data.table_data.columns;
             this.column_rows.map(function (column_row) {
               column_row.original_field_name = column_row.name;
@@ -392,12 +385,6 @@
         params.append('comment', this.comment);
         params.append('auto_increment_value', this.auto_increment_value);
 
-        let auto_increment_field = 'false';
-        if (typeof this.auto_increment_column_row_index == 'number') {
-          auto_increment_field = this.column_rows[this.auto_increment_column_row_index]['name'];
-        }
-
-        params.append('auto_increment_field', auto_increment_field);
         for (let column_index in this.column_rows) {
           for (let column_field in this.column_rows[column_index]) {
             params.append('columns[' + column_index + '][' + column_field + ']', this.column_rows[column_index][column_field]);
@@ -431,7 +418,7 @@
               query: api_result.query
             });
             this.$store.dispatch('refreshTables');
-            vue_instance.$router.push({name: 'table', params: { database: this.active_database, tableid: vue_instance.table_name}});
+            vue_instance.$router.push({name: 'structure', params: { database: this.active_database, tableid: vue_instance.table_name}});
           }
           scroll(0, 0);
         }).catch(error => {
@@ -451,6 +438,15 @@
         }
 
         return columns_after;
+      },
+
+      autoincrementChanged($event, column_row_index) {
+        // disable all auto_increment fields
+        this.column_rows.forEach(function(column_row) {
+          column_row.is_auto_increment = false;
+        });
+        // toggle the new value
+        this.column_rows[column_row_index].is_auto_increment = $event.target.checked;
       }
 
     }

@@ -10,6 +10,8 @@
         <div></div>
       </div>
 
+      <flash-message></flash-message>
+
       <div class="w-full flex items-start">
 
         <div class="relative w-full">
@@ -42,6 +44,7 @@
 
 import TableNav from '@/components/TableNav.vue'
 import ApiMixin from "@/mixins/Api";
+import FlashMessage from "@/components/FlashMessage";
 
 export default {
   name: 'TableStructure',
@@ -53,6 +56,7 @@ export default {
   },
 
   components: {
+    FlashMessage,
     TableNav
   },
 

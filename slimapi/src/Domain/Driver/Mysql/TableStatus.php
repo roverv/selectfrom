@@ -31,11 +31,7 @@ class TableStatus implements \JsonSerializable
         $table_status->auto_increment_value = (!empty($post_data['auto_increment_value'])) ? (int)$post_data['auto_increment_value'] : null;
 
         foreach ($post_data['columns'] as $column_index => $column) {
-            $is_auto_increment = false;
-            if (!empty($post_data['auto_increment_field']) && $post_data['auto_increment_field'] === $column['name']) {
-                $is_auto_increment = true;
-            }
-            $column_structure        = ColumnStructure::createFromPost($column_index, $column, $is_auto_increment);
+            $column_structure        = ColumnStructure::createFromPost($column_index, $column);
             $table_status->columns[] = $column_structure;
         }
 
