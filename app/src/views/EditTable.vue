@@ -340,9 +340,6 @@
 
       addColumn(from_index) {
         let new_column_row = clone(default_column_row);
-        if (this.page_is_edit) {
-          new_column_row.after_column = this.column_rows[from_index].name;
-        }
         this.column_rows.splice(from_index + 1, 0, new_column_row);
       },
 
@@ -385,10 +382,19 @@
         params.append('comment', this.comment);
         params.append('auto_increment_value', this.auto_increment_value);
 
+        let after_column = '';
         for (let column_index in this.column_rows) {
           for (let column_field in this.column_rows[column_index]) {
             params.append('columns[' + column_index + '][' + column_field + ']', this.column_rows[column_index][column_field]);
           }
+          if(this.page_is_edit) {
+            // for every new column, set the after_column which is the column above it
+            // we have to do this here, because while editing, the name of the previous column can change
+            if(this.column_rows[column_index].hasOwnProperty('original_field_name') === false) {
+              params.append('columns[' + column_index + '][after_column]', after_column);
+            }
+          }
+          after_column = this.column_rows[column_index].name;
         }
 
         this.$http.post(api_url, params).then(response => {
