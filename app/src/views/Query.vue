@@ -20,6 +20,23 @@
 
         <spinner v-if="fetching_query_results"></spinner>
 
+        <div v-if="query_results.length > 1 && query_result_summary_success > 0" class="success-box mb-3">
+          {{ query_result_summary_success }} successful executed
+          <span v-if="query_result_summary_success == 1">query</span>
+          <span v-else>queries</span>
+        </div>
+
+        <div v-if="query_results.length > 1 && query_result_summary_error > 0" class="error-box mb-3">
+          {{ query_result_summary_error }} executed
+          <span v-if="query_result_summary_error == 1">query</span>
+          <span v-else>queries</span>
+          returned an error
+        </div>
+
+        <div v-if="query_results.length > 1">
+          <h2 class="text-xl font-semibold mt-4">Results</h2>
+        </div>
+
         <div v-if="query_results.length > 0">
           <div v-for="(query_result, query_result_index) in query_results" :key="query_result_index" class="mb-8 mt-1">
 
@@ -190,6 +207,28 @@
 
       last_key() {
         return this.$store.getters["queryhistory/last_key"];
+      },
+
+      query_result_summary_success() {
+        if(this.query_results.length < 1) return;
+
+        return this.query_results.reduce(function(accumulator, query_result) {
+          if(query_result.result === 'success') {
+            accumulator += 1;
+          }
+          return accumulator;
+        }, 0);
+      },
+
+      query_result_summary_error() {
+        if(this.query_results.length < 1) return;
+
+        return this.query_results.reduce(function(accumulator, query_result) {
+          if(query_result.result === 'error') {
+            accumulator += 1;
+          }
+          return accumulator;
+        }, 0);
       },
     },
 
