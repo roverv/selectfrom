@@ -302,25 +302,37 @@
     --thumbBG:     #90A4AE;
   }
 
+  .CodeMirror-vscrollbar::-webkit-scrollbar,
   .CodeMirror-hscrollbar::-webkit-scrollbar {
-    width:  8px;
+    width:  11px;
     height: 8px;
   }
 
+  .CodeMirror-vscrollbar,
   .CodeMirror-hscrollbar {
-    scrollbar-width: 8px;
+    scrollbar-width: 11px;
+    scrollbar-height: 8px;
     scrollbar-color: var(--thumbBG) var(--scrollbarBG);
     @apply outline-none;
   }
 
+  .CodeMirror-vscrollbar::-webkit-scrollbar-track,
   .CodeMirror-hscrollbar::-webkit-scrollbar-track {
     background: var(--scrollbarBG);
   }
 
+  .CodeMirror-vscrollbar::-webkit-scrollbar-thumb,
   .CodeMirror-hscrollbar::-webkit-scrollbar-thumb {
     background-color: var(--thumbBG);
     border-radius:    5px;
     border:           1px solid var(--scrollbarBG);
+  }
+  .CodeMirror-scrollbar-filler {
+    @apply bg-light-100;
+  }
+
+  .CodeMirror-scroll {
+    max-height: 600px;
   }
 
 </style>
