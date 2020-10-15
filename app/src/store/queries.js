@@ -10,8 +10,14 @@ export default {
       return state.queries.length > 0;
     },
     queries(state) {
+      return state.queries;
+    },
+    queries_reversed(state) {
       return state.queries.slice().reverse();
     },
+    last_key(state) {
+      return state.queries.length - 1;
+    }
   },
   mutations: {
     [ADD_QUERY](state, query_data) {

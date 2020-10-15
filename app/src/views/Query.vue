@@ -187,6 +187,10 @@
       query_history() {
         return this.$store.getters["queryhistory/queries"];
       },
+
+      last_key() {
+        return this.$store.getters["queryhistory/last_key"];
+      },
     },
 
     methods: {
@@ -201,9 +205,28 @@
         const querystring = require('querystring');
         this.$http.post(api_url, querystring.stringify({query: query})).then(response => {
           this.query_results = Object.freeze(response.data.data.query_results);
-          if (this.query_history.includes(query) === false) {
-            this.$store.commit("queryhistory/ADD_QUERY", query);
+
+          // only push single query executions to history
+          if(this.query_results.length == 1) {
+            if (this.query_history.includes(query) === false) {
+              this.$store.commit("queryhistory/ADD_QUERY", query);
+            }
+
+            // generate a path the the new query history entry
+            let props = this.$router.resolve({
+              name: 'queryhistory',
+              params: {'database': this.active_database, 'historyindex': this.last_key},
+            });
+
+            // push query history url on the history, we can't do this with Vue router because it would reload the page
+            // this make it possible to navigate back to the previous query
+            history.pushState(
+                {},
+                null,
+                props.href
+            );
           }
+
           this.$nextTick().then(function () {
             // todo: navigation on query results???
             // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();

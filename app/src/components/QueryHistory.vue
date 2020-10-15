@@ -45,9 +45,9 @@
       active_database() {
         return this.$store.state.activeDatabase;
       },
-      
+
       query_history() {
-        return this.$store.getters["queryhistory/queries"];
+        return this.$store.getters["queryhistory/queries_reversed"];
       },
     },
 
