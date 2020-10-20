@@ -42,6 +42,8 @@
 
             <div v-if="query_result.result == 'error'" class="error-box">
               {{ query_result.message }}
+              <hr class="border-light-200 my-2">
+              {{ query_result.query }}
             </div>
 
             <div v-if="query_result.result == 'success'" class="success-box mb-3">
