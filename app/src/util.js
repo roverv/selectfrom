@@ -20,7 +20,6 @@ export function number_format (number, decimals, decPoint, thousandsSep) {
     }
   }
 
-  // @todo: for IE parseFloat(0.55).toFixed(0) = 0;
   s = (prec ? toFixedFix(n, prec).toString() : '' + Math.round(n)).split('.')
   if (s[0].length > 3) {
     s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep)

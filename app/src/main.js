@@ -34,7 +34,6 @@ Vue.config.keyCodes = {
 //before `new Vue`
 // Vue.config.devtools = true;
 // Vue.config.performance = true;
-// @todo: uitzetten
 new Vue({
   router,
   store,
