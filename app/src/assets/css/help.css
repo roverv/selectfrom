@@ -1,0 +1,12 @@
+.shortcut-box {
+  @apply flex items-start w-full mb-2 leading-none;
+}
+
+.shortcut-key {
+  @apply border-l-2 flex-shrink-0 border-r-2 border-highlight-700 bg-light-100 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mb-2 mr-3;
+}
+
+.shortcut-description {
+  @apply flex flex-col;
+  line-height: 1.1;
+}

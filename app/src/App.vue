@@ -19,6 +19,8 @@
     <QueryHistory v-if="active_database && queryhistoryopen" :modalisopen="queryhistoryopen"
                   v-on:closequeryhistory="closeQueryHistory()" tabindex="0" @keydown.esc="queryhistoryopen = false" />
 
+    <Welcome :modalisopen="welcomeopen" v-on:closewelcome="closeWelcome()"></Welcome>
+
     <div class="app-header">
       <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
     </div>
@@ -52,6 +54,7 @@
   import QueryHistory from "./components/QueryHistory";
   import MainNavigation from "./components/MainNavigation";
   import ApiError from "./components/ApiError";
+  import Welcome from "@/components/Welcome";
 
   export default {
 
@@ -61,6 +64,7 @@
         databasemodalopen: false,
         recenttablesopen: false,
         queryhistoryopen: false,
+        welcomeopen: false,
         tables: [],
       }
     },
@@ -82,6 +86,10 @@
           this.$store.commit("setActiveDatabase", '');
         }
 
+        if(from.name == 'login' && !(localStorage.getItem('do_not_show_welcome_message'))) {
+          this.welcomeopen   = true;
+        }
+
         this.searchmodalopen   = false;
         this.recenttablesopen  = false;
         this.databasemodalopen = false;
@@ -92,6 +100,7 @@
     },
 
     components: {
+      Welcome,
       ApiError,
       MainNavigation,
       TableListSidebar,
@@ -156,6 +165,12 @@
 
       closeQueryHistory() {
         this.queryhistoryopen = false;
+        // when the modal is closed, we need to set the focus back on the app
+        document.getElementById('app').focus();
+      },
+
+      closeWelcome() {
+        this.welcomeopen = false;
         // when the modal is closed, we need to set the focus back on the app
         document.getElementById('app').focus();
       },

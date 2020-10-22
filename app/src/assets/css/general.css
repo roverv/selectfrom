@@ -72,6 +72,16 @@ a:hover {
   background: hsla(215, 27%, 20%, 0.7);
 }
 
+.btn.light {
+  background: hsla(215, 27%, 80%, 0.15);
+  border:     1px solid hsla(215, 27%, 80%, 0.35);
+  box-shadow: 1px 1px 1px 0px hsla(215, 27%, 85%, 0.5);
+}
+
+.btn.light:hover {
+  background: hsla(215, 27%, 40%, 0.2);
+}
+
 .btn:active {
   top: 2px;
 }

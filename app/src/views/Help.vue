@@ -31,65 +31,66 @@
       </div>
 
 
-      <div class="w-2/3">
+      <div>
 
         <h3 class="text-lg mb-4  border-b border-light-200">Global shortcuts</h3>
 
-        <div class="flex items-center w-full mb-1">
-          <div class="border-l-2 flex-shrink-0 border-r-2 border-highlight-700 bg-light-100 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mb-2 mr-3">
-            F
-          </div>
+        <div class="shortcut-box">
+          <div class="shortcut-key">F</div>
 
-          <div>Find - quickly search, find and go to a table/column/row</div>
+          <div class="shortcut-description">
+            <span>Find</span>
+            <span class="text-light-300">Quickly search, find and go to a table/column/row</span>
+          </div>
         </div>
 
 
-        <div class="flex items-center w-full mb-1">
-          <div class="border-l-2 border-r-2 border-highlight-700 bg-light-100 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mb-2 mr-3">
-            E
+        <div class="shortcut-box">
+          <div class="shortcut-key">E</div>
+          <div class="shortcut-description">
+            <span>Recent tables</span>
+            <span class="text-light-300">Scroll through your recently visited tables</span>
           </div>
-
-          <div>Recent tables</div>
         </div>
 
-        <div class="flex items-center w-full mb-1">
-          <div class="border-l-2 border-r-2 border-highlight-700 bg-light-100 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mb-2 mr-3">
-            D
+        <div class="shortcut-box">
+          <div class="shortcut-key">D</div>
+          <div class="shortcut-description">
+            <span>Databases</span>
+            <span class="text-light-300">Switch to any database</span>
           </div>
-
-          <div>Databases</div>
         </div>
 
-        <div class="flex items-center w-full mb-1">
-          <div class="border-l-2 border-r-2 border-highlight-700 bg-light-100 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mb-2 mr-3">
-            Q
+        <div class="shortcut-box">
+          <div class="shortcut-key">Q</div>
+          <div class="shortcut-description">
+            <span>Query</span>
+            <span class="text-light-300">Go to query page</span>
           </div>
-
-          <div>Go to query page</div>
         </div>
 
-        <div class="flex items-center w-full mb-1">
-          <div class="border-l-2 border-r-2 border-highlight-700 bg-light-100 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mb-2 mr-3">
-            H
+        <div class="shortcut-box">
+          <div class="shortcut-key">H</div>
+          <div class="shortcut-description">
+            <span>Query history</span>
+            <span class="text-light-300">Scroll through your recently executed queries</span>
           </div>
-
-          <div>Query history</div>
         </div>
 
-        <div class="flex items-center w-full mb-1">
-          <div class="border-l-2 flex-shrink-0 border-r-2 border-highlight-700 bg-light-100 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mb-2 mr-3">
-            U
+        <div class="shortcut-box">
+          <div class="shortcut-key">U</div>
+          <div class="shortcut-description">
+            <span>Up</span>
+            <span class="text-light-300">Move up one level in the hierarchy: Server &gt; database &gt; table &gt; page</span>
           </div>
-
-          <div>Move up one level in the hierarchy <br> Server &gt; database  &gt; table  &gt; page</div>
         </div>
 
-        <div class="flex items-center w-full mb-1">
-          <div class="border-l-2 flex-shrink-0 border-r-2 border-highlight-700 bg-light-100 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mb-2 mr-3">
-            R
+        <div class="shortcut-box">
+          <div class="shortcut-key">R</div>
+          <div class="shortcut-description">
+            <span>Refresh page</span>
+            <span class="text-light-300">Reload the current page, but does not renew cached data</span>
           </div>
-
-          <div>Refresh page - reload the current page, but does not renew cached data</div>
         </div>
 
       </div>
