@@ -19,9 +19,8 @@ export default {
     },
   },
   mutations: {
-    [ADD_QUERY_EDIT](state, query, direct_execution) {
+    [ADD_QUERY_EDIT](state, query) {
       state.query            = query;
-      state.direct_execution = direct_execution;
     },
 
     [ACTIVATE_DIRECT_EXECUTION](state) {

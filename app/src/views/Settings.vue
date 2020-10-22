@@ -46,7 +46,8 @@
                 <div>Default table column order</div>
               </div>
 
-              <select name="default_table_column_order" v-model="default_table_column_order" class="default-select flex-grow" v-on:keyup.esc="focusToApp">
+              <select name="default_table_column_order" v-model="default_table_column_order"
+                      class="default-select flex-grow" v-on:keyup.esc="focusToApp">
                 <option value="">Default</option>
                 <option value="primary_asc">Primary key: ascending (lowest id / first row)</option>
                 <option value="primary_desc">Primary key: descending (highest id / last row)</option>
@@ -107,15 +108,15 @@ export default {
   data() {
     return {
       default_table_column_order: '',
-      default_rows_per_page : 0,
-      cell_text_display_limit : 0,
+      default_rows_per_page: 0,
+      cell_text_display_limit: 0,
     }
   },
 
   created() {
-    this.default_table_column_order = this.store_settings.default_table_column_order;
-    this.default_rows_per_page = this.store_settings.default_rows_per_page;
-    this.cell_text_display_limit = this.store_settings.cell_text_display_limit;
+    this.default_table_column_order = this.store_default_table_column_order;
+    this.default_rows_per_page      = this.store_default_rows_per_page;
+    this.cell_text_display_limit    = this.store_cell_text_display_limit;
   },
 
   components: {
@@ -123,8 +124,14 @@ export default {
   },
 
   computed: {
-    store_settings() {
-      return this.$store.getters["settings/getAll"];
+    store_default_table_column_order() {
+      return this.$store.getters["settings/getSetting"]('default_table_column_order');
+    },
+    store_default_rows_per_page() {
+      return this.$store.getters["settings/getSetting"]('default_rows_per_page');
+    },
+    store_cell_text_display_limit() {
+      return this.$store.getters["settings/getSetting"]('cell_text_display_limit');
     }
   },
 
@@ -143,8 +150,7 @@ export default {
         'default_rows_per_page': default_rows_per_page,
         'cell_text_display_limit': parseInt(this.cell_text_display_limit),
       }
-
-      this.$store.commit("settings/SET_SETTINGS", new_settings);
+      this.$store.commit("settings/set_settings", new_settings);
       this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
         type: 'success',
         message: 'Settings saved'

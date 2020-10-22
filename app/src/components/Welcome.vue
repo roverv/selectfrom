@@ -131,7 +131,8 @@ export default {
 
     close() {
       if (this.do_not_show_again) {
-        localStorage.setItem('do_not_show_welcome_message', true);
+        let pay_load = {setting_name: 'do_not_show_welcome_message', setting_value: true};
+        this.$store.commit("settings/set_setting", pay_load);
       }
       this.$emit('closewelcome');
     }

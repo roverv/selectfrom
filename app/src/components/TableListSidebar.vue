@@ -47,23 +47,11 @@
     name: 'TableListSidebar',
 
     data() {
-      return {
-        tables_list_is_open: true,
-        only_show_tables_with_rows: false,
-      }
+      return {}
     },
 
     components: {
       TableListSettingDropdown
-    },
-
-    mounted() {
-      if (localStorage.getItem('only_show_tables_with_rows')) {
-        this.only_show_tables_with_rows = (localStorage.getItem('only_show_tables_with_rows') === 'true');
-      }
-      if (localStorage.getItem('tables_list_is_open')) {
-        this.tables_list_is_open = (localStorage.getItem('tables_list_is_open') === 'true');
-      }
     },
 
     computed: {
@@ -82,18 +70,26 @@
       tables_all() {
         return this.$store.getters["tables/tables"];
       },
+
+      only_show_tables_with_rows() {
+        return this.$store.getters["settings/getSetting"]('only_show_tables_with_rows');
+      },
+
+      tables_list_is_open() {
+        return this.$store.getters["settings/getSetting"]('tables_list_is_open');
+      },
     },
 
     methods: {
 
       toggleTablesWithoutRows: function () {
-        this.only_show_tables_with_rows = !this.only_show_tables_with_rows;
-        localStorage.setItem('only_show_tables_with_rows', this.only_show_tables_with_rows)
+        let pay_load = {setting_name: 'only_show_tables_with_rows', setting_value: !this.only_show_tables_with_rows};
+        this.$store.commit("settings/set_setting", pay_load);
       },
 
       toggleTableList: function () {
-        this.tables_list_is_open = !this.tables_list_is_open;
-        localStorage.setItem('tables_list_is_open', this.tables_list_is_open)
+        let pay_load = {setting_name: 'tables_list_is_open', setting_value: !this.tables_list_is_open};
+        this.$store.commit("settings/set_setting", pay_load);
       }
     },
   }

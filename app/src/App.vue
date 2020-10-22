@@ -86,7 +86,7 @@
           this.$store.commit("setActiveDatabase", '');
         }
 
-        if(from.name == 'login' && !(localStorage.getItem('do_not_show_welcome_message'))) {
+        if(from.name == 'login' && this.do_not_show_welcome_message === false) {
           this.welcomeopen   = true;
         }
 
@@ -117,6 +117,10 @@
 
       show_table_list_sidebar() {
         return !(this.active_database == '' || this.$route.name == 'server');
+      },
+
+      do_not_show_welcome_message() {
+        return this.$store.getters["settings/getSetting"]('do_not_show_welcome_message');
       },
     },
 

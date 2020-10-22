@@ -22,7 +22,7 @@ export default {
     },
 
     handleApiError(error) {
-      if (error.response && error.response.status && error.response.status == 400 && error.response.error == 'Invalid CSRF') {
+      if (error.response && error.response.status && error.response.status == 400 && error.response.data.error == 'Invalid CSRF') {
         this.$store.commit("apierror/add_error_message", '400 - Invalid CSRF token, please login again');
       }
       else if (error.response && error.response.status && error.response.status == 500 && has_deep_property(error.response, 'data', 'data', 'message')) {
