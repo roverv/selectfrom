@@ -43,7 +43,11 @@ $app = AppFactory::create();
 
 /** !IMPORTANT */
 /** point to the index.php, we removed the .htaccess so we can also support nginx */
-$app->setBasePath('/rove/slimapi/public/index.php');
+$app->setBasePath((function () {
+    // get the dir of the location of where the script is executed, this way the user can put the application in any folder
+    $script_dir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+    return $script_dir . '/index.php';
+})());
 
 $callableResolver = $app->getCallableResolver();
 
