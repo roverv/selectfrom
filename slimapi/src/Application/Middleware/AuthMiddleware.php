@@ -19,9 +19,27 @@ class AuthMiddleware implements Middleware
     {
         $session = $request->getAttribute('session');
 
+        if (empty($_COOKIE['password_key']) || empty($_COOKIE['password_nonce'])) {
+            $response_json = json_encode(
+              [
+                'result'  => 'error',
+                'message' => 'Login data expired, please login again',
+              ]
+            );
+
+            $response = new \Slim\Psr7\Response();
+            $response->getBody()->write($response_json);
+
+            return $response->withHeader('Content-Type', 'application/json');
+        }
+
+        $key = $_COOKIE['password_key'];
+        $nonce = $_COOKIE['password_nonce'];
+        $decrypted_password = sodium_crypto_secretbox_open($session['password'] ?? '', $nonce, $key);
+
         $host     = $session['host'] ?? '';
         $username = $session['username'] ?? '';
-        $password = $session['password'] ?? '';
+        $password = $decrypted_password ?: '';
         $charset  = 'utf8mb4';
 
         $query_parameters = $request->getQueryParams();

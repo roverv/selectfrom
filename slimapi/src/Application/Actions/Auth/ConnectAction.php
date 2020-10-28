@@ -66,7 +66,24 @@ class ConnectAction extends Action
 
         $_SESSION['host']     = $host;
         $_SESSION['username'] = $username;
-        $_SESSION['password'] = $password; // @todo: encrypt this
+
+        // https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use#crypto-secretbox
+        if (!empty($_COOKIE['password_key'])) {
+            $key = $_COOKIE['password_key'];
+        } else {
+            $key = random_bytes(32);
+            setcookie("password_key", $key, time() + 3600 * 24 * 90, "", "", false, true); // 3 months
+        }
+
+        if (!empty($_COOKIE['password_nonce'])) {
+            $nonce = $_COOKIE['password_nonce'];
+        } else {
+            $nonce = random_bytes(24);
+            setcookie("password_nonce", $nonce, time() + 3600 * 24 * 90, "", "", false, true); // 3 months
+        }
+
+        $password_encrypted = sodium_crypto_secretbox($password, $nonce, $key);
+        $_SESSION['password'] = $password_encrypted;
 
         // generate CSRF token
         $csrf = $this->container->get('csrf');
