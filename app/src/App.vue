@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="grid-container-app" v-on:keydown.self.stop.exact.prevent.open-search="openSearchModal"
-       v-on:keydown.self.stop.exact.prevent.open-recent-tables="openRecentTables"
+       v-on:keydown.self.exact.prevent.open-recent-tables="openRecentTables"
        v-on:keydown.self.stop.exact.prevent.to-query="goToQuery" v-on:keydown.self.stop.prevent.open-database-list="openDatabasesModal"
        v-on:keydown.self.stop.exact.prevent.open-query-history="openQueryHistory"
        v-on:keydown.self.stop.exact.prevent.level-up="moveLevelUp"

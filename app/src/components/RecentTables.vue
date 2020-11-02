@@ -8,6 +8,9 @@
           Recent tables
         </h3>
         <ul class="mx-3 my-4" id="recent-tables-list" autocomplete="off">
+          <li class="list-item" v-if="recent_tables.length == 0">
+            No tables visited
+          </li>
           <li v-for="(table_name, index) in recent_tables" class="list-item" v-bind:class="{'active': isActive(index)}"
               :ref="table_name">
             <router-link :to="{ name: 'table', params: { database: active_database,  tableid: table_name } }">
@@ -33,7 +36,12 @@
     },
 
     created() {
-      document.addEventListener('keydown', this.triggerKeyDown);
+      // when you press e on app.vue, the recent tables will open but also trigger the keydown below, adding +1 to current
+      // the small timeout below prevents this
+      let self = this
+      setTimeout(function () {
+        document.addEventListener('keydown', self.triggerKeyDown);
+      }, 50);
     },
 
     beforeDestroy() {
@@ -57,6 +65,9 @@
       up() {
         if (this.current > 0) {
           this.current--;
+        }
+        else {
+          this.current = this.recent_tables.length - 1;
         }
       },
 
@@ -84,6 +95,9 @@
       down() {
         if (this.current < this.recent_tables.length - 1) {
           this.current++;
+        }
+        else {
+          this.current = 0;
         }
       },
 

@@ -8,6 +8,9 @@
           Query history
         </h3>
         <ul class="mx-3 my-4" autocomplete="off">
+          <li class="list-item" v-if="query_history.length == 0">
+            No queries executed
+          </li>
           <li v-for="(query, index) in query_history" class="list-item" v-bind:class="{'active': isActive(index)}"
               :ref="index">
             <router-link :to="{ name: 'queryhistory', params: { database: active_database, historyindex: index } }">
