@@ -8,9 +8,7 @@
         <div class="header-bar px-6 py-3 text-center font-semibold" style="background: rgba(33, 32, 63, 0.6);">
           Rove - Login
         </div>
-        <div class="error-box text-center m-3 break-words" v-show="login_error != ''">
-          {{ login_error }}
-        </div>
+        <div class="error-box text-center m-3 break-words" v-show="login_error != ''" v-html="login_error"></div>
         <form @submit.prevent="submitLogin()" ref="loginform" class="form px-6 py-5">
           <div class="flex items-center mb-4">
             <label class="w-32">Host</label>
@@ -90,11 +88,9 @@ export default {
       }).catch(error => {
         if (error.response) {
           this.login_error = error.response.data.statusCode + ': ' + error.response.data.error.type + ' - ' + error.response.data.error.description;
-        } else if (error.request) {
-          // The request was made but no response was received
-          this.login_error = error.request
         } else {
-          this.login_error = 'No API response';
+          // The request was made but no response was received
+          this.login_error = "Backend is not available. <br>Make sure you have at least PHP 7.2 and that it is running.";
         }
       });
     },

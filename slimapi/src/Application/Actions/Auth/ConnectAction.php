@@ -33,6 +33,34 @@ class ConnectAction extends Action
      */
     protected function action(): Response
     {
+        // check server requirements
+        if(extension_loaded('sodium') === false) {
+            $payload = [
+              'result'  => 'error',
+              'message' => 'Sodium extension is not installed or loaded. PHP 7.2 by default comes with the sodium library installed, so you probably only need to enable it.',
+            ];
+
+            return $this->respondWithData($payload);
+        }
+
+        if(extension_loaded('pdo_mysql') === false) {
+            $payload = [
+              'result'  => 'error',
+              'message' => 'PDO MySQL extension is not installed or loaded.',
+            ];
+
+            return $this->respondWithData($payload);
+        }
+
+        if(version_compare(PHP_VERSION, '7.2.0') === -1) {
+            $payload = [
+              'result'  => 'error',
+              'message' => sprintf('PHP 7.2 is required, you are running %s', PHP_VERSION),
+            ];
+
+            return $this->respondWithData($payload);
+        }
+
         $params = (array)$this->request->getParsedBody(); // post
         //            $params = $this->request->getQueryParams(); // get
 
