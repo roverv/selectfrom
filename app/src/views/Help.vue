@@ -41,6 +41,7 @@
           <div class="shortcut-description">
             <span>Find</span>
             <span class="text-light-300">Quickly search, find and go to a table/column/row</span>
+            <span class="text-light-300">When opened, click on the question mark to see the available options</span>
           </div>
         </div>
 
@@ -90,6 +91,28 @@
           <div class="shortcut-description">
             <span>Refresh page</span>
             <span class="text-light-300">Reload the current page, but does not renew cached data</span>
+          </div>
+        </div>
+
+        <h3 class="text-lg mb-4  border-b border-light-200">Table view shortcuts</h3>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">V</div>
+
+          <div class="shortcut-description">
+            <span>View switch</span>
+            <span class="text-light-300">Switch between table view and single row view</span>
+          </div>
+        </div>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key long">CTRL</div>
+          <div class="shortcut-key long">Click</div>
+
+          <div class="shortcut-description">
+            <span>Show sidebar</span>
+            <span class="text-light-300">CTRL + click on a row to show the row vertically in the sidebar.</span>
+            <span class="text-light-300">Click multple rows for comparison.</span>
           </div>
         </div>
 

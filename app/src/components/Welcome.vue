@@ -18,8 +18,9 @@
             <strong>Shortcuts</strong>
             <br>
             With these shortcuts, you can easily access any part of your database.
+            <br>
+            These shortcuts can also be found on the help page.
           </p>
-
 
           <div class="shortcut-box">
             <div class="shortcut-key">F</div>
@@ -27,9 +28,9 @@
             <div class="shortcut-description">
               <span>Find</span>
               <span class="text-light-300">Quickly search, find and go to a table/column/row</span>
+              <span class="text-light-300">When opened, click on the question mark to see the available options</span>
             </div>
           </div>
-
 
           <div class="shortcut-box">
             <div class="shortcut-key">E</div>
@@ -80,7 +81,32 @@
             </div>
           </div>
 
+
+          <p class="mb-4">
+            <strong>Table view shortcuts</strong>
+          </p>
+
+          <div class="shortcut-box">
+            <div class="shortcut-key">V</div>
+
+            <div class="shortcut-description">
+              <span>View switch</span>
+              <span class="text-light-300">Switch between table view and single row view</span>
+            </div>
+          </div>
+
+          <div class="shortcut-box">
+            <div class="shortcut-key long">CTRL</div>
+            <div class="shortcut-key long">Click</div>
+
+            <div class="shortcut-description">
+              <span>Show sidebar</span>
+              <span class="text-light-300">CTRL + click on a row to show the row vertically in the sidebar. Click multple rows for comparison.</span>
+            </div>
+          </div>
+
         </div>
+
 
         <div class="flex justify-between my-6">
           <label class="custom-checkbox w-1/3 ml-2">
