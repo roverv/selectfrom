@@ -4,7 +4,9 @@
        v-on:keydown.self.stop.exact.prevent.to-query="goToQuery" v-on:keydown.self.stop.prevent.open-database-list="openDatabasesModal"
        v-on:keydown.self.stop.exact.prevent.open-query-history="openQueryHistory"
        v-on:keydown.self.stop.exact.prevent.level-up="moveLevelUp"
-       v-on:keydown.self.stop.exact.prevent.refresh-page="refreshPage" tabindex="0">
+       v-on:keydown.self.stop.exact.prevent.refresh-page="refreshPage"
+       v-on:keydown.self.stop.exact.prevent.open-context-menu="openContextMenu"
+       tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
                  v-on:closesearchmodal="closeSearchModal()" />
@@ -19,7 +21,10 @@
     <QueryHistory v-if="active_database && queryhistoryopen" :modalisopen="queryhistoryopen"
                   v-on:closequeryhistory="closeQueryHistory()" tabindex="0" @keydown.esc="queryhistoryopen = false" />
 
-    <Welcome :modalisopen="welcomeopen" v-on:closewelcome="closeWelcome()"></Welcome>
+    <Welcome :modalisopen="welcomeopen" v-on:closewelcome="closeWelcome()" v-if="welcomeopen"></Welcome>
+
+    <ContextMenu :modalisopen="contextmenuopen" v-on:closecontextmenu="closeContext()" :contextoptions="contextoptions"
+                 v-on:runContextAction="runContextAction" v-if="contextmenuopen"></ContextMenu>
 
     <div class="app-header">
       <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
@@ -34,7 +39,7 @@
     </div>
 
     <div class="app-body">
-      <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" />
+      <router-view :key="$route.fullPath + $store.state.reloadMainComponentKey" v-on:setcontextoptions="setContextOptions" ref="pageComponent" />
     </div>
 
   </div>
@@ -55,6 +60,7 @@
   import MainNavigation from "./components/MainNavigation";
   import ApiError from "./components/ApiError";
   import Welcome from "@/components/Welcome";
+  import ContextMenu from "@/components/ContextMenu";
 
   export default {
 
@@ -65,6 +71,8 @@
         recenttablesopen: false,
         queryhistoryopen: false,
         welcomeopen: false,
+        contextmenuopen: false,
+        contextoptions: [],
         tables: [],
       }
     },
@@ -94,6 +102,8 @@
         this.recenttablesopen  = false;
         this.databasemodalopen = false;
         this.queryhistoryopen  = false;
+        this.contextmenuopen   = false;
+        this.contextoptions    = [];
         this.$nextTick();
         document.getElementById('app').focus();
       }
@@ -108,6 +118,7 @@
       SearchModal,
       DatabasesModal,
       QueryHistory,
+      ContextMenu,
     },
 
     computed: {
@@ -149,6 +160,15 @@
         this.queryhistoryopen = true;
       },
 
+      openContextMenu() {
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
+        this.contextmenuopen = true;
+      },
+
+      setContextOptions(contextoptions) {
+        this.contextoptions = contextoptions;
+      },
+
       closeSearchModal() {
         this.searchmodalopen = false;
         // when the modal is closed, we need to set the focus back on the app
@@ -177,6 +197,16 @@
         this.welcomeopen = false;
         // when the modal is closed, we need to set the focus back on the app
         document.getElementById('app').focus();
+      },
+
+      closeContext() {
+        this.contextmenuopen = false;
+        // when the modal is closed, we need to set the focus back on the app
+        document.getElementById('app').focus();
+      },
+
+      runContextAction(context_action) {
+        this.$refs.pageComponent[context_action]();
       },
 
       moveLevelUp() {

@@ -26,7 +26,7 @@
           <tr>
             <th class="toggle-row">
               <label for="check-all-rows">
-                <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event)" />
+                <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event.target.checked)" />
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                   <circle cx="12" cy="12" r="10"></circle>
                   <path
@@ -135,7 +135,33 @@ export default {
       order_by: 'name',
       order_direction: 'asc',
       query_result: {},
+      toggle_all_rows: false,
     }
+  },
+
+  created() {
+    this.$emit('setcontextoptions', [
+      {
+        'shortkey': '1',
+        'label': 'Create table',
+        'action': 'createTable'
+      },
+      {
+        'shortkey': '2',
+        'label': 'Select all tables',
+        'action': 'selectAllTables'
+      },
+      {
+        'shortkey': '3',
+        'label': 'Truncate selected tables',
+        'action': 'confirmTruncateTables'
+      },
+      {
+        'shortkey': '4',
+        'label': 'Drop selected tables',
+        'action': 'confirmDropTables'
+      }
+    ]);
   },
 
   components: {
@@ -228,6 +254,14 @@ export default {
 
   methods: {
 
+    createTable() {
+      this.$router.push({ name: 'addtable', params: { database: this.active_database } });
+    },
+
+    selectAllTables() {
+      this.toggleAllRows(true);
+    },
+
     getSize(table_info) {
       return parseInt(table_info.Data_length) + parseInt(table_info.Index_length);
     },
@@ -241,8 +275,8 @@ export default {
       return size.toFixed(0) + ' <span class="text-gray-500">KB</span>';
     },
 
-    toggleAllRows($event) {
-      if ($event.target.checked) {
+    toggleAllRows(checked) {
+      if (checked) {
         this.selected_rows = [];
         for (let row_index in Object.keys(this.tables)) {
           this.selected_rows.push(row_index);

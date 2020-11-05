@@ -32,6 +32,7 @@ module.exports = {
         "highlight-200": "var(--color-highlight-200)",
         "highlight-400": "var(--color-highlight-400)",
         "highlight-700": "var(--color-highlight-700)",
+        "highlight-800": "var(--color-highlight-800)",
 
       },
       backgroundColor: {

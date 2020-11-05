@@ -29,6 +29,7 @@ Vue.config.keyCodes = {
   "refresh-page": 82, // r
   "to-query": 81, // q
   "level-up": 85, // u
+  "open-context-menu": 67, // c
 }
 
 //before `new Vue`

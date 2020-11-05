@@ -10,8 +10,8 @@
   --color-highlight-400:    rgba(104, 211, 145, 0.4);
   /*--color-highlight-500: #ed8936;*/
   /*--color-highlight-600: #dd6b20;*/
-  --color-highlight-700:    #68d391;
-  /*--color-highlight-800: #9c4221;*/
+  --color-highlight-700:    hsl(143, 55%, 62%);
+  --color-highlight-800:    hsl(143, 35%, 52%);
   /*--color-highlight-900: #7b341e;*/
 
   --color-light-50:         rgba(255, 255, 255, 0.07);
