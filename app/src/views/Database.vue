@@ -26,7 +26,7 @@
           <tr>
             <th class="toggle-row">
               <label for="check-all-rows">
-                <input type="checkbox" id='check-all-rows' class="hidden" @change="toggleAllRows($event.target.checked)" />
+                <input type="checkbox" id='check-all-rows' class="hidden" v-model="toggle_all_rows" />
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                   <circle cx="12" cy="12" r="10"></circle>
                   <path
@@ -148,18 +148,13 @@ export default {
       },
       {
         'shortkey': '2',
-        'label': 'Select all tables',
-        'action': 'selectAllTables'
+        'label': 'Truncate all tables',
+        'action': 'truncateAllTables'
       },
       {
         'shortkey': '3',
-        'label': 'Truncate selected tables',
-        'action': 'confirmTruncateTables'
-      },
-      {
-        'shortkey': '4',
-        'label': 'Drop selected tables',
-        'action': 'confirmDropTables'
+        'label': 'Drop all tables',
+        'action': 'dropAllTables'
       }
     ]);
   },
@@ -252,14 +247,37 @@ export default {
 
   },
 
+  watch: {
+    toggle_all_rows() {
+      if (this.toggle_all_rows) {
+        this.selected_rows = [];
+        for (let row_index in Object.keys(this.tables)) {
+          this.selected_rows.push(row_index);
+        }
+      } else {
+        this.selected_rows = [];
+      }
+    }
+  },
+
   methods: {
 
     createTable() {
-      this.$router.push({ name: 'addtable', params: { database: this.active_database } });
+      this.$router.push({name: 'addtable', params: {database: this.active_database}});
     },
 
-    selectAllTables() {
-      this.toggleAllRows(true);
+    truncateAllTables() {
+      this.toggle_all_rows = true;
+      this.$nextTick(function () {
+        this.confirmTruncateTables()
+      });
+    },
+
+    dropAllTables() {
+      this.toggle_all_rows = true;
+      this.$nextTick(function () {
+        this.confirmDropTables()
+      });
     },
 
     getSize(table_info) {
@@ -273,17 +291,6 @@ export default {
         return number_format(size, 2, ',', '.') + ' <span class="text-gray-400">MB</span>';
       }
       return size.toFixed(0) + ' <span class="text-gray-500">KB</span>';
-    },
-
-    toggleAllRows(checked) {
-      if (checked) {
-        this.selected_rows = [];
-        for (let row_index in Object.keys(this.tables)) {
-          this.selected_rows.push(row_index);
-        }
-      } else {
-        this.selected_rows = [];
-      }
     },
 
     orderByColumn(column) {

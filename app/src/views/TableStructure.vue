@@ -64,6 +64,15 @@ export default {
     ApiMixin
   ],
 
+  created() {
+    this.$emit('setcontextoptions', [
+      {
+        'shortkey': '6',
+        'label': 'Edit table',
+        'action': 'editTable'
+      }]);
+  },
+
   mounted() {
     this.getTableStructure();
   },
@@ -88,6 +97,11 @@ export default {
   },
 
   methods: {
+
+    editTable() {
+      this.$router.push({ name: 'edittable', params: { database: this.active_database, tableid: this.tableid } });
+    },
+
     getTableStructure() {
 
       let api_url_params = {'db': this.active_database, 'tablename': this.tableid};

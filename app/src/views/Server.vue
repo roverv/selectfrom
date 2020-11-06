@@ -141,6 +141,13 @@ export default {
     if(this.$store.getters["databases/hasDatabases"] === false) {
       this.$store.dispatch('databases/get');
     }
+
+    this.$emit('setcontextoptions', [
+      {
+        'shortkey': '1',
+        'label': 'Create database',
+        'action': 'createDatabase'
+      }]);
   },
 
   computed: {
@@ -177,6 +184,10 @@ export default {
   },
 
   methods: {
+
+    createDatabase() {
+      this.$router.push({ name: 'adddatabase'});
+    },
 
     toggleAllRows($event) {
       if ($event.target.checked) {
