@@ -346,6 +346,54 @@ export default {
   created() {
     this.$store.commit("recenttables/ADD_RECENT_TABLE", this.tableid);
     document.addEventListener('keydown', this.triggerKeyDown);
+
+    this.$emit('setcontextoptions', [
+      {
+        'shortkey': '2',
+        'label': 'To structure',
+        'action': 'toStructure'
+      },
+      {
+        'shortkey': '3',
+        'label': 'To indexes',
+        'action': 'toIndexes'
+      },
+      {
+        'shortkey': '4',
+        'label': 'To foreign keys',
+        'action': 'toForeignKeys'
+      },
+      {
+        'shortkey': '5',
+        'label': 'Add row',
+        'action': 'toAddRow'
+      },
+      {
+        'shortkey': '6',
+        'label': 'Truncate table',
+        'action': 'confirmTruncateTable'
+      },
+      {
+        'shortkey': '7',
+        'label': 'Drop table',
+        'action': 'confirmDropTable'
+      },
+      {
+        'shortkey': 'v',
+        'label': 'Toggle view',
+        'action': '' // action is already binded on page
+      },
+      {
+        'shortkey': 'n',
+        'label': 'Next page',
+        'action': '' // action is already binded on page
+      },
+      {
+        'shortkey': 'p',
+        'label': 'Previous page',
+        'action': '' // action is already binded on page
+      }
+    ]);
   },
 
   destroyed() {
@@ -427,6 +475,22 @@ export default {
   },
 
   methods: {
+
+    toStructure() {
+      this.$router.push({name: 'structure', params: {database: this.active_database, tableid: this.tableid}});
+    },
+
+    toIndexes() {
+      this.$router.push({name: 'indexes', params: {database: this.active_database, tableid: this.tableid}});
+    },
+
+    toForeignKeys() {
+      this.$router.push({name: 'foreignkeys', params: {database: this.active_database, tableid: this.tableid}});
+    },
+
+    toAddRow() {
+      this.$router.push({name: 'addrow', params: {database: this.active_database, tableid: this.tableid}});
+    },
 
     getTableData() {
 
@@ -535,12 +599,14 @@ export default {
     },
 
     nextPage() {
+      if((this.offset_rows + 1) * this.rows_per_page >= this.total_amount_rows) return;
       this.offset_rows += 1;
       this.loadRows();
       this.row_pointer = 0;
     },
 
     prevPage() {
+      if(this.offset_rows <= 0) return;
       this.offset_rows -= 1;
       this.loadRows();
       this.row_pointer = this.rows_per_page - 1;
@@ -808,6 +874,12 @@ export default {
 
       if (evt.key === 'v') {
         this.togglePageView();
+      }
+      else if (evt.key === 'n') {
+        this.nextPage();
+      }
+      else if (evt.key === 'p') {
+        this.prevPage();
       }
     },
 
