@@ -1,0 +1,17 @@
+.context-item-box {
+  @apply flex items-center w-full mb-4 leading-none bg-dark-600;
+  border:     1px solid hsla(215, 27%, 20%, 0.7);
+  box-shadow: 1px 1px 1px 0px hsla(215, 27%, 22%, 1);
+  transition: all 0.3s ease;
+  outline:    none !important;
+}
+
+.context-item-key {
+  @apply border-l-2 flex-shrink-0 w-10 text-center text-2xl h-10 inline-flex justify-center items-center mr-3;
+  @apply bg-highlight-800 border-0;
+}
+
+.context-item-label {
+  @apply flex flex-col;
+  line-height: 1.15;
+}

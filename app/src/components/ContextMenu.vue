@@ -4,9 +4,16 @@
     <div class="modal-content max-w-md">
       <div>
 
-        <div v-for="contextoption in contextoptions" class="shortcut-box bg-dark-600 shadow-lg ">
-          <div class="shortcut-key bg-highlight-800 border-0">{{ contextoption.shortkey }}</div>
-          <div class="shortcut-description">
+        <div v-if="!contextoptions || contextoptions.length == 0" class="context-item-box">
+          <div class="context-item-key"></div>
+          <div class="context-item-label">
+            <span>No available actions</span>
+          </div>
+        </div>
+
+        <div v-for="contextoption in contextoptions" class="context-item-box">
+          <div class="context-item-key">{{ contextoption.shortkey }}</div>
+          <div class="context-item-label">
             <span>{{ contextoption.label }}</span>
           </div>
         </div>
@@ -27,7 +34,11 @@ export default {
   },
 
   created() {
-    document.addEventListener('keydown', this.triggerKeyDown);
+    // prevents from executing keypress of c twice, because of app.vue trigger and trigger of this component
+    let self = this
+    setTimeout(function () {
+      document.addEventListener('keydown', self.triggerKeyDown);
+    }, 50);
   },
 
   beforeDestroy() {
@@ -37,7 +48,7 @@ export default {
   methods: {
 
     triggerKeyDown: function (evt) {
-      if (evt.key === 'Escape') {
+      if (evt.key === 'Escape' || evt.key === 'c') {
         this.close();
         evt.preventDefault();
       }

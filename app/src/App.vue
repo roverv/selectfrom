@@ -5,7 +5,7 @@
        v-on:keydown.self.stop.exact.prevent.open-query-history="openQueryHistory"
        v-on:keydown.self.stop.exact.prevent.level-up="moveLevelUp"
        v-on:keydown.self.stop.exact.prevent.refresh-page="refreshPage"
-       v-on:keydown.self.stop.exact.prevent.open-context-menu="openContextMenu"
+       v-on:keydown.self.exact.prevent.open-context-menu="openContextMenu"
        tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
@@ -139,29 +139,29 @@
 
       openSearchModal() {
         if(!this.active_database) return;
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
         this.searchmodalopen = true;
       },
 
       openDatabasesModal() {
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
         this.databasemodalopen = true;
       },
 
       openRecentTables() {
         if(!this.active_database) return;
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
         this.recenttablesopen = true;
       },
 
       openQueryHistory() {
         if(!this.active_database) return;
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
         this.queryhistoryopen = true;
       },
 
       openContextMenu() {
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen) return;
+        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
         this.contextmenuopen = true;
       },
 
