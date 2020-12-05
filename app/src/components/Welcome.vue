@@ -15,11 +15,11 @@
             navigation and the settings and help pages.</p>
 
           <p class="mb-4">
-            <strong>Shortcuts</strong>
+            <strong>Important shortcuts</strong>
             <br>
             With these shortcuts, you can easily access any part of your database.
             <br>
-            These shortcuts can also be found on the help page.
+            You can find all shortcuts on the help page.
           </p>
 
           <div class="shortcut-box">
@@ -29,14 +29,6 @@
               <span>Find</span>
               <span class="text-light-300">Quickly search, find and go to a table/column/row</span>
               <span class="text-light-300">When opened, click on the question mark to see the available options</span>
-            </div>
-          </div>
-
-          <div class="shortcut-box">
-            <div class="shortcut-key">E</div>
-            <div class="shortcut-description">
-              <span>Recent tables</span>
-              <span class="text-light-300">Scroll through your recently visited tables</span>
             </div>
           </div>
 
@@ -57,10 +49,10 @@
           </div>
 
           <div class="shortcut-box">
-            <div class="shortcut-key">H</div>
+            <div class="shortcut-key">R</div>
             <div class="shortcut-description">
-              <span>Query history</span>
-              <span class="text-light-300">Scroll through your recently executed queries</span>
+              <span>Refresh page</span>
+              <span class="text-light-300">Reload the current page, but does not renew cached data</span>
             </div>
           </div>
 
@@ -74,36 +66,22 @@
           </div>
 
           <div class="shortcut-box">
-            <div class="shortcut-key">R</div>
+            <div class="shortcut-key">C</div>
             <div class="shortcut-description">
-              <span>Refresh page</span>
-              <span class="text-light-300">Reload the current page, but does not renew cached data</span>
-            </div>
-          </div>
-
-
-          <p class="mb-4">
-            <strong>Table view shortcuts</strong>
-          </p>
-
-          <div class="shortcut-box">
-            <div class="shortcut-key">V</div>
-
-            <div class="shortcut-description">
-              <span>View switch</span>
-              <span class="text-light-300">Switch between table view and single row view</span>
+              <span>Context menu</span>
+              <span
+                  class="text-light-300">Opens a page specific context menu to quickly execute certain actions</span>
             </div>
           </div>
 
           <div class="shortcut-box">
-            <div class="shortcut-key long">CTRL</div>
-            <div class="shortcut-key long">Click</div>
-
+            <div class="shortcut-key long">Esc</div>
             <div class="shortcut-description">
-              <span>Show sidebar</span>
-              <span class="text-light-300">CTRL + click on a row to show the row vertically in the sidebar. Click multple rows for comparison.</span>
+              <span>Close</span>
+              <span class="text-light-300">Close modal, close sidebar or remove focus from input</span>
             </div>
           </div>
+
 
         </div>
 

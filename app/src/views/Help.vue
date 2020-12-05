@@ -94,10 +94,70 @@
           </div>
         </div>
 
-        <h3 class="text-lg mb-4  border-b border-light-200">Table view shortcuts</h3>
+        <div class="shortcut-box">
+          <div class="shortcut-key">C</div>
+          <div class="shortcut-description">
+            <span>Context menu</span>
+            <span class="text-light-300">Opens a page specific context menu to quickly execute certain actions</span>
+          </div>
+        </div>
 
         <div class="shortcut-box">
-          <div class="shortcut-key">V</div>
+          <div class="shortcut-key long">Esc</div>
+          <div class="shortcut-description">
+            <span>Close</span>
+            <span class="text-light-300">Close modal, close sidebar or remove focus from input</span>
+          </div>
+        </div>
+
+        <h3 class="text-lg mb-4  border-b border-light-200">Table view shortcuts</h3>
+
+        <p class="mb-4">
+          <strong>Navigation shortcuts</strong>
+        </p>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">1</div>
+
+          <div class="shortcut-description">
+            <span class="text-light-500">To table data</span>
+          </div>
+        </div>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">2</div>
+          <div class="shortcut-description">
+            <span class="text-light-500">To structure</span>
+          </div>
+        </div>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">3</div>
+          <div class="shortcut-description">
+            <span class="text-light-500">To indexes</span>
+          </div>
+        </div>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">4</div>
+          <div class="shortcut-description">
+            <span class="text-light-500">To foreign keys</span>
+          </div>
+        </div>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">5</div>
+          <div class="shortcut-description">
+            <span class="text-light-500">To add row</span>
+          </div>
+        </div>
+
+        <p class="mb-4">
+          <strong>Table shortcuts</strong>
+        </p>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">v</div>
 
           <div class="shortcut-description">
             <span>View switch</span>
@@ -106,13 +166,30 @@
         </div>
 
         <div class="shortcut-box">
-          <div class="shortcut-key long">CTRL</div>
+          <div class="shortcut-key long">Ctrl</div>
           <div class="shortcut-key long">Click</div>
 
           <div class="shortcut-description">
             <span>Show sidebar</span>
-            <span class="text-light-300">CTRL + click on a row to show the row vertically in the sidebar.</span>
-            <span class="text-light-300">Click multple rows for comparison.</span>
+            <span class="text-light-300">CTRL + click on a row to show the row vertically in the sidebar. Click multiple rows for comparison.</span>
+          </div>
+        </div>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">n</div>
+
+          <div class="shortcut-description">
+            <span>Next page</span>
+            <span class="text-light-300">Go to next batch of rows</span>
+          </div>
+        </div>
+
+        <div class="shortcut-box">
+          <div class="shortcut-key">p</div>
+
+          <div class="shortcut-description">
+            <span>Previous page</span>
+            <span class="text-light-300">Go to previous batch of rows</span>
           </div>
         </div>
 
