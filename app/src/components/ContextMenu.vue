@@ -2,7 +2,7 @@
 
   <div class="modal-container" :class="{ 'open' : modalisopen }">
     <div class="modal-content max-w-md">
-      <div>
+      <div id="context-menu" tabindex="0">
 
         <div v-if="!contextoptions || contextoptions.length == 0" class="context-item-box">
           <div class="context-item-key"></div>
@@ -41,6 +41,10 @@ export default {
     }, 50);
   },
 
+  mounted() {
+    document.getElementById('context-menu').focus();
+  },
+
   beforeDestroy() {
     document.removeEventListener('keydown', this.triggerKeyDown);
   },
@@ -57,6 +61,8 @@ export default {
       console.log(context_option, evt.key);
 
       if(context_option) {
+        evt.preventDefault();
+        evt.stopPropagation();
         this.$emit('runContextAction', context_option.action);
         this.close();
       }

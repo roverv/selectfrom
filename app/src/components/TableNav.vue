@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mx-5">
     <router-link :to="{ name: 'table', params: { database: active_database, tableid: tableid } }" class="subnav-item"
                  :class="{ 'active' : (['table', 'tablewithcolumn', 'tablewithcolumnvalue', 'editrow'].includes($route.name)) }">
       Data
@@ -56,6 +56,8 @@
       triggerKeyDown: function (evt) {
         const { nodeName } = document.activeElement;
         if (this.nodes_skip_on_key.includes(nodeName)) return;
+        // context menu has overlapping key shortcuts with table nav
+        if(document.activeElement.id == 'context-menu') return;
 
         if (evt.key === '1') {
           this.$router.push({name: 'table', params: { database: this.active_database, tableid: this.tableid }});

@@ -14,6 +14,7 @@ export default {
 
     // help
     'do_not_show_welcome_message': false,
+    'do_not_show_table_data_help_message': false,
   },
   getters: {
     getSetting: (state) => (setting_name) => {

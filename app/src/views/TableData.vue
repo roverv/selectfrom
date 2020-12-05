@@ -37,11 +37,18 @@
                 <rect width="24" height="1" x="1" y="22" class="secondary"></rect>
               </svg>
             </a>
-            <a @click="togglePageView()" class="view-page-single" :class="{ 'active' : page_view == 'single'}">
+            <a @click="togglePageView()" class="mr-2 view-page-single" :class="{ 'active' : page_view == 'single'}">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
                 <rect width="20" height="12" x="2" y="10" class="primary"></rect>
                 <path class="secondary"
                       d="M20 8H4c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2zm-2-4H6c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </a>
+
+            <a @click="help_modal_open = true" class="text-light-300">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 fill-current">
+                <path class="secondary"
+                      d="M12 19.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm1-5.5a1 1 0 0 1-2 0v-1.41a1 1 0 0 1 .55-.9L14 10.5C14.64 10.08 15 9.53 15 9c0-1.03-1.3-2-3-2-1.35 0-2.49.62-2.87 1.43a1 1 0 0 1-1.8-.86C8.05 6.01 9.92 5 12 5c2.7 0 5 1.72 5 4 0 1.3-.76 2.46-2.05 3.24L13 13.2V14z"></path>
               </svg>
             </a>
           </div>
@@ -276,6 +283,8 @@
       {{ confirm_modal_message }}
     </confirm-modal>
 
+    <TableDataHelpModal :modalisopen="help_modal_open" v-on:closehelp="closeHelp()" v-if="help_modal_open"></TableDataHelpModal>
+
   </div>
 
 </template>
@@ -293,6 +302,7 @@ import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import TableDataRow from "@/components/TableDataRow";
 import ApiMixin from "@/mixins/Api";
 import ResultMessage from "@/components/ResultMessage";
+import TableDataHelpModal from "@/components/TableDataHelpModal";
 
 export default {
   name: 'TableData',
@@ -322,11 +332,13 @@ export default {
       initial_loading: true,
       row_pointer: 0,
       column_for_list: 0,
-      query_result: {}
+      query_result: {},
+      help_modal_open: false,
     }
   },
 
   components: {
+    TableDataHelpModal,
     ResultMessage,
     Spinner,
     FlashMessage,
@@ -347,52 +359,22 @@ export default {
     this.$store.commit("recenttables/ADD_RECENT_TABLE", this.tableid);
     document.addEventListener('keydown', this.triggerKeyDown);
 
+    // only show once, on the first visit
+    if(this.do_not_show_table_data_help_message === false) {
+      this.help_modal_open = true;
+    }
+
     this.$emit('setcontextoptions', [
       {
-        'shortkey': '2',
-        'label': 'To structure',
-        'action': 'toStructure'
-      },
-      {
-        'shortkey': '3',
-        'label': 'To indexes',
-        'action': 'toIndexes'
-      },
-      {
-        'shortkey': '4',
-        'label': 'To foreign keys',
-        'action': 'toForeignKeys'
-      },
-      {
-        'shortkey': '5',
-        'label': 'Add row',
-        'action': 'toAddRow'
-      },
-      {
-        'shortkey': '6',
+        'shortkey': '1',
         'label': 'Truncate table',
         'action': 'confirmTruncateTable'
       },
       {
-        'shortkey': '7',
+        'shortkey': '2',
         'label': 'Drop table',
         'action': 'confirmDropTable'
       },
-      {
-        'shortkey': 'v',
-        'label': 'Toggle view',
-        'action': '' // action is already binded on page
-      },
-      {
-        'shortkey': 'n',
-        'label': 'Next page',
-        'action': '' // action is already binded on page
-      },
-      {
-        'shortkey': 'p',
-        'label': 'Previous page',
-        'action': '' // action is already binded on page
-      }
     ]);
   },
 
@@ -457,7 +439,11 @@ export default {
 
     nodes_skip_on_key() {
       return this.$store.state.nodes_skip_on_key;
-    }
+    },
+
+    do_not_show_table_data_help_message() {
+      return this.$store.getters["settings/getSetting"]('do_not_show_table_data_help_message');
+    },
   },
 
   watch: {
@@ -917,8 +903,11 @@ export default {
 
     togglePageView() {
       this.page_view = (this.page_view == 'single') ? 'multi' : 'single';
-    }
+    },
 
+    closeHelp() {
+      this.help_modal_open = false;
+    }
 
   },
 
