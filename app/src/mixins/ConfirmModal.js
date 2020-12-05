@@ -12,6 +12,7 @@ export default {
     closeConfirmModal() {
       this.confirm_modal_open   = false;
       this.confirm_modal_action = '';
+      document.getElementById('app').focus();
     },
 
     confirmConfirmModal() {
