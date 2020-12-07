@@ -19,6 +19,7 @@ use App\Application\Actions\Table\AlterTableAction;
 use App\Application\Actions\Table\CreateTableAction;
 use App\Application\Actions\Table\CreationDataTableAction;
 use App\Application\Actions\Table\DropTableAction;
+use App\Application\Actions\Table\ListSizeDataTableAction;
 use App\Application\Actions\Table\ListTableAction;
 use App\Application\Actions\Table\ListWithColumnsTableAction;
 use App\Application\Actions\Table\StructureTableAction;
@@ -59,6 +60,7 @@ return function (App $app) {
       function (Group $group) {
           $group->get('/list', ListTableAction::class);
           $group->get('/listwithcolumns', ListWithColumnsTableAction::class);
+          $group->get('/listsizedata', ListSizeDataTableAction::class);
           $group->post('/truncate', TruncateTableAction::class);
           $group->post('/drop', DropTableAction::class);
           $group->get('/structure', StructureTableAction::class);

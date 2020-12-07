@@ -34,23 +34,24 @@
                 </svg>
               </label>
             </th>
-            <th v-for="(table_list_header, index) in table_list_headers" :key="index">
-              <a @click="orderByColumn(table_list_header)" class="column-order-link">
-                <span>{{ table_list_header }}</span>
+            <th v-for="(header_label, header_key) in table_list_headers" :key="header_key">
+              <a @click="orderByColumn(header_key)" class="column-order-link">
+                <span>{{ header_label }}</span>
                 <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
-                     v-if="order_by == table_list_header && order_direction == 'asc'">
+                     v-if="order_by == header_key && order_direction == 'asc'">
                   <path class="text-highlight-400"
                         d="M6 11V4a1 1 0 1 1 2 0v7h3a1 1 0 0 1 .7 1.7l-4 4a1 1 0 0 1-1.4 0l-4-4A1 1 0 0 1 3 11h3z"></path>
                   <path class="text-highlight-700"
                         d="M21 21H8a1 1 0 0 1 0-2h13a1 1 0 0 1 0 2zm0-4h-9a1 1 0 0 1 0-2h9a1 1 0 0 1 0 2zm0-4h-5a1 1 0 0 1 0-2h5a1 1 0 0 1 0 2z"></path>
                 </svg>
                 <svg viewBox="0 0 24 24" class="w-5 ml-2 fill-current"
-                     v-if="order_by == table_list_header && order_direction == 'desc'">
+                     v-if="order_by == header_key && order_direction == 'desc'">
                   <path class="text-highlight-400"
                         d="M18 13v7a1 1 0 0 1-2 0v-7h-3a1 1 0 0 1-.7-1.7l4-4a1 1 0 0 1 1.4 0l4 4A1 1 0 0 1 21 13h-3z"></path>
                   <path class="text-highlight-700"
                         d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
                 </svg>
+                <spinner v-if="header_key == 'size' && is_fetching_size_data"></spinner>
               </a>
             </th>
           </tr>
@@ -67,20 +68,36 @@
                 </svg>
               </label>
             </td>
-            <td class="table-data-row" v-for="(table_list_header, index) in table_list_headers" :key="index"
-                @click="$event.target.focus()" tabindex="1"
-                :class="{ ' sticky-first-row-cell' : (index == 0)}">
-              <router-link v-if="table_list_header == 'Name'"
-                           :to="{ name: 'table', params: { database: active_database, tableid: table[table_list_header] } }"
+            <td class="table-data-row" @click="$event.target.focus()">
+              <router-link :to="{ name: 'table', params: { database: active_database, tableid: table.name } }"
                            class="inline-block whitespace-normal">
-                {{ table[table_list_header] }}
+                {{ table.name }}
               </router-link>
-              <span v-else-if="table_list_header == 'Size'" v-html="showTableSize(table)"></span>
-              <span v-else-if="table_list_header == 'Rows' || table_list_header == 'Auto_increment'">{{
-                  table[table_list_header] | formatNumber
-                }}</span>
-              <span v-else>{{ table[table_list_header] }}</span>
             </td>
+            <template v-if="table.type == 'VIEW'">
+              <td class="table-data-row" @click="$event.target.focus()">
+                <span>View</span>
+              </td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </template>
+            <template v-else>
+              <td class="table-data-row" @click="$event.target.focus()">
+                <span>{{ table.engine }}</span>
+              </td>
+              <td class="table-data-row" @click="$event.target.focus()">
+                <span>{{ table.collation }}</span>
+              </td>
+              <td class="table-data-row" @click="$event.target.focus()" v-if="table.size" v-html="showTableSize(table.size)"></td>
+              <td class="table-data-row" @click="$event.target.focus()">
+                <span>{{ table.rows | formatNumber }}</span>
+              </td>
+              <td class="table-data-row" @click="$event.target.focus()">
+                <span>{{ table.auto_increment | formatNumber }}</span>
+              </td>
+            </template>
           </tr>
           </tbody>
         </table>
@@ -118,7 +135,7 @@
 
 <script>
 
-import {number_format} from '@/util'
+import {has_deep_property, number_format} from '@/util'
 import Spinner from "@/components/Spinner";
 import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
@@ -136,6 +153,9 @@ export default {
       order_direction: 'asc',
       query_result: {},
       toggle_all_rows: false,
+      is_fetching_size_data: false,
+      endpoint_table_size_data: 'table/listsizedata',
+      tables_size_data: {},
     }
   },
 
@@ -159,6 +179,13 @@ export default {
     ]);
   },
 
+  mounted() {
+    // if the property already exists, it is already present in the store
+    if(has_deep_property(this.tables[0], 'size') === false) {
+      this.loadSizeData();
+    }
+  },
+
   components: {
     ResultMessage,
     Spinner,
@@ -179,25 +206,15 @@ export default {
 
   computed: {
     table_list_headers: function () {
-      return ["Name", "Engine", "Collation", "Size", "Rows", "Auto_increment"];
-      // Auto_increment:1
-      // Avg_row_length:0
-      // Check_time:null
-      // Checksum:null
-      // Collation:"utf8_general_ci"
-      // Comment:""
-      // Create_options:""
-      // Create_time:"2020-03-25 15:13:31"
-      // Data_free:0
-      // Data_length:16384
-      // Engine:"InnoDB"
-      // Index_length:32768
-      // Max_data_length:0
-      // Name:"auction_bids"
-      // Row_format:"Dynamic"
-      // Rows:0
-      // Update_time:null
-      // Version:10
+      return {
+        // key => label
+        "name": 'Name',
+        "engine": 'Engine',
+        "collation": 'Collation',
+        "size": 'Size',
+        "rows": 'Rows',
+        "auto_increment": 'Auto_increment',
+      };
     },
 
     active_database() {
@@ -262,6 +279,32 @@ export default {
 
   methods: {
 
+    loadSizeData() {
+      let api_url_params = {'db': this.active_database };
+      let api_url = this.buildApiUrl(this.endpoint_table_size_data, api_url_params);
+
+      let vue_instance              = this;
+      vue_instance.is_fetching_size_data = true;
+      this.$http.get(api_url).then(response => {
+
+        if (response.data.data.result == 'error') {
+          this.is_fetching_size_data = false;
+          return;
+        }
+
+        response.data.data.forEach(function(table_size_data, index) {
+          vue_instance.tables[index].size = table_size_data.size;
+          vue_instance.tables[index].rows = table_size_data.rows;
+          vue_instance.tables[index].auto_increment = table_size_data.auto_increment;
+        });
+        vue_instance.is_fetching_size_data = false;
+        // we have updated the store, so make sure vue processes the data change
+        vue_instance.$nextTick();
+      }).catch(error => {
+        this.handleApiError(error);
+      })
+    },
+
     createTable() {
       this.$router.push({name: 'addtable', params: {database: this.active_database}});
     },
@@ -280,12 +323,9 @@ export default {
       });
     },
 
-    getSize(table_info) {
-      return parseInt(table_info.Data_length) + parseInt(table_info.Index_length);
-    },
 
-    showTableSize(table_info) {
-      let size = this.getSize(table_info) / 1024;
+    showTableSize(table_size) {
+      let size = table_size / 1024;
       if (size > 1000) {
         size /= 1024;
         return number_format(size, 2, ',', '.') + ' <span class="text-gray-400">MB</span>';
@@ -321,6 +361,7 @@ export default {
     truncateTables() {
       let params = new URLSearchParams();
       for (let row_index in this.selected_rows) {
+        if(this.ordered_tables[this.selected_rows[row_index]].type == 'VIEW') continue;
         params.append('tables[]', this.ordered_tables[this.selected_rows[row_index]].Name);
       }
 
@@ -336,6 +377,8 @@ export default {
           scroll(0,0);
           return;
         }
+
+        this.selected_rows = [];
 
         let message = response.data.data.affected_tables;
         message += (response.data.data.affected_tables == 1) ? ' table truncated.' : ' tables truncated.';
@@ -354,7 +397,12 @@ export default {
     dropTables() {
       let params = new URLSearchParams();
       for (let row_index in this.selected_rows) {
-        params.append('tables[]', this.ordered_tables[this.selected_rows[row_index]].Name);
+        if(this.ordered_tables[this.selected_rows[row_index]].type == 'VIEW') {
+          params.append('views[]', this.ordered_tables[this.selected_rows[row_index]].name);
+        }
+        else {
+          params.append('tables[]', this.ordered_tables[this.selected_rows[row_index]].name);
+        }
       }
 
       let vue_instance = this;
@@ -369,6 +417,8 @@ export default {
           scroll(0,0);
           return;
         }
+
+        this.selected_rows = [];
 
         let message = response.data.data.affected_tables;
         message += (response.data.data.affected_tables == 1) ? ' table dropped.' : ' tables dropped.';

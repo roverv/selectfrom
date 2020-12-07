@@ -20,7 +20,8 @@ class DropTableAction extends Action
         // Get all POST parameters
         $params = (array)$this->request->getParsedBody();
 
-        $tables = $params['tables'];
+        $tables = $params['tables'] ?? [];
+        $views  = $params['views'] ?? [];
 
         $foreign_key_check_query = "SET foreign_key_checks = 0;";
         $pdo->query($foreign_key_check_query);
@@ -32,6 +33,23 @@ class DropTableAction extends Action
                 $drop_table_query = "DROP TABLE  ".QueryHelper::escapeMysqlId($table).";";
                 $pdo->query($drop_table_query);
                 $result_data['query'] .= $drop_table_query;
+                $affected_tables++;
+            } catch (\PDOException $e) {
+                $payload = [
+                  'result'  => 'error',
+                  'message' => $e->getMessage(),
+                  'code'    => $e->getCode(),
+                ];
+
+                return $this->respondWithData($payload);
+            }
+        }
+
+        foreach ($views as $view) {
+            try {
+                $drop_view_query = "DROP VIEW  ".QueryHelper::escapeMysqlId($view).";";
+                $pdo->query($drop_view_query);
+                $result_data['query'] .= $drop_view_query;
                 $affected_tables++;
             } catch (\PDOException $e) {
                 $payload = [

@@ -20,7 +20,7 @@ class TruncateTableAction extends Action
         // Get all POST parameters
         $params = (array)$this->request->getParsedBody();
 
-        $tables = $params['tables'];
+        $tables = $params['tables'] ?? [];
 
         $foreign_key_check_query = "SET foreign_key_checks = 0;";
         $pdo->query($foreign_key_check_query);
