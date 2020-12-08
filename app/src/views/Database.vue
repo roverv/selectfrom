@@ -51,7 +51,6 @@
                   <path class="text-highlight-700"
                         d="M3 3h13a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h9a1 1 0 0 1 0 2H3a1 1 0 1 1 0-2zm0 4h5a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2z"></path>
                 </svg>
-                <spinner v-if="header_key == 'size' && is_fetching_size_data"></spinner>
               </a>
             </th>
           </tr>
@@ -79,7 +78,7 @@
                 <span>View</span>
               </td>
               <td></td>
-              <td></td>
+              <td><spinner v-if="table_index === 0 && is_fetching_size_data"></spinner></td>
               <td></td>
               <td></td>
             </template>
@@ -90,12 +89,15 @@
               <td class="table-data-row" @click="$event.target.focus()">
                 <span>{{ table.collation }}</span>
               </td>
-              <td class="table-data-row" @click="$event.target.focus()" v-if="table.size" v-html="showTableSize(table.size)"></td>
-              <td class="table-data-row" @click="$event.target.focus()">
-                <span>{{ table.rows | formatNumber }}</span>
+              <td class="table-data-row" @click="$event.target.focus()" >
+                <spinner v-if="table_index === 0 && is_fetching_size_data"></spinner>
+                <span v-if="table.size" v-html="showTableSize(table.size)"></span>
               </td>
               <td class="table-data-row" @click="$event.target.focus()">
-                <span>{{ table.auto_increment | formatNumber }}</span>
+                <span v-if="table.rows">{{ table.rows | formatNumber }}</span>
+              </td>
+              <td class="table-data-row" @click="$event.target.focus()">
+                <span v-if="table.auto_increment">{{ table.auto_increment | formatNumber }}</span>
               </td>
             </template>
           </tr>
@@ -240,15 +242,9 @@ export default {
       let vue_instance = this;
 
       // sort numeric
-      if (this.order_by == 'Sort' || this.order_by == 'Auto_increment') {
+      if (this.order_by == 'size' || this.order_by == 'rows' || this.order_by == 'auto_increment') {
         ordered_tables.sort(function (a, b) {
           return reverse * (a[vue_instance.order_by] - b[vue_instance.order_by]);
-        });
-      }
-      // sort by function
-      else if (this.order_by == 'Size') {
-        ordered_tables.sort(function (a, b) {
-          return reverse * (vue_instance.getSize(a) - vue_instance.getSize(b));
         });
       }
       // sort by string
@@ -292,14 +288,8 @@ export default {
           return;
         }
 
-        response.data.data.forEach(function(table_size_data, index) {
-          vue_instance.tables[index].size = table_size_data.size;
-          vue_instance.tables[index].rows = table_size_data.rows;
-          vue_instance.tables[index].auto_increment = table_size_data.auto_increment;
-        });
+        vue_instance.$store.commit("tables/addSizeData", response.data.data);
         vue_instance.is_fetching_size_data = false;
-        // we have updated the store, so make sure vue processes the data change
-        vue_instance.$nextTick();
       }).catch(error => {
         this.handleApiError(error);
       })

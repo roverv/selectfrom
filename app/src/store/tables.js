@@ -54,7 +54,17 @@ export default {
     },
     [FETCHING_TABLES_SUCCESS](state, tables) {
       state.error     = null;
-      state.tables    = tables;
+      // depending of which api call result is first in (table/list or table/listsizedata)
+      // not yet set
+      if(state.tables.length == 0) {
+        state.tables = tables;
+      }
+      // already set, merge data
+      else {
+        state.tables = state.tables.map(function (table, index) {
+          return Object.assign(table, tables[index]);
+        });
+      }
       // set a very small timeout, to let vuejs load the data before displaying (else this will briefly show "0 tables")
       setTimeout(function () {
         state.isLoading = false;
@@ -88,6 +98,19 @@ export default {
       setTimeout(function () {
         state.isLoading = false;
       }, 100);
+    },
+    addSizeData(state, tables_size_data) {
+      // depending of which api call result is first in (table/list or table/listsizedata)
+      // not yet set
+      if(state.tables.length == 0) {
+        state.tables = tables_size_data;
+      }
+      // already set, merge data
+      else {
+        state.tables = state.tables.map(function (table, index) {
+          return Object.assign(table, tables_size_data[index]);
+        });
+      }
     }
   },
   actions: {
