@@ -24,11 +24,11 @@
     <div v-if="tables_list_is_open" class="sidebar-scrollable table-list scroll-bar">
         <ul class="pr-2">
           <li v-for="(table_data) in tables_filtered"
-              :class="{active: table_data.Name == $route.params.tableid}">
-            <router-link :to="{ name: 'table', params: { database: active_database, tableid: table_data.Name } }">
-              {{ table_data.Name }}
+              :class="{active: table_data.name == $route.params.tableid}">
+            <router-link :to="{ name: 'table', params: { database: active_database, tableid: table_data.name } }">
+              {{ table_data.name }}
               <span class="text-gray-500 hidden">
-              ({{ table_data.Rows }})
+              ({{ table_data.rows }})
             </span>
             </router-link>
           </li>
@@ -59,7 +59,7 @@
         if (!this.tables_all) return [];
         var vue = this;
         return this.tables_all.filter(function (table_data) {
-          return !vue.only_show_tables_with_rows || table_data.Rows > 0;
+          return !vue.only_show_tables_with_rows || table_data.rows > 0;
         })
       },
 
