@@ -7,13 +7,28 @@
       <div v-if="!fetching_tables">
 
         <div class="flex justify-between items-center mb-3">
-          <h2 class="text-xl">
-            <span class="text-gray-500 text-lg">{{ tables.length }}</span>
-            Tables
-          </h2>
+          <a class="inline-flex items-center" @click="toggleMetaBox()">
+            <h2 class="text-xl">
+              <span class="text-gray-500 text-lg">{{ tables.length }}</span>
+              Tables
+            </h2>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 ml-1 fill-current">
+              <path class="text-gray-400"
+                    d="M15.3 10.3a1 1 0 0 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 1.4-1.4l3.3 3.29 3.3-3.3z"></path>
+            </svg>
+          </a>
 
+          <div>
           <router-link :to="{ name: 'addtable', params: { database: active_database } }" class="btn">
             Create table
+          </router-link>
+          </div>
+        </div>
+
+
+        <div v-cloak v-if="meta_box_open" class="px-4 py-4 my-5 bg-light-50">
+          <router-link :to="{ name: 'addview', params: { database: active_database } }" class="btn">
+            Create view
           </router-link>
         </div>
 
@@ -158,6 +173,7 @@ export default {
       is_fetching_size_data: false,
       endpoint_table_size_data: 'table/listsizedata',
       tables_size_data: {},
+      meta_box_open: false,
     }
   },
 
@@ -423,6 +439,11 @@ export default {
         this.handleApiError(error);
       })
     },
+
+    toggleMetaBox() {
+      this.meta_box_open = !this.meta_box_open;
+    },
+
 
   },
 }

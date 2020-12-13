@@ -11,6 +11,7 @@
 @import "./modal.css";
 @import "./help.css";
 @import "./contextmenu.css";
+@import "./code.mirror.css";
 
 @import 'theme.light.css';
 @import 'theme.color.css';

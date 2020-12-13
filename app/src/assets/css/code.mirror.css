@@ -1,0 +1,54 @@
+.cm-s-default.CodeMirror {
+  @apply bg-light-300 outline-none border border-light-300 text-gray-300 text-xl h-auto text-gray-900 ;
+  /*@apply bg-light-300 outline-none border border-light-300 text-dark-600 text-xl;*/
+}
+
+.cm-s-default .CodeMirror-gutters {
+  @apply border-light-300 border-r;
+  background: hsl(213, 27%, 41%);
+}
+
+.cm-s-default .CodeMirror-linenumber {
+  @apply text-white;
+}
+
+.cm-s-default div.CodeMirror-selected {
+  @apply bg-light-100;
+}
+
+.cm-s-default .cm-bracket {
+  @apply text-dark-600;
+}
+
+.CodeMirror-vscrollbar::-webkit-scrollbar,
+.CodeMirror-hscrollbar::-webkit-scrollbar {
+  width:  11px;
+  height: 8px;
+}
+
+.CodeMirror-vscrollbar,
+.CodeMirror-hscrollbar {
+  scrollbar-width: 11px;
+  scrollbar-height: 8px;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+  @apply outline-none;
+}
+
+.CodeMirror-vscrollbar::-webkit-scrollbar-track,
+.CodeMirror-hscrollbar::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb,
+.CodeMirror-hscrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius:    5px;
+  border:           1px solid var(--scrollbarBG);
+}
+.CodeMirror-scrollbar-filler {
+  @apply bg-light-100;
+}
+
+.CodeMirror-scroll {
+  max-height: 600px;
+}

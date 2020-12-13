@@ -28,7 +28,7 @@
             </tbody>
           </table>
 
-          <router-link :to="{ name: 'edittable', params: { database: active_database, tableid: tableid } }"
+          <router-link v-if="!is_view" :to="{ name: 'edittable', params: { database: active_database, tableid: tableid } }"
                        class="btn mt-4">Edit table
           </router-link>
 
@@ -65,12 +65,14 @@ export default {
   ],
 
   created() {
-    this.$emit('setcontextoptions', [
-      {
-        'shortkey': '6',
-        'label': 'Edit table',
-        'action': 'editTable'
-      }]);
+    if(this.is_view === false) {
+      this.$emit('setcontextoptions', [
+        {
+          'shortkey': '6',
+          'label': 'Edit table',
+          'action': 'editTable'
+        }]);
+    }
   },
 
   mounted() {
@@ -81,6 +83,14 @@ export default {
     active_database() {
       return this.$store.state.activeDatabase;
     },
+    tables() {
+      return this.$store.getters["tables/tables"];
+    },
+    is_view() {
+      let current_table_data = this.tables.find(table_data => table_data.name == this.tableid);
+      if (current_table_data.type == 'VIEW') return true;
+      return false;
+    }
   },
 
   watch: {

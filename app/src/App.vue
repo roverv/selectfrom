@@ -225,6 +225,7 @@
           case 'addrow':
           case 'editrow':
           case 'edittable':
+          case 'editview':
             this.$router.push({name: 'table', params: {database: this.$route.params.database, tableid: this.$route.params.tableid}});
             break;
 
@@ -233,6 +234,7 @@
           case 'tablewithcolumnvalue':
           case 'structure':
           case 'addtable':
+          case 'addview':
             this.$router.push({name: 'database'});
             break;
         }

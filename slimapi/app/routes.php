@@ -24,6 +24,9 @@ use App\Application\Actions\Table\ListTableAction;
 use App\Application\Actions\Table\ListWithColumnsTableAction;
 use App\Application\Actions\Table\StructureTableAction;
 use App\Application\Actions\Table\TruncateTableAction;
+use App\Application\Actions\View\AlterViewAction;
+use App\Application\Actions\View\CreateViewAction;
+use App\Application\Actions\View\CreationDataViewAction;
 use App\Application\Middleware\AuthMiddleware;
 use App\Application\Middleware\CsrfMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -67,6 +70,15 @@ return function (App $app) {
           $group->get('/creationdata', CreationDataTableAction::class);
           $group->post('/create', CreateTableAction::class);
           $group->post('/alter', AlterTableAction::class);
+      }
+    )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
+
+    $app->group(
+      '/view',
+      function (Group $group) {
+          $group->get('/creationdata', CreationDataViewAction::class);
+          $group->post('/create', CreateViewAction::class);
+          $group->post('/alter', AlterViewAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 

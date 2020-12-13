@@ -444,6 +444,15 @@ export default {
     do_not_show_table_data_help_message() {
       return this.$store.getters["settings/getSetting"]('do_not_show_table_data_help_message');
     },
+
+    tables() {
+      return this.$store.getters["tables/tables"];
+    },
+    is_view() {
+      let current_table_data = this.tables.find(table_data => table_data.name == this.tableid);
+      if (current_table_data.type == 'VIEW') return true;
+      return false;
+    }
   },
 
   watch: {
@@ -784,7 +793,12 @@ export default {
 
     dropTable() {
       let params = new URLSearchParams();
-      params.append('tables[]', this.tableid);
+      if(this.is_view) {
+        params.append('views[]', this.tableid);
+      }
+      else {
+        params.append('tables[]', this.tableid);
+      }
 
       let vue_instance = this;
       let api_url_params = {'db': this.active_database};
@@ -818,7 +832,12 @@ export default {
 
     truncateTable() {
       let params = new URLSearchParams();
-      params.append('tables[]', this.tableid);
+      if(this.is_view) {
+        params.append('views[]', this.tableid);
+      }
+      else {
+        params.append('tables[]', this.tableid);
+      }
 
       let vue_instance = this;
       let api_url_params = {'db': this.active_database};

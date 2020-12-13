@@ -129,6 +129,18 @@ const router = new Router({
       props: true,
     },
     {
+      path: '/:database/addview',
+      name: 'addview',
+      component: () => import(/* webpackChunkName: "editview" */ './views/EditView.vue'),
+      props: true,
+    },
+    {
+      path: '/:database/editview/:tableid',
+      name: 'editview',
+      component: () => import(/* webpackChunkName: "editview" */ './views/EditView.vue'),
+      props: true,
+    },
+    {
       path: '/:database/query',
       name: 'query',
       component: () => import(/* webpackChunkName: "query" */ './views/Query.vue'),
