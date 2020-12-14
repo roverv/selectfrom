@@ -20,12 +20,12 @@ export default new Vuex.Store({
     // persist these modules in session storage, meaning it will only persist for the open tab and remove when the tab closes
     // a different tab will be store separately
     createPersistedState({
-      paths: ['activeDatabase', 'reloadMainComponentKey', 'authenticated', 'csrf_token', 'databases', 'nodes_skip_on_key', 'tables', 'queryhistory', 'recenttables', 'searches'],
+      paths: ['activeDatabase', 'reloadMainComponentKey', 'databases', 'nodes_skip_on_key', 'tables', 'queryhistory', 'recenttables', 'searches'],
       storage: window.sessionStorage
     }),
     // save in local storage, for longer storage across multiple tabs
     createPersistedState({
-      paths: ['settings'],
+      paths: ['settings', 'authenticated', 'csrf_token'],
       storage: window.localStorage
     }),
   ],
