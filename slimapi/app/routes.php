@@ -9,6 +9,7 @@ use App\Application\Actions\Database\DropDatabaseAction;
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
+use App\Application\Actions\Index\ListIndexAction;
 use App\Application\Actions\Query\QueryAction;
 use App\Application\Actions\Row\DeleteRowAction;
 use App\Application\Actions\Row\GetRowAction;
@@ -90,6 +91,13 @@ return function (App $app) {
           $group->get('/get', GetRowAction::class);
           $group->post('/insert', InsertRowAction::class);
           $group->post('/update', UpdateRowAction::class);
+      }
+    )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
+
+    $app->group(
+      '/index',
+      function (Group $group) {
+          $group->get('/list', ListIndexAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 };

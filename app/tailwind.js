@@ -37,6 +37,7 @@ module.exports = {
       },
       backgroundColor: {
         "light-50": "var(--color-light-50)",
+        "light-70": "var(--color-light-70)",
       }
     }
   },

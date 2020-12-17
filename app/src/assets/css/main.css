@@ -12,6 +12,7 @@
 @import "./help.css";
 @import "./contextmenu.css";
 @import "./code.mirror.css";
+@import "./tableitem.css";
 
 @import 'theme.light.css';
 @import 'theme.color.css';

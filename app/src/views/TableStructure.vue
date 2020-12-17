@@ -68,7 +68,7 @@ export default {
     if(this.is_view === false) {
       this.$emit('setcontextoptions', [
         {
-          'shortkey': '6',
+          'shortkey': '1',
           'label': 'Edit table',
           'action': 'editTable'
         }]);

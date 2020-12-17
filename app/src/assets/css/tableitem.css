@@ -1,0 +1,39 @@
+/*********************
+ * Table with separate rows as items, can have action buttons in the last cell
+ *********************/
+
+.items-table {
+  @apply relative flex-grow w-full;
+  min-width:       500px;
+  border-collapse: separate;
+  border-spacing:  0px 10px;
+}
+
+.items-table thead {
+  @apply text-gray-200 text-left;
+}
+
+.items-table thead th {
+  @apply bg-dark-400 text-gray-200 py-3 px-2;
+}
+
+.items-table.with-actions thead th:last-child {
+  @apply bg-transparent;
+}
+
+
+.items-table tbody td {
+  @apply py-1 bg-light-70 border border-light-200 px-2 border-r-0 border-l-0;
+}
+
+.items-table tbody td:first-child {
+  @apply border-r-0 border-l;
+}
+
+.items-table.with-actions tbody td:last-child {
+  @apply border-0 bg-transparent border-l;
+}
+
+.items-table.with-actions tbody td:last-child .btn {
+  padding: 5px;
+}
