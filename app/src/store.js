@@ -74,5 +74,10 @@ export default new Vuex.Store({
     refreshDatabases() {
       this.dispatch("databases/get");
     },
+    logout() {
+      this.commit("setAuthenticated", false);
+      this.commit("setCsrfToken", {});
+      this.commit("setActiveDatabase", '');
+    },
   }
 })

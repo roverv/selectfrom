@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Actions\Database\AlterDatabaseAction;
+  use App\Application\Actions\Auth\LogoutAction;
+  use App\Application\Actions\Database\AlterDatabaseAction;
 use App\Application\Actions\Database\CreateDatabaseAction;
 use App\Application\Actions\Database\CreationDataDatabaseAction;
 use App\Application\Actions\Database\DropDatabaseAction;
@@ -45,6 +46,7 @@ return function (App $app) {
     );
 
     $app->post('/connect', ConnectAction::class);
+    $app->get('/logout', LogoutAction::class);
 
     $app->group(
       '/database',

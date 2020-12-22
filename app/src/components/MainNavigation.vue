@@ -73,9 +73,9 @@
         <router-link :to="{ name: 'settings' }" class="btn-link">
           Settings &amp; help
         </router-link>
-        <a href="" class="btn-link">
+        <router-link :to="{ name: 'logout' }" class="btn-link">
           Logout
-        </a>
+        </router-link>
       </div>
     </div>
 
