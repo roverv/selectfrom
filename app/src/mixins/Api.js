@@ -46,7 +46,14 @@ export default {
       }
     },
 
-    validateApiResponse(response) {
+    /**
+     * Only use this on POST calls, because it will refresh the page
+     * (causing a fetch loop if a request is made on mounted)
+     *
+     * @param response
+     * @returns {boolean}
+     */
+    validateApiPostResponse(response) {
       if(has_deep_property(response, 'data', 'data', 'result') === false) {
         this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", { type: 'error', message: 'Invalid response'});
         this.refreshPage();

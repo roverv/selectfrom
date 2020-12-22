@@ -151,7 +151,7 @@
 
         this.$http.post(api_url, params).then(response => {
 
-          if(this.validateApiResponse(response) === false) return;
+          if(this.validateApiPostResponse(response) === false) return;
 
           if(response.data.data.result == 'error') {
             vue_instance.query_result = {type: 'error', message: response.data.data.message};

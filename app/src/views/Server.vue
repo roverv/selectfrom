@@ -233,7 +233,7 @@ export default {
 
       let api_url        = this.buildApiUrl('database/drop', {});
       this.$http.post(api_url, params).then(response => {
-        if(this.validateApiResponse(response) === false) return;
+        if(this.validateApiPostResponse(response) === false) return;
 
         if(response.data.data.result == 'error') {
           if(response.data.data.affected_databases > 0) {

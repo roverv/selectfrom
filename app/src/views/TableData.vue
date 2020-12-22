@@ -508,8 +508,6 @@ export default {
 
       this.$http.get(api_url).then(response => {
 
-        if(this.validateApiResponse(response) === false) return;
-
         if(response.data.data.result == 'error') {
           this.initial_loading  = false;
           this.is_fetching_data = false;
@@ -628,8 +626,6 @@ export default {
       vue_instance.is_fetching_data = true;
       this.$http.get(api_url).then(response => {
 
-        if(this.validateApiResponse(response) === false) return;
-
         if (response.data.data.result == 'error') {
           this.initial_loading      = false;
           this.is_fetching_data     = false;
@@ -667,7 +663,7 @@ export default {
       let api_url = this.buildApiUrl(this.endpoint_delete_rows, api_url_params);
 
       this.$http.post(api_url, params).then(response => {
-        if(this.validateApiResponse(response) === false) return;
+        if(this.validateApiPostResponse(response) === false) return;
 
         if(response.data.data.result == 'error') {
           if(response.data.data.affected_rows > 0) {
@@ -804,7 +800,7 @@ export default {
       let api_url_params = {'db': this.active_database};
       let api_url = this.buildApiUrl(this.endpoint_drop_tables, api_url_params);
       this.$http.post(api_url, params).then(response => {
-        if(this.validateApiResponse(response) === false) return;
+        if(this.validateApiPostResponse(response) === false) return;
 
         if(response.data.data.result == 'error') {
           vue_instance.query_result = {type: 'error', message: response.data.data.message};
@@ -845,7 +841,7 @@ export default {
 
       this.$http.post(api_url, params).then(response => {
 
-        if(this.validateApiResponse(response) === false) return;
+        if(this.validateApiPostResponse(response) === false) return;
 
         if(response.data.data.result == 'error') {
           vue_instance.query_result = {type: 'error', message: response.data.data.message};

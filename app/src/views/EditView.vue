@@ -201,7 +201,7 @@ export default {
 
       this.$http.post(api_url, params).then(response => {
 
-        if (this.validateApiResponse(response) === false) return;
+        if (this.validateApiPostResponse(response) === false) return;
 
         let api_result = response.data.data;
 
