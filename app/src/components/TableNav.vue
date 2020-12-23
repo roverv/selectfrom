@@ -21,7 +21,7 @@
     <template v-else>
       <router-link :to="{ name: 'indexes', params: { database: active_database, tableid: tableid } }"
                    class="subnav-item"
-                   :class="{ 'active' : (['indexes'].includes($route.name)) }">
+                   :class="{ 'active' : (['indexes', 'addindex', 'editindex'].includes($route.name)) }">
         Indexes
       </router-link>
       <router-link :to="{ name: 'foreignkeys', params: { database: active_database, tableid: tableid } }"

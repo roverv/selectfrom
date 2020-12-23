@@ -10,6 +10,10 @@ use App\Application\Actions\Database\DropDatabaseAction;
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
+use App\Application\Actions\Index\AlterIndexAction;
+use App\Application\Actions\Index\CreateIndexAction;
+use App\Application\Actions\Index\DropIndexAction;
+use App\Application\Actions\Index\GetIndexAction;
 use App\Application\Actions\Index\ListIndexAction;
 use App\Application\Actions\Query\QueryAction;
 use App\Application\Actions\Row\DeleteRowAction;
@@ -100,6 +104,10 @@ return function (App $app) {
       '/index',
       function (Group $group) {
           $group->get('/list', ListIndexAction::class);
+          $group->get('/get', GetIndexAction::class);
+          $group->post('/create', CreateIndexAction::class);
+          $group->post('/drop', DropIndexAction::class);
+          $group->post('/alter', AlterIndexAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 };

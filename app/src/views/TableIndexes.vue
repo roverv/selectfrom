@@ -10,6 +10,8 @@
         <div></div>
       </div>
 
+      <flash-message></flash-message>
+
       <div v-if="is_fetching_data === false">
 
         <div v-cloak v-if="indexes.length == 0">
@@ -28,7 +30,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="index in indexes">
+          <tr v-for="(index, index_key) in indexes">
             <td>{{ index.type }}</td>
             <td>{{ index.name }}</td>
             <td>{{ index.is_unique ? 'Yes' : 'No' }}</td>
@@ -42,14 +44,14 @@
             </td>
             <td>
               <div class="flex">
-                <button @click="addColumn(index)" class="btn btn-icon ml-2 show-focus" type="button">
+                <router-link :to="{ name: 'editindex', params: { database: active_database, tableid: tableid, indexname: index.name } }" class="btn btn-icon ml-2 show-focus">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 fill-current">
                     <path class="text-light-300"
                           d="M4 14a1 1 0 0 1 .3-.7l11-11a1 1 0 0 1 1.4 0l3 3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-.7.3H5a1 1 0 0 1-1-1v-3z"></path>
                     <rect width="20" height="2" x="2" y="20" class="text-light-200" rx="1"></rect>
                   </svg>
-                </button>
-                <a @click="removeColumn(index)" class="btn btn-icon ml-2">
+                </router-link>
+                <a @click="confirmDeleteIndex(index_key)" class="btn btn-icon ml-2">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 fill-current">
                     <path class="text-light-200"
                           d="M5 5h14l-.89 15.12a2 2 0 0 1-2 1.88H7.9a2 2 0 0 1-2-1.88L5 5zm5 5a1 1 0 0 0-1 1v6a1 1 0 0 0 2 0v-6a1 1 0 0 0-1-1zm4 0a1 1 0 0 0-1 1v6a1 1 0 0 0 2 0v-6a1 1 0 0 0-1-1z"></path>
@@ -63,12 +65,18 @@
           </tbody>
         </table>
 
-        <router-link :to="{ name: 'editindex', params: { database: active_database, tableid: tableid } }"
+        <router-link :to="{ name: 'addindex', params: { database: active_database, tableid: tableid } }"
                      class="btn mt-4">
           Add index
         </router-link>
 
       </div>
+
+      <confirm-modal v-if="confirm_modal_open" v-on:close="closeConfirmModal()"
+                     v-on:confirm="confirmConfirmModal()">
+        {{ confirm_modal_message }}
+      </confirm-modal>
+
     </div>
   </div>
 </template>
@@ -77,6 +85,9 @@
 
 import TableNav from '@/components/TableNav.vue'
 import ApiMixin from "@/mixins/Api";
+import FlashMessage from "@/components/FlashMessage";
+import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModalMixin from "@/mixins/ConfirmModal";
 
 export default {
   name: 'TableIndexes',
@@ -85,15 +96,19 @@ export default {
     return {
       indexes: [],
       is_fetching_data: false,
+      modal_index_key: null,
     }
   },
 
   components: {
+    ConfirmModal,
+    FlashMessage,
     TableNav
   },
 
   mixins: [
-    ApiMixin
+    ApiMixin,
+    ConfirmModalMixin
   ],
 
   mounted() {
@@ -122,6 +137,47 @@ export default {
       }).catch(error => {
         this.handleApiError(error);
       })
+    },
+
+    confirmDeleteIndex(index_key) {
+      this.confirm_modal_message = "Delete index '" + this.indexes[index_key].name + "'";
+      this.confirm_modal_open   = true;
+      this.confirm_modal_action = 'deleteIndex';
+      this.modal_index_key = index_key;
+    },
+
+    deleteIndex() {
+      if(this.modal_index_key === null) return;
+
+      let params = new URLSearchParams();
+      params.append('index_name', this.indexes[this.modal_index_key].name);
+
+      let api_url_params = {'db': this.active_database, 'tablename': this.tableid};
+      let api_url = this.buildApiUrl('index/drop', api_url_params);
+
+      let vue_instance = this;
+
+      this.$http.post(api_url, params).then(response => {
+
+        if(this.validateApiPostResponse(response) === false) return;
+
+        if(response.data.data.result == 'error') {
+          vue_instance.query_result = {type: 'error', message: response.data.data.message};
+          scroll(0,0);
+          return;
+        }
+
+        this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
+          type: 'success',
+          message: 'Index dropped',
+          query: response.data.data.query
+        });
+        this.refreshPage();
+      }).catch(error => {
+        this.handleApiError(error);
+      });
+
+      this.modal_index_key = null;
     },
 
   }

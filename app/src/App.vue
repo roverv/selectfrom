@@ -229,12 +229,18 @@
             this.$router.push({name: 'table', params: {database: this.$route.params.database, tableid: this.$route.params.tableid}});
             break;
 
+          case 'addindex':
+          case 'editindex':
+            this.$router.push({name: 'indexes', params: {database: this.$route.params.database, tableid: this.$route.params.tableid}});
+            break;
+
           case 'table':
           case 'tablewithcolumn':
           case 'tablewithcolumnvalue':
           case 'structure':
           case 'addtable':
           case 'addview':
+          case 'indexes':
             this.$router.push({name: 'database'});
             break;
         }

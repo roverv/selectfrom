@@ -110,6 +110,18 @@ const router = new Router({
       props: true,
     },
     {
+      path: '/:database/addindex/:tableid',
+      name: 'addindex',
+      component: () => import(/* webpackChunkName: "editindex" */ './views/EditIndex.vue'),
+      props: true,
+    },
+    {
+      path: '/:database/editindex/:tableid/:indexname',
+      name: 'editindex',
+      component: () => import(/* webpackChunkName: "editindex" */ './views/EditIndex.vue'),
+      props: true,
+    },
+    {
       path: '/:database/foreignkeys/:tableid',
       name: 'foreignkeys',
       component: () => import(/* webpackChunkName: "tablestructure" */ './views/TableForeignKeys.vue'),

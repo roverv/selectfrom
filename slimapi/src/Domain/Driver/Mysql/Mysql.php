@@ -82,4 +82,14 @@ class Mysql
         return $collations;
     }
 
+    public function getIndexTypes() {
+        return [
+          'PRIMARY',
+          'INDEX',
+          'UNIQUE',
+          'FULLTEXT',
+          'SPATIAL',
+        ];
+    }
+
 }
