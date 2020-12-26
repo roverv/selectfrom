@@ -29,7 +29,7 @@
               <div>Table name</div>
             </div>
 
-            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="table_name">
+            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="table_name" v-focus>
           </div>
 
           <div class="flex w-full mb-1">

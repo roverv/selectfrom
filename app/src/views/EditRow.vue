@@ -18,10 +18,10 @@
 
       <result-message :message="query_result"></result-message>
 
-      <form method="post" @submit.prevent="saveRow()" autocomplete="off">
+      <form method="post" @submit.prevent="saveRow()" autocomplete="off" ref="edit_row_form">
 
         <div class="w-full" v-if="columns.length > 0">
-          <div class="flex w-full mb-1" v-for="column in columns">
+          <div class="flex w-full mb-1" v-for="(column, key) in columns">
 
             <div class="bg-dark-400 flex justify-between items-center w-2/5 pl-3 flex-shrink-0 relative flex-wrap mr-2">
               <div>{{ column.Field }}</div>
@@ -159,6 +159,9 @@
           for (let column_name in this.row_data) {
             this.columns_null[column_name] = (this.row_data[column_name] === null) ? true : false;
           }
+
+          // set focus on first input
+          this.$refs.edit_row_form.getElementsByTagName('input')[0].focus();
         }).catch(error => {
           this.handleApiError(error);
         })

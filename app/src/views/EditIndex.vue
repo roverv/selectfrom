@@ -29,7 +29,7 @@
               <div>Index name</div>
             </div>
 
-            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="name" placeholder="Leave empty for auto generate">
+            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="name" placeholder="Leave empty for auto generate" v-focus>
           </div>
 
           <div class="flex w-full mb-1">
@@ -38,7 +38,7 @@
               <div>Type</div>
             </div>
 
-            <select class="default-select w-64" v-model="type">
+            <select class="default-select w-64" v-model="type" v-on:keyup.esc="focusToApp">
               <option value=""></option>
               <option v-for="index_type in index_types">
                 {{ index_type }}
@@ -60,7 +60,7 @@
           <template v-for="(index_column, index) in columns">
             <div class="columns-table-cell">
 
-              <select class="default-select w-64" v-model="index_column.name">
+              <select class="default-select w-64" v-model="index_column.name" v-on:keyup.esc="focusToApp">
                 <option value=""></option>
                 <option v-for="table_column in table_columns" :value="table_column.name">
                   {{ table_column.name }} | {{ table_column.type }}

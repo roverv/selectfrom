@@ -47,7 +47,7 @@ export default new Vuex.Store({
     reloadMainComponentKey: 0,
     authenticated: false,
     csrf_token : {},
-    nodes_skip_on_key: ['INPUT', 'TEXTAREA', 'SELECT'],
+    nodes_skip_on_key: ['INPUT', 'TEXTAREA', 'SELECT'], // when focused on these nodes, pressing a shortcut won't trigger
   },
 
   mutations: {

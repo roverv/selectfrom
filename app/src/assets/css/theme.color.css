@@ -4,10 +4,11 @@
   --color-text-on-bg-light: #2d3748;
 
   /** GENERAL COLORS **/
-  --color-highlight-100:    rgba(104, 211, 145, 0.1);
-  --color-highlight-200:    rgba(104, 211, 145, 0.17);
+  --color-highlight-100:    hsla(143, 55%, 62%, 0.1);
+  --color-highlight-200:    hsla(143, 55%, 62%, 0.17);
   /*--color-highlight-300: #fbd38d;*/
-  --color-highlight-400:    rgba(104, 211, 145, 0.4);
+  --color-highlight-300:    hsla(143, 55%, 62%, 0.25);
+  --color-highlight-400:    hsla(143, 55%, 62%, 0.4);
   /*--color-highlight-500: #ed8936;*/
   /*--color-highlight-600: #dd6b20;*/
   --color-highlight-700:    hsl(143, 55%, 62%);

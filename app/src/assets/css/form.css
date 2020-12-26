@@ -12,7 +12,7 @@
   @apply absolute;
 }
 .custom-checkbox input[type="checkbox"]:focus + .input-box {
-  @apply border-light-500;
+  @apply bg-highlight-300 border-highlight-400;;
 }
 .custom-checkbox .input-box:after {
   @apply border-white absolute bg-transparent;
@@ -39,7 +39,7 @@ input[type="text"].default-text-input {
   @apply bg-light-100 border border-light-200 py-1 px-3;
 }
 input[type="text"].default-text-input:focus {
-  @apply border-light-500;
+  @apply bg-highlight-300 border-highlight-400;
 }
 
 
@@ -47,7 +47,7 @@ input[type="number"].default-number-input {
   @apply bg-light-100 border border-light-200 py-1 px-3;
 }
 input[type="number"].default-number-input:focus {
-  @apply border-light-500;
+  @apply bg-highlight-300 border-highlight-400;
 }
 
 select.default-select {
@@ -55,7 +55,7 @@ select.default-select {
 }
 
 select.default-select:focus {
-  @apply border-light-500;
+  @apply bg-highlight-300 border-highlight-400;
 }
 
 select.default-select option, select.default-select optgroup {
