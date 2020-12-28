@@ -10,6 +10,8 @@ use App\Application\Actions\Database\DropDatabaseAction;
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
+use App\Application\Actions\ForeignKey\DropForeignKeyAction;
+use App\Application\Actions\ForeignKey\ListForeignKeyAction;
 use App\Application\Actions\Index\AlterIndexAction;
 use App\Application\Actions\Index\CreateIndexAction;
 use App\Application\Actions\Index\DropIndexAction;
@@ -108,6 +110,14 @@ return function (App $app) {
           $group->post('/create', CreateIndexAction::class);
           $group->post('/drop', DropIndexAction::class);
           $group->post('/alter', AlterIndexAction::class);
+      }
+    )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
+
+    $app->group(
+      '/foreignkey',
+      function (Group $group) {
+          $group->get('/list', ListForeignKeyAction::class);
+          $group->post('/drop', DropForeignKeyAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 };
