@@ -12,12 +12,32 @@ class ListTableAction extends Action
     /**
      * {@inheritdoc}
      */
-    protected function action(): Response
-    {
+    protected function action(): Response {
         $pdo = $this->request->getAttribute('pdo_instance');
 
-          $rows  = $pdo->query("SELECT TABLE_NAME as name, TABLE_TYPE as type, ENGINE as engine, TABLE_COLLATION as collation FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME")->fetchAll();
+        $query = <<<SQL
+SELECT
+  TABLE_NAME as name,
+  TABLE_TYPE as type,
+  ENGINE as engine,
+  TABLE_COLLATION as collation
+FROM
+  information_schema.TABLES
+WHERE
+  TABLE_SCHEMA = DATABASE()
+ORDER BY
+  TABLE_NAME
+SQL;
 
-        return $this->respondWithData($rows);
+        $rows = $pdo->query($query)->fetchAll();
+
+        // add boolean for support for foreign keys
+        $rows_payload = array_map(function($row) {
+            $tmp_row = $row;
+            $tmp_row['has_foreign_key_support'] = ($row['engine'] == 'InnoDB') ? true : false;
+            return $tmp_row;
+        }, $rows);
+
+        return $this->respondWithData($rows_payload);
     }
 }

@@ -25,7 +25,7 @@
         Indexes
       </router-link>
       <router-link :to="{ name: 'foreignkeys', params: { database: active_database, tableid: tableid } }"
-                   class="subnav-item"
+                   class="subnav-item" v-if="has_foreign_key_support"
                    :class="{ 'active' : (['foreignkeys'].includes($route.name)) }">
         Foreign keys
       </router-link>
@@ -69,7 +69,12 @@ export default {
       let current_table_data = this.tables.find(table_data => table_data.name == this.tableid);
       if (current_table_data.type == 'VIEW') return true;
       return false;
-    }
+    },
+    has_foreign_key_support() {
+      let current_table_data = this.tables.find(table_data => table_data.name == this.tableid);
+      if (current_table_data.has_foreign_key_support === false) return false;
+      return true;
+    },
   },
 
   methods: {
@@ -93,7 +98,7 @@ export default {
       else {
         if (evt.key === '3') {
           this.$router.push({name: 'indexes', params: {database: this.active_database, tableid: this.tableid}});
-        } else if (evt.key === '4') {
+        } else if (evt.key === '4' && this.has_foreign_key_support) {
           this.$router.push({name: 'foreignkeys', params: {database: this.active_database, tableid: this.tableid}});
         } else if (evt.key === '5') {
           this.$router.push({name: 'addrow', params: {database: this.active_database, tableid: this.tableid}});
