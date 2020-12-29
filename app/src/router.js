@@ -128,6 +128,18 @@ const router = new Router({
       props: true,
     },
     {
+      path: '/:database/addforeignkey/:tableid',
+      name: 'addforeignkey',
+      component: () => import(/* webpackChunkName: "editforeignkey" */ './views/EditForeignKey.vue'),
+      props: true,
+    },
+    {
+      path: '/:database/editforeignkey/:tableid/:foreignkeyname',
+      name: 'editforeignkey',
+      component: () => import(/* webpackChunkName: "editforeignkey" */ './views/EditForeignKey.vue'),
+      props: true,
+    },
+    {
       path: '/:database/editrow/:tableid/:column/:rowid',
       name: 'editrow',
       component: () => import(/* webpackChunkName: "editrow" */ './views/EditRow.vue'),

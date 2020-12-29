@@ -41,7 +41,7 @@
             </td>
             <td>
               <p v-for="column in foreign_key.columns">
-                <span class="text-gray-500">{{ column.ref_table }}.</span>{{ column.ref_column_name }}
+                <span class="text-gray-500">{{ foreign_key.reference_table }}.</span>{{ column.reference_column_name }}
               </p>
             </td>
             <td>{{ foreign_key.on_delete }}</td>

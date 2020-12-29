@@ -92,4 +92,13 @@ class Mysql
         ];
     }
 
+    public function getForeignKeyRules() {
+        return [
+          'CASCADE',
+          'SET NULL',
+          'RESTRICT',
+          'NO ACTION',
+        ];
+    }
+
 }

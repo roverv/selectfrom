@@ -26,7 +26,7 @@
       </router-link>
       <router-link :to="{ name: 'foreignkeys', params: { database: active_database, tableid: tableid } }"
                    class="subnav-item" v-if="has_foreign_key_support"
-                   :class="{ 'active' : (['foreignkeys'].includes($route.name)) }">
+                   :class="{ 'active' : (['foreignkeys', 'addforeignkey', 'editforeignkey'].includes($route.name)) }">
         Foreign keys
       </router-link>
       <router-link :to="{ name: 'addrow', params: { database: active_database, tableid: tableid } }" class="subnav-item"

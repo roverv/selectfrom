@@ -10,7 +10,10 @@ use App\Application\Actions\Database\DropDatabaseAction;
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
+use App\Application\Actions\ForeignKey\AlterForeignKeyAction;
+use App\Application\Actions\ForeignKey\CreateForeignKeyAction;
 use App\Application\Actions\ForeignKey\DropForeignKeyAction;
+use App\Application\Actions\ForeignKey\GetForeignKeyAction;
 use App\Application\Actions\ForeignKey\ListForeignKeyAction;
 use App\Application\Actions\Index\AlterIndexAction;
 use App\Application\Actions\Index\CreateIndexAction;
@@ -117,7 +120,10 @@ return function (App $app) {
       '/foreignkey',
       function (Group $group) {
           $group->get('/list', ListForeignKeyAction::class);
+          $group->get('/get', GetForeignKeyAction::class);
+          $group->post('/create', CreateForeignKeyAction::class);
           $group->post('/drop', DropForeignKeyAction::class);
+          $group->post('/alter', AlterForeignKeyAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 };

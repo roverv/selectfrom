@@ -21,26 +21,26 @@ class ListForeignKeyAction extends Action
 
         $query = <<<SQL
 SELECT
-  k.CONSTRAINT_NAME AS foreign_key_name,
-  k.COLUMN_NAME AS column_name,
-  k.REFERENCED_TABLE_NAME AS ref_table,
-  k.REFERENCED_COLUMN_NAME AS ref_column_name,
-  fc.UPDATE_RULE AS on_update,
-  fc.DELETE_RULE AS on_delete
+  kcu.CONSTRAINT_NAME AS foreign_key_name,
+  kcu.COLUMN_NAME AS column_name,
+  kcu.REFERENCED_TABLE_NAME AS reference_table,
+  kcu.REFERENCED_COLUMN_NAME AS reference_column_name,
+  rc.UPDATE_RULE AS on_update,
+  rc.DELETE_RULE AS on_delete
 FROM
-  information_schema.TABLE_CONSTRAINTS i
-  JOIN information_schema.KEY_COLUMN_USAGE k
-  JOIN information_schema.REFERENTIAL_CONSTRAINTS fc
+  information_schema.TABLE_CONSTRAINTS tc
+  JOIN information_schema.KEY_COLUMN_USAGE kcu
+  JOIN information_schema.REFERENTIAL_CONSTRAINTS rc
 WHERE
-  i.CONSTRAINT_TYPE = 'FOREIGN KEY'
-  AND i.TABLE_SCHEMA = DATABASE()
-  AND i.TABLE_NAME = :tablename
-  AND i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
-  AND k.TABLE_SCHEMA = DATABASE()
-  AND k.TABLE_NAME = :tablename
-  AND i.CONSTRAINT_NAME = fc.CONSTRAINT_NAME
-  AND fc.CONSTRAINT_SCHEMA = DATABASE()
-  AND fc.TABLE_NAME = :tablename
+  tc.CONSTRAINT_TYPE = 'FOREIGN KEY'
+  AND tc.TABLE_SCHEMA = DATABASE()
+  AND tc.TABLE_NAME = :tablename
+  AND tc.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME
+  AND kcu.TABLE_SCHEMA = DATABASE()
+  AND kcu.TABLE_NAME = :tablename
+  AND tc.CONSTRAINT_NAME = rc.CONSTRAINT_NAME
+  AND rc.CONSTRAINT_SCHEMA = DATABASE()
+  AND rc.TABLE_NAME = :tablename
 SQL;
 
         $binded_values = [
@@ -67,15 +67,15 @@ SQL;
             foreach ($foreign_keys as $foreign_key) {
                 if (!isset($foreign_keys_payload[$foreign_key['foreign_key_name']])) {
                     $foreign_keys_payload[$foreign_key['foreign_key_name']] = [
-                      'name'      => $foreign_key['foreign_key_name'],
-                      'on_update' => $foreign_key['on_update'],
-                      'on_delete' => $foreign_key['on_delete'],
+                      'name'            => $foreign_key['foreign_key_name'],
+                      'on_update'       => $foreign_key['on_update'],
+                      'on_delete'       => $foreign_key['on_delete'],
+                      "reference_table" => $foreign_key['reference_table'],
                     ];
                 }
                 $foreign_keys_payload[$foreign_key['foreign_key_name']]['columns'][] = [
-                  "column_name"     => $foreign_key['column_name'],
-                  "ref_table"       => $foreign_key['ref_table'],
-                  "ref_column_name" => $foreign_key['ref_column_name'],
+                  "column_name"           => $foreign_key['column_name'],
+                  "reference_column_name" => $foreign_key['reference_column_name'],
                 ];
             }
 
