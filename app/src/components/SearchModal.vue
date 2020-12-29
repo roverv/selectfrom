@@ -112,7 +112,7 @@
         let search_results = [];
         if (this.can_autocomplete_column) {
           let search_values = this.search_value.split(this.column_split_value);
-          search_results    = this.tables_with_columns[search_values[0]].filter((column_name) => {
+          search_results    = this.tables_with_column_names[search_values[0]].filter((column_name) => {
             return this.fussySearchMatch(search_values[1], column_name);
           });
         } else {
@@ -155,16 +155,16 @@
         if (!this.entering_column) return false;
 
         let search_values = this.search_value.split(this.column_split_value);
-        if (this.tables_with_columns[search_values[0]] !== 'undefined') return true;
+        if (this.tables_with_column_names[search_values[0]] !== 'undefined') return true;
         return false;
       },
 
-      tables_with_columns() {
-        return this.$store.getters["tables/tablesWithColumns"];
+      tables_with_column_names() {
+        return this.$store.getters["tables/tablesWithColumnNames"];
       },
 
       tables() {
-        return Object.keys(this.tables_with_columns);
+        return Object.keys(this.tables_with_column_names);
       },
 
       searches() {
@@ -286,7 +286,7 @@
         }
 
         // cannot go to a column that does not exists, skip
-        if (has_id == '' && column != '' && this.tables_with_columns[table_id].includes(column) === false) {
+        if (has_id == '' && column != '' && this.tables_with_column_names[table_id].includes(column) === false) {
           // if the table is not found, but there are autocomplete items, just replace the value with the first matching autocomplete table item
           // very handy when doing fuzzy search: orgadd > ENTER > organisation_address
           if (this.matches.length > 0) {

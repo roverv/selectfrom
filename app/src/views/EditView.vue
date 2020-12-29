@@ -116,7 +116,7 @@ export default {
         }
       },
       hintOptions: {
-        tables: this.tables_with_columns
+        tables: this.tables_with_column_names
       }
     });
 
@@ -135,8 +135,8 @@ export default {
     page_is_edit() {
       return (this.$route.name == 'editview');
     },
-    tables_with_columns() {
-      return this.$store.getters["tables/tablesWithColumns"];
+    tables_with_column_names() {
+      return this.$store.getters["tables/tablesWithColumnNames"];
     },
   },
 

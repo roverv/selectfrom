@@ -177,7 +177,7 @@
           }
         },
         hintOptions: {
-          tables: this.tables_with_columns
+          tables: this.tables_with_column_names
         }
       });
 
@@ -199,8 +199,8 @@
         return this.$store.state.activeDatabase;
       },
 
-      tables_with_columns() {
-        return this.$store.getters["tables/tablesWithColumns"];
+      tables_with_column_names() {
+        return this.$store.getters["tables/tablesWithColumnNames"];
       },
 
       query_history() {

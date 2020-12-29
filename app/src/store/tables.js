@@ -36,6 +36,14 @@ export default {
     tablesWithColumns(state) {
       return state.tables_with_columns;
     },
+    tablesWithColumnNames(state) {
+      // return from each table an array with only the column names, like: { tablename : [id, firstname, lastname etc..] }
+      let tables_with_column_names = {};
+      Object.entries(state.tables_with_columns).forEach(function(table_entry) {
+        tables_with_column_names[table_entry[0]] = table_entry[1].map(column => column.column_name)
+      });
+      return tables_with_column_names;
+    },
     tablesWithPrimaryKeys(state) {
       return state.tables_with_primary_keys;
     },
