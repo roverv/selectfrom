@@ -121,6 +121,12 @@
             this.fillDefaults();
           }
 
+          // set focus on first input when inputs are rendered
+          this.$nextTick(function() {
+            if(this.$refs.edit_row_form.getElementsByTagName('input').length > 0) {
+              this.$refs.edit_row_form.getElementsByTagName('input')[0].focus();
+            }
+          });
         }).catch(error => {
           this.handleApiError(error);
         })
@@ -159,9 +165,6 @@
           for (let column_name in this.row_data) {
             this.columns_null[column_name] = (this.row_data[column_name] === null) ? true : false;
           }
-
-          // set focus on first input
-          this.$refs.edit_row_form.getElementsByTagName('input')[0].focus();
         }).catch(error => {
           this.handleApiError(error);
         })
