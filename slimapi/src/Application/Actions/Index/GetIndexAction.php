@@ -38,9 +38,6 @@ class GetIndexAction extends Action
         try {
             $query   = "SHOW INDEXES FROM ".QueryHelper::escapeMysqlId($query_params['tablename']);
             $indexes = $pdo->query($query)->fetchAll();
-
-            $query        = "SHOW FULL COLUMNS FROM ".QueryHelper::escapeMysqlId($query_params['tablename']).";";
-            $columns_data = $pdo->query($query)->fetchAll();
         } catch (PDOException $e) {
             $payload = [
               'result'  => 'error',
@@ -85,13 +82,6 @@ class GetIndexAction extends Action
             ];
         }
 
-        $columns_data = array_map(function ($column_data) {
-            return [
-              'name' => $column_data['Field'],
-              'type' => $column_data['Type'],
-            ];
-        }, $columns_data);
-
         $index_data = null;
         if (!empty($query_params['indexname'])) {
             $index_data = $indexes_payload[$query_params['indexname']] ?? null;
@@ -99,7 +89,6 @@ class GetIndexAction extends Action
 
         $return_data = [
           'index'       => $index_data,
-          'columns'     => $columns_data,
           'index_types' => $index_types,
         ];
 

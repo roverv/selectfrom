@@ -44,6 +44,10 @@ export default {
       });
       return tables_with_column_names;
     },
+    columnsOfTable: (state) => (table_name) => {
+      if(state.tables_with_columns.hasOwnProperty(table_name) === false) return [];
+      return state.tables_with_columns[table_name];
+    },
     tablesWithPrimaryKeys(state) {
       return state.tables_with_primary_keys;
     },

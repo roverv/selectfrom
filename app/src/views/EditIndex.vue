@@ -59,8 +59,8 @@
             <div class="columns-table-cell">
               <select class="default-select w-64" v-model="index_column.name" v-on:keyup.esc="focusToApp">
                 <option value=""></option>
-                <option v-for="table_column in table_columns" :value="table_column.name">
-                  {{ table_column.name }} | {{ table_column.type }}
+                <option v-for="table_column in table_columns" :value="table_column.column_name">
+                  {{ table_column.column_name }} | {{ table_column.column_type }}
                 </option>
               </select>
             </div>
@@ -122,7 +122,6 @@ export default {
       endpoint_get_index: 'index/get',
       query_result: {},
       is_fetching_data: false,
-      table_columns: [],
       index_types: [],
       name: '',
       columns: [clone(default_column_row)],
@@ -153,7 +152,10 @@ export default {
     },
     page_is_edit() {
       return (this.$route.name == 'editindex');
-    }
+    },
+    table_columns() {
+      return this.$store.getters["tables/columnsOfTable"](this.tableid);
+    },
   },
 
   methods: {
@@ -170,7 +172,6 @@ export default {
       this.$http.get(api_url).then(response => {
         let reponse_data   = response.data.data;
         this.index_types   = reponse_data.index_types;
-        this.table_columns = reponse_data.columns;
         if (this.page_is_edit) {
           this.name    = reponse_data.index.name;
           this.type    = reponse_data.index.type;
