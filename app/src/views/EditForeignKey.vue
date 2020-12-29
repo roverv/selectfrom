@@ -85,7 +85,7 @@
             <div class="label-box">
               <div>Reference table</div>
             </div>
-            <select class="default-select w-64" v-model="reference_table" v-on:keyup.esc="focusToApp">
+            <select class="default-select w-64" v-model="reference_table" v-on:keyup.esc="focusToApp" @change="referenceTableChanged()">
               <option value=""></option>
               <option v-for="referencable_table in referencable_tables">
                 {{ referencable_table.name }}
@@ -102,24 +102,43 @@
           <span class=""></span>
 
           <template v-for="(column, index) in columns">
+
+            <template v-if="validateSameDataType(index) === false">
+              <p class="full-columns-table-cell text-warning text-center mb-2">
+                Corresponding columns in the foreign key and the referenced key must have <u>similar data types</u>.
+              </p>
+              <div style="grid-column: 3/4"></div>
+            </template>
+
+            <template v-if="validatePrecisionType(index) === false">
+              <p class="full-columns-table-cell text-warning text-center mb-2">
+                The <u>size and sign</u> of fixed precision types such as INTEGER and DECIMAL must be the same
+                <br>
+                <b>{{ getColumnTypes(column.column).column_type }}</b> vs <b>{{ getReferenceColumnTypes(column.reference_column).column_type }}</b>
+              </p>
+              <div style="grid-column: 3/4"></div>
+            </template>
+
             <div class="columns-table-cell">
               <span class="text-gray-500">{{ tableid }}.</span>&nbsp;
               <select class="default-select w-64" v-model="column.column" v-on:keyup.esc="focusToApp">
                 <option value=""></option>
-                <option v-for="table_column in table_columns" :value="table_column">
-                  {{ table_column }}
+                <option v-for="table_column in table_columns" :value="table_column.column_name">
+                  {{ table_column.column_name }} ({{ table_column.data_type }})
                 </option>
               </select>
             </div>
 
             <div class="columns-table-cell" v-if="reference_table">
+              <div>
               <span class="text-gray-500">{{ reference_table }}.</span>&nbsp;
               <select class="default-select w-64" v-model="column.reference_column" v-on:keyup.esc="focusToApp">
                 <option value=""></option>
-                <option v-for="referencable_column in referencable_columns" :value="referencable_column">
-                  {{ referencable_column }}
+                <option v-for="referencable_column in referencable_columns" :value="referencable_column.column_name">
+                  {{ referencable_column.column_name }} ({{ referencable_column.data_type }})
                 </option>
               </select>
+              </div>
             </div>
             <div class="columns-table-cell" v-else>
               Choose a reference table
@@ -336,6 +355,61 @@ export default {
         this.handleApiError(error);
       })
     },
+
+    validateSameDataType(column_index) {
+      if(!this.reference_table) return;
+
+      let reference_column = this.columns[column_index].reference_column;
+      let column = this.columns[column_index].column;
+
+      if(!reference_column || !column) return;
+
+      let column_data = this.getColumnTypes(column);
+      let reference_column_data = this.getReferenceColumnTypes(reference_column);
+
+      // this happens when changing the reference table
+      if(!reference_column_data || reference_column_data.hasOwnProperty('data_type') === false) return;
+
+      return column_data.data_type === reference_column_data.data_type;
+    },
+
+    validatePrecisionType(column_index) {
+      if(!this.reference_table) return;
+
+      if(this.validateSameDataType(column_index) !== true) return;
+
+      let reference_column = this.columns[column_index].reference_column;
+      let column = this.columns[column_index].column;
+
+      if(!reference_column || !column) return;
+
+      let column_data = this.getColumnTypes(column);
+      let reference_column_data = this.getReferenceColumnTypes(reference_column);
+
+      /** @backendlogic */
+      if(['tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'decimal'].includes(column_data.data_type) === false) return;
+
+      // this happens when changing the reference table
+      if(!reference_column_data || reference_column_data.hasOwnProperty('column_type') === false) return;
+
+      return column_data.column_type === reference_column_data.column_type;
+    },
+
+    getColumnTypes(column) {
+      return this.tables_with_columns[this.tableid].find(column_data => column_data.column_name == column);
+    },
+
+    getReferenceColumnTypes(reference_column) {
+      return this.tables_with_columns[this.reference_table].find(column_data => column_data.column_name == reference_column)
+    },
+
+    referenceTableChanged() {
+      // reset reference table columns on change
+      for (let column_index in this.columns) {
+        this.columns.reference_column == '';
+      }
+    }
+
   }
 }
 </script>
@@ -344,6 +418,10 @@ export default {
 
 .columns-table {
   grid-template-columns: repeat(3, auto);
+}
+
+.full-columns-table-cell {
+  grid-column: 1/3;
 }
 
 .edit-table-container {

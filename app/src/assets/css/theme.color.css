@@ -15,6 +15,8 @@
   --color-highlight-800:    hsl(143, 35%, 52%);
   /*--color-highlight-900: #7b341e;*/
 
+  --color-warning:    hsl(0, 55%, 62%);
+
   --color-light-50:         rgba(255, 255, 255, 0.07);
   --color-light-70:         rgba(255, 255, 255, 0.12);
   --color-light-100:        rgba(255, 255, 255, 0.2);
