@@ -63,29 +63,32 @@ class AlterForeignKeyAction extends Action
         //        ALTER TABLE `actor` ADD FOREIGN KEY(`actor_id`) REFERENCES `actor`(`actor_id`) ON DELETE CASCADE ON UPDATE CASCADE;
         //        ALTER TABLE `actor` ADD CONSTRAINT `123` FOREIGN KEY (`actor_id`) REFERENCES `actor`(`actor_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-        $query = "ALTER TABLE ".QueryHelper::escapeMysqlId($query_params['tablename']);
-        $query .= " DROP FOREIGN KEY " . QueryHelper::escapeMysqlId($query_params['foreign_key_name']) . ",";
-        $query .= " ADD";
+        $drop_query = "ALTER TABLE ".QueryHelper::escapeMysqlId($query_params['tablename']);
+        $drop_query .= " DROP FOREIGN KEY " . QueryHelper::escapeMysqlId($query_params['foreign_key_name']) . ";";
+
+        $alter_query = "ALTER TABLE ".QueryHelper::escapeMysqlId($query_params['tablename']);
+        $alter_query .= " ADD";
         if (!empty($post_params['name'])) {
-            $query .= " CONSTRAINT ".QueryHelper::escapeMysqlId($post_params['name'])." ";
+            $alter_query .= " CONSTRAINT ".QueryHelper::escapeMysqlId($post_params['name'])." ";
         }
-        $query .= " FOREIGN KEY ";
-        $query .= "(";
-        $query .= implode(', ', $columns_query);
-        $query .= ")";
-        $query .= " REFERENCES";
-        $query .= " ".QueryHelper::escapeMysqlId($post_params['reference_table']) . " ";
-        $query .= "(";
-        $query .= implode(', ', $reference_columns_query);
-        $query .= ") ";
-        $query .= "ON DELETE " . $on_delete_rule . " ";
-        $query .= "ON UPDATE " . $on_update_rule . ";";
-        //        return $this->respondWithData($query);
+        $alter_query .= " FOREIGN KEY ";
+        $alter_query .= "(";
+        $alter_query .= implode(', ', $columns_query);
+        $alter_query .= ")";
+        $alter_query .= " REFERENCES";
+        $alter_query .= " ".QueryHelper::escapeMysqlId($post_params['reference_table']) . " ";
+        $alter_query .= "(";
+        $alter_query .= implode(', ', $reference_columns_query);
+        $alter_query .= ") ";
+        $alter_query .= "ON DELETE " . $on_delete_rule . " ";
+        $alter_query .= "ON UPDATE " . $on_update_rule . ";";
+//                return $this->respondWithData($alter_query);
         $result_data          = [];
-        $result_data['query'] = $query;
+        $result_data['query'] = $drop_query . $alter_query;
 
         try {
-            $pdo->query($query);
+            $pdo->query($drop_query);
+            $pdo->query($alter_query);
             $result_data['result'] = 'success';
         } catch (\PDOException $e) {
             $payload = [
