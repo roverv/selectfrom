@@ -22,10 +22,10 @@
 
       <form method="post" autocomplete="off">
 
-        <div class="mb-8">
-          <div class="flex w-full mb-1">
+        <div class="vertical-form">
+          <div class="input-row">
 
-            <div class="bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2">
+            <div class="label-box">
               <div>Foreign key name</div>
             </div>
 
@@ -33,9 +33,9 @@
                    placeholder="Leave empty for auto generate" v-focus>
           </div>
 
-          <div class="flex w-full mb-1">
+          <div class="input-row">
 
-            <div class="bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2">
+            <div class="label-box">
               <div>On delete</div>
             </div>
 
@@ -46,16 +46,17 @@
                   {{ foreign_key_rule }}
                 </option>
               </select>
-
               <p class="text-gray-500" v-if="page_is_create && on_delete == 'SET NULL'">
-              If you specify a SET NULL action, make sure that you have not declared the columns in the child table as NOT NULL.
+                If you specify a SET NULL action, make sure that you have not declared the columns in the child table as
+                NOT NULL.
               </p>
             </div>
+
           </div>
 
-          <div class="flex w-full mb-1">
+          <div class="input-row">
 
-            <div class="bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2">
+            <div class="label-box">
               <div>On update</div>
             </div>
 
@@ -66,32 +67,32 @@
                   {{ foreign_key_rule }}
                 </option>
               </select>
-
               <p class="text-gray-500" v-if="page_is_create && on_update == 'SET NULL'">
-              If you specify a SET NULL action, make sure that you have not declared the columns in the child table as NOT NULL.
+                If you specify a SET NULL action, make sure that you have not declared the columns in the child table as
+                NOT NULL.
               </p>
             </div>
-
 
           </div>
 
         </div>
 
+
         <h2 class="mb-3 text-lg">Columns</h2>
 
-
-        <div class="flex w-full mb-4">
-
-          <div class="bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2">
-            <div>Reference table</div>
+        <div class="vertical-form mb-4">
+          <div class="input-row">
+            <div class="label-box">
+              <div>Reference table</div>
+            </div>
+            <select class="default-select w-64" v-model="reference_table" v-on:keyup.esc="focusToApp">
+              <option value=""></option>
+              <option v-for="referencable_table in referencable_tables">
+                {{ referencable_table.name }}
+              </option>
+            </select>
           </div>
 
-          <select class="default-select w-64" v-model="reference_table" v-on:keyup.esc="focusToApp">
-            <option value=""></option>
-            <option v-for="referencable_table in referencable_tables">
-              {{ referencable_table.name }}
-            </option>
-          </select>
         </div>
 
 
@@ -99,7 +100,6 @@
           <span class="head">Column</span>
           <span class="head">Reference column</span>
           <span class=""></span>
-
 
           <template v-for="(column, index) in columns">
             <div class="columns-table-cell">
@@ -340,21 +340,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .columns-table {
-  display:               grid;
   grid-template-columns: repeat(3, auto);
 }
-
-.columns-table .head {
-  @apply bg-dark-400 py-3 px-2 mb-3 font-bold;
-}
-
-.columns-table-cell {
-  @apply flex items-center mb-2 border-b border-light-100 pb-2 px-2;
-}
-
 
 .edit-table-container {
   min-width: 800px;

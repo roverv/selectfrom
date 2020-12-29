@@ -37,46 +37,38 @@
 
         <form method="post" @submit.prevent="saveSettings()" autocomplete="off" refs="settings-form">
 
-          <div class="w-full">
+          <div class="vertical-form">
 
-            <div class="flex w-full mb-1">
-
+            <div class="input-row">
               <div
-                  class="bg-dark-400 flex justify-between items-center w-3/5 pl-3 flex-shrink-0 relative flex-wrap mr-2 leading-tight py-1">
+                  class="label-box w-3/5 leading-tight py-1">
                 <div>Default table column order</div>
               </div>
-
               <select name="default_table_column_order" v-model="default_table_column_order"
                       class="default-select flex-grow" v-on:keyup.esc="focusToApp">
                 <option value="">Default</option>
                 <option value="primary_asc">Primary key: ascending (lowest id / first row)</option>
                 <option value="primary_desc">Primary key: descending (highest id / last row)</option>
               </select>
-
             </div>
 
-            <div class="flex w-full mb-1">
-
-              <div
-                  class="bg-dark-400 flex justify-between items-center w-3/5 pl-3 flex-shrink-0 relative flex-wrap mr-2 leading-tight py-1">
+            <div class="input-row">
+              <div class="label-box w-3/5 leading-tight py-1">
                 Default rows per page
                 <span class="text-gray-600 text-xs block">Between 10 and 300</span>
               </div>
-
               <input type="number" step="1" min="10" max="300" class="default-number-input w-32"
                      v-on:keyup.esc="focusToApp" v-model="default_rows_per_page">
             </div>
 
-            <div class="flex w-full mb-1">
-
+            <div class="input-row">
               <div
-                  class="bg-dark-400 flex justify-between items-center w-3/5 pl-3 flex-shrink-0 relative flex-wrap mr-2 leading-tight py-1">
+                  class="label-box w-3/5 leading-tight py-1">
                 <div>
                   <span>Cell text display limit</span>
                   <span class="text-gray-600 text-xs block">Set to 0 for no limit</span>
                 </div>
               </div>
-
               <input type="number" step="1" min="0" max="500" class="default-number-input w-32"
                      v-on:keyup.esc="focusToApp" v-model="cell_text_display_limit">
             </div>

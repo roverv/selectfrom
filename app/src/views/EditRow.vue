@@ -20,10 +20,10 @@
 
       <form method="post" @submit.prevent="saveRow()" autocomplete="off" ref="edit_row_form">
 
-        <div class="w-full" v-if="columns.length > 0">
-          <div class="flex w-full mb-1" v-for="(column, key) in columns">
+        <div class="vertical-form" v-if="columns.length > 0">
+          <div class="input-row" v-for="(column, key) in columns">
 
-            <div class="bg-dark-400 flex justify-between items-center w-2/5 pl-3 flex-shrink-0 relative flex-wrap mr-2">
+            <div class="label-box w-2/5">
               <div>{{ column.Field }}</div>
               <span class=" text-xs text-light-200 mr-3">
                 {{ column.Type }}<span v-if="column.Extra != ''">, {{ column.Extra }}</span>

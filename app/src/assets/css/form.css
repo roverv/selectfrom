@@ -1,34 +1,40 @@
 .custom-checkbox {
   @apply cursor-pointer flex items-center;
 }
+
 .custom-checkbox .input-box {
   @apply bg-light-100 border border-light-200 w-4 h-4 inline-block relative mr-2;
 }
+
 .custom-checkbox.no-label .input-box {
   @apply mr-0;
 }
+
 .custom-checkbox input[type="checkbox"] {
   @apply opacity-0; /** if we make it hidden, tabindex wont work in this element **/
   @apply absolute;
 }
+
 .custom-checkbox input[type="checkbox"]:focus + .input-box {
   @apply bg-highlight-300 border-highlight-400;;
 }
+
 .custom-checkbox .input-box:after {
   @apply border-white absolute bg-transparent;
-  content: '';
-  width: 11px;
-  height: 7px;
-  top: 2px;
-  left: 2px;
-  border: 3px solid;
-  border-top: none;
-  border-right: none;
+  content:           '';
+  width:             11px;
+  height:            7px;
+  top:               2px;
+  left:              2px;
+  border:            3px solid;
+  border-top:        none;
+  border-right:      none;
   /* default off */
-  opacity: 0;
+  opacity:           0;
   -webkit-transform: rotate(-45deg);
-  transform: rotate(-45deg);
+  transform:         rotate(-45deg);
 }
+
 .custom-checkbox input[type="checkbox"]:checked + .input-box:after {
   /* show check if checkbox is checked */
   opacity: 1;
@@ -38,6 +44,7 @@
 input[type="text"].default-text-input {
   @apply bg-light-100 border border-light-200 py-1 px-3;
 }
+
 input[type="text"].default-text-input:focus {
   @apply bg-highlight-300 border-highlight-400;
 }
@@ -46,6 +53,7 @@ input[type="text"].default-text-input:focus {
 input[type="number"].default-number-input {
   @apply bg-light-100 border border-light-200 py-1 px-3;
 }
+
 input[type="number"].default-number-input:focus {
   @apply bg-highlight-300 border-highlight-400;
 }
@@ -61,3 +69,36 @@ select.default-select:focus {
 select.default-select option, select.default-select optgroup {
   @apply bg-dark-400 text-white border-none;
 }
+
+
+/*********************
+ * Vertical form
+ *********************/
+
+.vertical-form {
+  @apply mb-8;
+}
+
+.input-row {
+  @apply flex w-full mb-1;
+}
+
+.label-box {
+  @apply bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2;
+}
+
+
+/*********************
+ * Columns table
+ *********************/
+.columns-table {
+  display:               grid;
+}
+.columns-table .head {
+  @apply bg-dark-400 py-3 px-2 mb-3 font-bold;
+}
+
+.columns-table-cell {
+  @apply flex items-center mb-2 border-b border-light-100 pb-2 px-2;
+}
+

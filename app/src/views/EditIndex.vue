@@ -22,22 +22,20 @@
 
       <form method="post" autocomplete="off">
 
-        <div class="mb-8">
-          <div class="flex w-full mb-1">
+        <div class="vertical-form">
 
-            <div class="bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2">
+          <div class="input-row">
+            <div class="label-box">
               <div>Index name</div>
             </div>
-
-            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="name" placeholder="Leave empty for auto generate" v-focus>
+            <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="name"
+                   placeholder="Leave empty for auto generate" v-focus>
           </div>
 
-          <div class="flex w-full mb-1">
-
-            <div class="bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2">
+          <div class="input-row">
+            <div class="label-box">
               <div>Type</div>
             </div>
-
             <select class="default-select w-64" v-model="type" v-on:keyup.esc="focusToApp">
               <option value=""></option>
               <option v-for="index_type in index_types">
@@ -48,18 +46,17 @@
 
         </div>
 
-        <h2 class="mb-3 text-lg">Columns</h2>
 
+        <h2 class="mb-3 text-lg">Columns</h2>
 
         <div class="columns-table mb-8 w-auto" :class="{ 'edit' : page_is_edit }">
           <span class="head">Name</span>
           <span class="head">Length</span>
           <span class=""></span>
 
-
           <template v-for="(index_column, index) in columns">
-            <div class="columns-table-cell">
 
+            <div class="columns-table-cell">
               <select class="default-select w-64" v-model="index_column.name" v-on:keyup.esc="focusToApp">
                 <option value=""></option>
                 <option v-for="table_column in table_columns" :value="table_column.name">
@@ -175,8 +172,8 @@ export default {
         this.index_types   = reponse_data.index_types;
         this.table_columns = reponse_data.columns;
         if (this.page_is_edit) {
-          this.name = reponse_data.index.name;
-          this.type = reponse_data.index.type;
+          this.name    = reponse_data.index.name;
+          this.type    = reponse_data.index.type;
           this.columns = reponse_data.index.columns;
         }
         this.is_fetching_data = false;
@@ -266,21 +263,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .columns-table {
-  display:               grid;
   grid-template-columns: repeat(3, auto);
 }
-
-.columns-table .head {
-  @apply bg-dark-400 py-3 px-2 mb-3 font-bold;
-}
-
-.columns-table-cell {
-  @apply flex items-center mb-2 border-b border-light-100 pb-2 px-2;
-}
-
 
 .edit-table-container {
   min-width: 800px;

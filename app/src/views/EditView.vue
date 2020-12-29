@@ -22,14 +22,12 @@
         <spinner v-if="is_fetching_data"></spinner>
 
         <form method="post" autocomplete="off">
+          <div class="vertical-form">
 
-          <div class="mb-8">
-            <div class="flex w-full mb-4">
-
-              <div class="bg-dark-400 flex justify-between items-center w-64 pl-3 flex-shrink-0 relative flex-wrap mr-2">
+            <div class="input-row mb-4">
+              <div class="label-box">
                 <div>View name</div>
               </div>
-
               <input type="text" class="default-text-input w-64" v-on:keyup.esc="focusToApp" v-model="view_name">
             </div>
 
@@ -38,8 +36,6 @@
             <textarea ref="view_definition" id="view_definition"></textarea>
 
           </div>
-
-
         </form>
 
         <div class="flex justify-center">
@@ -155,7 +151,7 @@ export default {
     getViewCreationData() {
       this.is_fetching_data = true;
 
-      let api_url_params = {'db': this.active_database};
+      let api_url_params       = {'db': this.active_database};
       api_url_params.tablename = this.tableid;
 
       let api_url = this.buildApiUrl(this.endpoint_view_creation_data, api_url_params);
@@ -163,7 +159,7 @@ export default {
       this.$http.get(api_url).then(response => {
         let reponse_data = response.data.data;
         if (this.page_is_edit) {
-          this.view_name = reponse_data.view_name;
+          this.view_name       = reponse_data.view_name;
           this.view_definition = reponse_data.view_definition;
           window.editor.setValue(sqlFormatter.format(reponse_data.view_definition));
         }
