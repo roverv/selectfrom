@@ -60,6 +60,19 @@
                            :rows="tabledata.length" :columns="columns.length" :query="query"></table-data-meta>
         </div>
 
+        <div v-if="$route.name == 'tablewithcolumnvalue'" class="mb-4">
+          <div class="inline-flex items-center bg-highlight-200 border border-highlight-400 pl-3 pr-2 py-1">
+            <div>Active filter: {{ active_filter }}</div>
+            <router-link :to="{ name: 'table', params: {database: active_database, tableid: $route.params.tableid }}">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 ml-2 fill-current">
+                <circle cx="12" cy="12" r="10" class="text-gray-400 hover:text-highlight-700;"></circle>
+                <path class="text-gray-800"
+                      d="M13.41 12l2.83 2.83a1 1 0 0 1-1.41 1.41L12 13.41l-2.83 2.83a1 1 0 1 1-1.41-1.41L10.59 12 7.76 9.17a1 1 0 0 1 1.41-1.41L12 10.59l2.83-2.83a1 1 0 0 1 1.41 1.41L13.41 12z"></path>
+              </svg>
+            </router-link>
+          </div>
+        </div>
+
         <flash-message></flash-message>
 
         <result-message :message="query_result"></result-message>
@@ -448,10 +461,23 @@ export default {
     tables() {
       return this.$store.getters["tables/tables"];
     },
+
+    table_primary_key() {
+      return this.$store.getters["tables/primaryKeyOfTable"](this.tableid);
+    },
     is_view() {
       let current_table_data = this.tables.find(table_data => table_data.name == this.tableid);
       if (current_table_data.type == 'VIEW') return true;
       return false;
+    },
+    active_filter() {
+      let active_filter = '';
+      active_filter +=(this.column == 'primarykey') ? this.table_primary_key : this.column;
+      active_filter += ' ';
+      active_filter += (this.comparetype == 'like') ? 'LIKE' : this.comparetype;
+      active_filter += ' ';
+      active_filter += (isNaN(this.value) === false) ? this.value : "'" + this.value + "'";
+      return active_filter;
     }
   },
 
