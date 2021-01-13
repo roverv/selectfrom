@@ -128,6 +128,10 @@
               {{ selected_rows.length }} tables
             </div>
 
+            <a v-if="selected_rows.length == 1" class="rows-action" @click="toEditTable()">
+              <span>Edit</span>
+            </a>
+
             <a class="rows-action" @click="confirmTruncateTables()">
               <span>Truncate</span>
             </a>
@@ -443,6 +447,17 @@ export default {
     toggleMetaBox() {
       this.meta_box_open = !this.meta_box_open;
     },
+
+    toEditTable() {
+      let selected_table = this.ordered_tables[this.selected_rows[0]];
+
+      if(selected_table.type == 'VIEW') {
+        this.$router.push({name: 'editview', params: {database: this.active_database, tableid: selected_table.name}});
+      }
+      else {
+        this.$router.push({name: 'edittable', params: {database: this.active_database, tableid: selected_table.name}});
+      }
+    }
 
 
   },
