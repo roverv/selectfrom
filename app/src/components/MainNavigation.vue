@@ -56,9 +56,9 @@
 <!--        <router-link :to="{ name: 'query' }" class="btn-link">-->
 <!--          Import-->
 <!--        </router-link>-->
-<!--        <router-link :to="{ name: 'query' }" class="btn-link">-->
-<!--          Export-->
-<!--        </router-link>-->
+        <router-link :to="{ name: 'exportdatabase', params: {database: active_database } }" class="btn-link">
+          Export
+        </router-link>
       </div>
 
       <hr class="border-light-200 my-3">

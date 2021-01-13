@@ -187,6 +187,12 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "query" */ './views/Query.vue'),
       props: true,
     },
+    {
+      path: '/:database/exportdatabase',
+      name: 'exportdatabase',
+      component: () => import(/* webpackChunkName: "exportdatabase" */ './views/ExportDatabase.vue'),
+      props: true,
+    },
   ]
 });
 

@@ -41,11 +41,11 @@
 }
 
 
-input[type="text"].default-text-input {
+.default-text-input {
   @apply bg-light-100 border border-light-200 py-1 px-3;
 }
 
-input[type="text"].default-text-input:focus {
+.default-text-input:focus {
   @apply bg-highlight-300 border-highlight-400;
 }
 
