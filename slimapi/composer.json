@@ -24,6 +24,7 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*",
+        "ifsnop/mysqldump-php": "^2.9",
         "monolog/monolog": "^2.1",
         "php-di/php-di": "^6.2",
         "slim/csrf": "^1.0",
