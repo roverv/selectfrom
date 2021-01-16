@@ -14,7 +14,7 @@
 
         <div class="input-row">
           <div class="label-box">
-            <div>Filetype</div>
+            <div>Format</div>
           </div>
           <select class="default-select w-64" disabled>
             <option value="both">For now only SQL is supported</option>

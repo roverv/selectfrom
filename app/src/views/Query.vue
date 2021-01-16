@@ -84,7 +84,13 @@
                 </thead>
                 <tbody>
                 <tr v-for="(row, row_index) in query_result.rows" :key="row_index" @click.ctrl="toggleRowSidebar(query_result_index, row_index)">
-                  <TableDataRow v-bind:row="row" :truncate-amount="0"></TableDataRow>
+                  <td class="table-data-row" v-for="(cell, index) in row" :key="index"
+                      :class="{ ' sticky-first-row-cell' : (index == 0)}" @click.exact="$event.target.focus()" tabindex="1">
+                    <span v-if="cell === null" class="null-value"><i>NULL</i></span>
+                    <router-link v-else-if="query_results_primary_key_columns[query_result_index][index] !== false" class="link"
+                                 :to="{ name: 'tablewithcolumnvalue', params: {database: active_database, tableid: query_results_primary_key_columns[query_result_index][index], column: 'primarykey', comparetype: 'is', value: cell}}">{{ cell }}</router-link>
+                    <span v-else>{{ cell }}</span>
+                  </td>
                 </tr>
                 </tbody>
               </table>
@@ -232,6 +238,20 @@
           return accumulator;
         }, 0);
       },
+
+      query_results_primary_key_columns() {
+        // loop through all the query results
+        return this.query_results.map(function (query_result, result_index) {
+          // loop through all the columns and return the table name if the column is a primary key
+          return query_result.columns_meta.map(function (column_data, column_index) {
+            if(column_data.flags.find(flag => flag === 'primary_key')) {
+              return column_data.table;
+            }
+            return false;
+          });
+        });
+      },
+
     },
 
     methods: {

@@ -67,6 +67,11 @@
   padding-bottom: 1px;
 }
 
+.table-data .table-data-row a.link{
+  @apply underline;
+  text-decoration-color: var(--color-light-300);
+}
+
 .null-value {
   @apply tracking-wide text-sm text-gray-400;
 }
