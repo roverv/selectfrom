@@ -222,7 +222,17 @@
                     </svg>
                   </label>
                 </td>
-                <TableDataRow v-bind:row="row" v-bind:truncate-amount="cell_text_display_limit"></TableDataRow>
+                <td class="table-data-row" v-for="(column_name, index) in columns"
+                    @click.ctrl="toggleRowSidebar(row_index)"
+                    @click="$event.target.focus()" tabindex="1"
+                    :class="{ ' sticky-first-row-cell' : (index == 0)}">
+                  <span v-if="row[column_name.Field] == null" class="null-value"><i>NULL</i></span>
+                  <router-link v-else-if="columns_with_foreign_key[index] !== false" class="link"
+                               :to="{ name: 'tablewithcolumnvalue', params: {database: active_database, tableid: columns_with_foreign_key[index].reference_table, column: columns_with_foreign_key[index].reference_column_name, comparetype: 'is', value: row[column_name.Field]}}">{{ row[column_name.Field] }}</router-link>
+                  <span v-else-if="shouldTruncateField(column_name.Type)"
+                        :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
+                  <span v-else>{{ row[column_name.Field] }}</span>
+                </td>
               </tr>
               </tbody>
 
@@ -312,7 +322,6 @@ import FlashMessage from "@/components/FlashMessage";
 import Spinner from "@/components/Spinner";
 import ConfirmModal from "@/components/ConfirmModal";
 import ConfirmModalMixin from "@/mixins/ConfirmModal";
-import TableDataRow from "@/components/TableDataRow";
 import ApiMixin from "@/mixins/Api";
 import ResultMessage from "@/components/ResultMessage";
 import TableDataHelpModal from "@/components/TableDataHelpModal";
@@ -325,6 +334,7 @@ export default {
       page_view: 'multi',
       tabledata: [],
       columns: [],
+      foreign_keys: [],
       total_amount_rows: 0,
       offset_rows: 0,
       api_error: '',
@@ -359,7 +369,6 @@ export default {
     TableNav,
     TableDataMeta,
     ConfirmModal,
-    TableDataRow,
   },
 
   mixins: [
@@ -478,7 +487,17 @@ export default {
       active_filter += ' ';
       active_filter += (isNaN(this.value) === false) ? this.value : "'" + this.value + "'";
       return active_filter;
-    }
+    },
+
+    columns_with_foreign_key() {
+      let vue_instance = this;
+        // loop through all the columns and return the table name if the column is a primary key
+        return this.columns.map(function (column_data, column_index) {
+          let foreign_key = vue_instance.foreign_keys.find(foreign_key => foreign_key.column_name === column_data.Field);
+          if(foreign_key) return foreign_key;
+          return false;
+        });
+    },
   },
 
   watch: {
@@ -493,6 +512,15 @@ export default {
       return string.toLowerCase();
     },
 
+    truncate: function (value, limit) {
+      if (!value) return value;
+      if (value.length > limit) {
+        value = value.replace(/(\r\n|\n|\r)/gm, ""); // remove line breaks
+        value = value.substring(0, limit) + '...';
+      }
+
+      return value
+    }
   },
 
   methods: {
@@ -548,6 +576,7 @@ export default {
         });
         this.tabledata         = data;
         this.columns           = Object.freeze(response_data.columns);
+        this.foreign_keys      = Object.freeze(response_data.foreign_keys);
         this.total_amount_rows = response_data.amount_rows;
         this.query = response_data.query;
         if (this.tabledata.length == 1) {
@@ -576,6 +605,13 @@ export default {
         this.initial_loading = false;
         this.handleApiError(error);
       })
+    },
+
+    shouldTruncateField(column_type) {
+      if (column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
+        return true;
+      }
+      return false;
     },
 
     gotocolumn(field_id) {

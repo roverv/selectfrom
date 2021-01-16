@@ -24,10 +24,37 @@ class ListRowAction extends Action
 
         // no need to get columns if we are retrieving more rows, they are already retrieved on the first call
         if (empty($query_params['offset'])) {
+
+            $foreign_keys_query = <<<SQL
+SELECT
+  kcu.CONSTRAINT_NAME AS foreign_key_name,
+  kcu.COLUMN_NAME AS column_name,
+  kcu.REFERENCED_TABLE_NAME AS reference_table,
+  kcu.REFERENCED_COLUMN_NAME AS reference_column_name
+FROM
+  information_schema.TABLE_CONSTRAINTS tc
+  JOIN information_schema.KEY_COLUMN_USAGE kcu
+WHERE
+  tc.CONSTRAINT_TYPE = 'FOREIGN KEY'
+  AND tc.TABLE_SCHEMA = DATABASE()
+  AND tc.TABLE_NAME = :tablename
+  AND tc.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME
+  AND kcu.TABLE_SCHEMA = DATABASE()
+  AND kcu.TABLE_NAME = :tablename
+SQL;
+
+            $binded_values = [
+              'tablename' => $query_params['tablename'],
+            ];
+
             try {
                 $query = "SHOW FULL COLUMNS FROM ".QueryHelper::escapeMysqlId($query_params['tablename']);
                 $rows                  = $pdo->query($query)->fetchAll();
                 $table_data['columns'] = $rows;
+
+                $pdo_statement = $pdo->prepare($foreign_keys_query);
+                $pdo_statement->execute($binded_values);
+                $table_data['foreign_keys'] = $pdo_statement->fetchAll();
             } catch (\PDOException $e) {
                 $payload = [
                   'result'  => 'error',
