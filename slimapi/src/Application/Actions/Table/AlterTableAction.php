@@ -162,6 +162,10 @@ class AlterTableAction extends Action
             $query = substr($query, 0, -2);
         }
 
+        if (substr($query, -1) == ' ') {
+            $query = substr($query, 0, -1);
+        }
+
         $query .= ";";
 
         $result_data          = [];

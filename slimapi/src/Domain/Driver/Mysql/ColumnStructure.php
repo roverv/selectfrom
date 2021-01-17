@@ -120,17 +120,17 @@ class ColumnStructure implements \JsonSerializable
         }
 
         if ($this->null === true) {
-            $structure_query .= "NULL ";
+            $structure_query .= "NULL";
         } else {
-            $structure_query .= "NOT NULL ";
+            $structure_query .= "NOT NULL";
         }
 
         if ($this->has_default_value === true) {
-            $structure_query .= "DEFAULT  ".$pdo->quote($this->default_value)." ";
+            $structure_query .= " DEFAULT ".$pdo->quote($this->default_value);
         }
 
         if (!empty($this->comment)) {
-            $structure_query .= "COMMENT  ".$pdo->quote($this->comment)." ";
+            $structure_query .= " COMMENT ".$pdo->quote($this->comment);
         }
 
         if ($this->is_auto_increment) {
@@ -144,7 +144,7 @@ class ColumnStructure implements \JsonSerializable
             );
 
             if (count($column_index_key) > 0) {
-                $structure_query .= "AUTO_INCREMENT ";
+                $structure_query .= " AUTO_INCREMENT";
             } else {
                 // find primary key from indexes
                 $primary_key_index = array_filter(
@@ -157,18 +157,18 @@ class ColumnStructure implements \JsonSerializable
                 // this table has a primary key
                 if (count($primary_key_index) > 0) {
                     // add unique key
-                    $structure_query .= "AUTO_INCREMENT UNIQUE ";
+                    $structure_query .= " AUTO_INCREMENT UNIQUE";
                 } else {
-                    $structure_query .= "AUTO_INCREMENT PRIMARY KEY ";
+                    $structure_query .= " AUTO_INCREMENT PRIMARY KEY";
                 }
             }
         }
 
         if (!empty($this->after_column)) {
             if (strtolower($this->after_column) == 'first') {
-                $structure_query .= 'FIRST ';
+                $structure_query .= ' FIRST';
             } else {
-                $structure_query .= "AFTER ". QueryHelper::escapeMysqlId($this->after_column)." ";
+                $structure_query .= " AFTER ". QueryHelper::escapeMysqlId($this->after_column);
             }
         }
 
