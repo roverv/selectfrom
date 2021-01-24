@@ -76,6 +76,7 @@
         <flash-message></flash-message>
 
         <result-message :message="query_result"></result-message>
+        <result-message :message="inventory_message"></result-message>
       </div>
 
 
@@ -259,6 +260,10 @@
                   <span>Delete</span>
                 </a>
 
+                <a class="rows-action" @click="addToInventory()">
+                  <span>Add to inventory</span>
+                </a>
+
 <!--                <a class="rows-action" href="">-->
 <!--                  <span>Export</span>-->
 <!--                </a>-->
@@ -356,6 +361,7 @@ export default {
       row_pointer: 0,
       column_for_list: 0,
       query_result: {},
+      inventory_message: {},
       help_modal_open: false,
     }
   },
@@ -984,6 +990,31 @@ export default {
 
     closeHelp() {
       this.help_modal_open = false;
+    },
+
+    addToInventory() {
+      let vue_instance   = this;
+
+      let inventory_item = {
+        'table': this.tableid,
+        'rows': [],
+        'columns': vue_instance.columns.map(function (column) {
+          return column.Field;
+        }),
+      }
+
+      this.selected_rows.forEach(function (row, row_index) {
+        inventory_item.rows.push(Object.values(vue_instance.tabledata[row_index]));
+      })
+
+      this.$store.commit("inventory/ADD_ROW", inventory_item);
+
+      this.inventory_message = {
+        type: 'success',
+        message: this.selected_rows.length + ((this.selected_rows.length == 1) ? ' row' : ' rows') + ' added to the inventory'
+      };
+
+      this.selected_rows = [];
     }
 
   },

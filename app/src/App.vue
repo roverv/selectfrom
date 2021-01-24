@@ -6,6 +6,7 @@
        v-on:keydown.self.stop.exact.prevent.level-up="moveLevelUp"
        v-on:keydown.self.stop.exact.prevent.refresh-page="refreshPage"
        v-on:keydown.self.exact.prevent.open-context-menu="openContextMenu"
+       v-on:keydown.self.exact.prevent.open-inventory="openInventory"
        tabindex="0">
 
     <SearchModal v-if="active_database && searchmodalopen" :modalisopen="searchmodalopen"
@@ -25,6 +26,8 @@
 
     <ContextMenu :modalisopen="contextmenuopen" v-on:closecontextmenu="closeContext()" :contextoptions="contextoptions"
                  v-on:runContextAction="runContextAction" v-if="contextmenuopen"></ContextMenu>
+
+    <InventoryModal :modalisopen="inventoryopen" v-on:closeinventory="closeInventory()" v-if="inventoryopen"></InventoryModal>
 
     <div class="app-header">
       <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
@@ -61,6 +64,7 @@
   import ApiError from "./components/ApiError";
   import Welcome from "@/components/Welcome";
   import ContextMenu from "@/components/ContextMenu";
+  import InventoryModal from "@/components/InventoryModal";
 
   export default {
 
@@ -72,6 +76,7 @@
         queryhistoryopen: false,
         welcomeopen: false,
         contextmenuopen: false,
+        inventoryopen: false,
         contextoptions: [],
         tables: [],
       }
@@ -103,6 +108,7 @@
         this.databasemodalopen = false;
         this.queryhistoryopen  = false;
         this.contextmenuopen   = false;
+        this.inventoryopen     = false;
         this.contextoptions    = [];
         this.$nextTick();
         document.getElementById('app').focus();
@@ -110,6 +116,7 @@
     },
 
     components: {
+      InventoryModal,
       Welcome,
       ApiError,
       MainNavigation,
@@ -133,36 +140,46 @@
       do_not_show_welcome_message() {
         return this.$store.getters["settings/getSetting"]('do_not_show_welcome_message');
       },
+
+      a_modal_is_open() {
+        return (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen || this.inventoryopen);
+      }
     },
 
     methods: {
 
       openSearchModal() {
         if(!this.active_database) return;
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
+        if (this.a_modal_is_open) return;
         this.searchmodalopen = true;
       },
 
       openDatabasesModal() {
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
+        if (this.a_modal_is_open) return;
         this.databasemodalopen = true;
       },
 
       openRecentTables() {
         if(!this.active_database) return;
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
+        if (this.a_modal_is_open) return;
         this.recenttablesopen = true;
       },
 
       openQueryHistory() {
         if(!this.active_database) return;
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
+        if (this.a_modal_is_open) return;
         this.queryhistoryopen = true;
       },
 
       openContextMenu() {
-        if (this.searchmodalopen || this.recenttablesopen || this.databasemodalopen || this.queryhistoryopen || this.contextmenuopen) return;
+        if (this.a_modal_is_open) return;
         this.contextmenuopen = true;
+      },
+
+      openInventory() {
+        if(!this.active_database) return;
+        if (this.a_modal_is_open) return;
+        this.inventoryopen = true;
       },
 
       setContextOptions(contextoptions) {
@@ -201,6 +218,12 @@
 
       closeContext() {
         this.contextmenuopen = false;
+        // when the modal is closed, we need to set the focus back on the app
+        document.getElementById('app').focus();
+      },
+
+      closeInventory() {
+        this.inventoryopen = false;
         // when the modal is closed, we need to set the focus back on the app
         document.getElementById('app').focus();
       },

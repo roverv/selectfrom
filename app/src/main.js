@@ -30,6 +30,7 @@ Vue.config.keyCodes = {
   "to-query": 81, // q
   "level-up": 85, // u
   "open-context-menu": 67, // c
+  "open-inventory": 73, // i
 }
 
 // Register a global custom directive called `v-focus`

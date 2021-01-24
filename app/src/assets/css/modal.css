@@ -1,5 +1,5 @@
 .modal-container {
-  @apply fixed top-0 right-0 bottom-0 left-0 z-50 overflow-auto flex invisible opacity-0;
+  @apply fixed top-0 right-0 bottom-0 left-0 z-50 overflow-auto flex justify-center invisible opacity-0;
   transition: opacity .2s ease-in;
   background: radial-gradient(circle, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0.7) 80%);
 }

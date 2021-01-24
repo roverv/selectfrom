@@ -11,6 +11,7 @@ import FlashMessage from '@/store/flashmessage';
 import ApiError from '@/store/apierror';
 import QueryEdit from '@/store/queryedit';
 import Settings from "@/store/settings";
+import inventory from "@/store/inventory";
 
 Vue.use(Vuex)
 
@@ -20,7 +21,7 @@ export default new Vuex.Store({
     // persist these modules in session storage, meaning it will only persist for the open tab and remove when the tab closes
     // a different tab will be store separately
     createPersistedState({
-      paths: ['activeDatabase', 'reloadMainComponentKey', 'databases', 'nodes_skip_on_key', 'tables', 'queryhistory', 'recenttables', 'searches'],
+      paths: ['activeDatabase', 'reloadMainComponentKey', 'databases', 'nodes_skip_on_key', 'tables', 'queryhistory', 'recenttables', 'searches', 'inventory'],
       storage: window.sessionStorage
     }),
     // save in local storage, for longer storage across multiple tabs
@@ -40,6 +41,7 @@ export default new Vuex.Store({
     apierror: ApiError,
     queryedit: QueryEdit,
     settings: Settings,
+    inventory: inventory,
   },
 
   state: {
