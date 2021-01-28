@@ -16,6 +16,11 @@ class QueryAction extends Action
      */
     protected function action(): Response
     {
+
+        // @todo: memory limit and timelimit set
+//        ini_set('memory_limit', '5120M');
+//        set_time_limit (0);
+
         $pdo = $this->request->getAttribute('pdo_instance');
 
         // Get all POST parameters
