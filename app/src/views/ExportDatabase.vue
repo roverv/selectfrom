@@ -212,21 +212,13 @@
 
       </div>
 
-      <confirm-modal v-if="confirm_modal_open" v-on:close="closeConfirmModal()"
-                     v-on:confirm="confirmConfirmModal()">
-        {{ confirm_modal_message }}
-      </confirm-modal>
-
     </div>
   </div>
 </template>
 
 <script>
 
-import {has_deep_property, number_format} from '@/util'
 import Spinner from "@/components/Spinner";
-import ConfirmModal from "@/components/ConfirmModal";
-import ConfirmModalMixin from "@/mixins/ConfirmModal";
 import FlashMessage from "@/components/FlashMessage";
 import ApiMixin from "@/mixins/Api";
 import ResultMessage from "@/components/ResultMessage";
@@ -260,12 +252,10 @@ export default {
   components: {
     ResultMessage,
     Spinner,
-    ConfirmModal,
     FlashMessage,
   },
 
   mixins: [
-    ConfirmModalMixin,
     ApiMixin
   ],
 
