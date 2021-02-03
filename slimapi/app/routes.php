@@ -8,6 +8,7 @@ use App\Application\Actions\Database\CreateDatabaseAction;
 use App\Application\Actions\Database\CreationDataDatabaseAction;
 use App\Application\Actions\Database\DropDatabaseAction;
 use App\Application\Actions\Database\ExportDatabaseAction;
+use App\Application\Actions\Database\ImportDatabaseAction;
 use App\Application\Actions\Database\ListDatabaseAction;
 use App\Application\Actions\Auth\ConnectAction;
 
@@ -67,6 +68,7 @@ return function (App $app) {
           $group->post('/alter', AlterDatabaseAction::class);
           $group->post('/drop', DropDatabaseAction::class);
           $group->post('/export', ExportDatabaseAction::class);
+          $group->post('/import', ImportDatabaseAction::class);
       }
     )->add(CsrfMiddleware::class)->add(AuthMiddleware::class);
 

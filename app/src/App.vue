@@ -242,6 +242,8 @@
 
           case 'query':
           case 'queryhistory':
+          case 'exportdatabase':
+          case 'importdatabase':
             this.$router.push({name: 'database'});
             break;
 

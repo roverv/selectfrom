@@ -193,6 +193,12 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "exportdatabase" */ './views/ExportDatabase.vue'),
       props: true,
     },
+    {
+      path: '/:database/importdatabase',
+      name: 'importdatabase',
+      component: () => import(/* webpackChunkName: "importdatabase" */ './views/ImportDatabase.vue'),
+      props: true,
+    },
   ]
 });
 

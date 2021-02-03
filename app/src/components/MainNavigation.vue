@@ -53,11 +53,11 @@
 <!--        <router-link :to="{ name: 'query' }" class="btn-link">-->
 <!--          Search-->
 <!--        </router-link>-->
-<!--        <router-link :to="{ name: 'query' }" class="btn-link">-->
-<!--          Import-->
-<!--        </router-link>-->
         <router-link :to="{ name: 'exportdatabase', params: {database: active_database } }" class="btn-link">
           Export
+        </router-link>
+        <router-link :to="{ name: 'importdatabase', params: {database: active_database } }" class="btn-link">
+          Import
         </router-link>
       </div>
 
