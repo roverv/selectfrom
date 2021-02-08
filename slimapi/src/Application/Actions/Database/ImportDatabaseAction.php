@@ -68,7 +68,6 @@ class ImportDatabaseAction extends Action
           'DROP TABLE',
         ];
 
-        $sql_text = QueryHelper::removeComments($sql_text);
         $queries  = QueryHelper::splitSql($sql_text);
 
         //        return $this->respondWithData([$queries]);
@@ -141,7 +140,6 @@ class ImportDatabaseAction extends Action
                     $return_data['refresh_cache'] = true;
                 }
             }
-
 
             // if the result has columns, it means it has data (eg SELECT or EXPLAIN query)
             if ($query_result->columnCount()) {

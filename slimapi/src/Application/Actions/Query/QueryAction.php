@@ -34,7 +34,6 @@ class QueryAction extends Action
           'DROP TABLE',
         ];
 
-        $sql_text = QueryHelper::removeComments($sql_text);
         $queries  = QueryHelper::splitSql($sql_text);
 
         $return_data = [

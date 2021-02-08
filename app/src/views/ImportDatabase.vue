@@ -37,7 +37,7 @@
         </div>
         <div class="flex">
           <div v-for="percentage_bar in ([10,20,30,40,50,60,70,80,90,100])" class="border w-5 h-5 mx-1"
-               :class="[progress_bar.percentage > percentage_bar ? 'bg-highlight-300 border-highlight-400' : 'bg-light-50 border-light-200' ]">
+               :class="[progress_bar.percentage >= percentage_bar ? 'bg-highlight-300 border-highlight-400' : 'bg-light-50 border-light-200' ]">
           </div>
         </div>
       </div>
