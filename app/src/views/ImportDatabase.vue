@@ -211,10 +211,8 @@ export default {
 
         this.query_results = Object.freeze(response_data.query_results);
 
-        if (response_data.refresh_cache === true) {
-          // a query has changed the cached data, refresh the cache
-          this.$store.dispatch('refreshTables');
-        }
+        // always refresh
+        this.$store.dispatch('refreshTables');
         this.is_importing_data   = false;
         this.progress_bar.active = false;
 

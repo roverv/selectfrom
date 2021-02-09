@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Actions\Database;
 
 use App\Application\Actions\Action;
+use App\Application\Helpers\IniHelper;
 use App\Application\Helpers\QueryHelper;
 use PDOException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -17,6 +18,7 @@ class ImportDatabaseAction extends Action
      */
     protected function action(): Response
     {
+        IniHelper::setHeavyScriptValues();
 
         $pdo = $this->request->getAttribute('pdo_instance');
 
@@ -62,12 +64,6 @@ class ImportDatabaseAction extends Action
             return $this->respondWithData($response_json);
         }
 
-        $refresh_data_on_query_types = [
-          'CREATE TABLE',
-          'ALTER TABLE',
-          'DROP TABLE',
-        ];
-
         $queries  = QueryHelper::splitSql($sql_text);
 
         //        return $this->respondWithData([$queries]);
@@ -97,7 +93,6 @@ class ImportDatabaseAction extends Action
 
         $return_data = [
           'query_results' => [],
-          'refresh_cache' => false,
         ];
 
         $start_time = microtime(true);
@@ -133,13 +128,6 @@ class ImportDatabaseAction extends Action
             }
 
             $result_data['result'] = 'success';
-
-            if ($return_data['refresh_cache'] === false) {
-                $query_type = QueryHelper::getQueryType($query);
-                if (in_array($query_type, $refresh_data_on_query_types)) {
-                    $return_data['refresh_cache'] = true;
-                }
-            }
 
             // if the result has columns, it means it has data (eg SELECT or EXPLAIN query)
             if ($query_result->columnCount()) {
