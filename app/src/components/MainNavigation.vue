@@ -10,34 +10,34 @@
       <div class="w-full">
 
         <div class="flex items-center mb-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 fill-current text-gray-400 -ml-1 mr-1"
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 flex-shrink-0 fill-current text-gray-400 -ml-1 mr-1"
                style="transform: rotate(90deg);">
             <path
                 d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
-          <router-link :to="{ name: 'server'}" class="btn-link ">
+          <router-link :to="{ name: 'server'}" class="btn-link break-all">
             Databases
           </router-link>
         </div>
 
         <div class="flex items-center mb-1" v-if="active_database">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 fill-current text-gray-400 -ml-1 mr-1"
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 flex-shrink-0 fill-current text-gray-400 -ml-1 mr-1"
                style="transform: rotate(90deg);">
             <path
                 d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
-          <router-link :to="{ name: 'database', params: {database: active_database }}" class="btn-link">
+          <router-link :to="{ name: 'database', params: {database: active_database }}" class="btn-link break-all">
             {{ active_database }}
           </router-link>
         </div>
 
-        <div class="flex items-center mb-1 " v-if="active_database && $route.params.hasOwnProperty('tableid')">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 fill-current text-gray-400 -ml-1 mr-1"
+        <div class="flex items-center mb-1" v-if="active_database && $route.params.hasOwnProperty('tableid')">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 flex-shrink-0 fill-current text-gray-400 -ml-1 mr-1"
                style="transform: rotate(90deg);">
             <path
                 d="M8.7 13.7a1 1 0 1 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1-1.4 1.4L12 10.42l-3.3 3.3z"></path>
           </svg>
-          <router-link :to="{ name: 'table', params: {database: active_database, tableid: $route.params.tableid }}" class="btn-link">
+          <router-link :to="{ name: 'table', params: {database: active_database, tableid: $route.params.tableid }}" class="btn-link break-all">
             {{ $route.params.tableid }}
           </router-link>
         </div>
