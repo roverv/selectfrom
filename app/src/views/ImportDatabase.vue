@@ -159,8 +159,6 @@ export default {
       let formData = new FormData();
       formData.append('import_file', this.import_file);
 
-      let last_response_length = 0;
-
       vue_instance.is_importing_data = true;
       this.$http.post(api_url, formData, {
             headers: {
@@ -173,27 +171,15 @@ export default {
               vue_instance.progress_bar.percentage = Math.floor(progressEvent.loaded / progressEvent.total * 100);
             },
             onDownloadProgress: progressEvent => {
-              let message = '';
-              if (last_response_length === 0) {
-                message = progressEvent.target.responseText;
-              } else {
-                // strip previous message
-                message = progressEvent.target.responseText.substr(last_response_length);
-              }
-
-              let progress_message = JSON.parse(message);
-              if (!progress_message || progress_message.length !== 1) {
+              let progress_message = vue_instance.getLastResultOfOutputBuffer(progressEvent.target.responseText);
+              if(!progress_message) {
                 return;
               }
-
-              progress_message = progress_message[0];
 
               vue_instance.progress_bar.active     = true;
               vue_instance.progress_bar.type       = 'processing';
               vue_instance.progress_bar.text       = 'Running SQL queries ' + progress_message.queries_executed + '/' + progress_message.total_queries;
               vue_instance.progress_bar.percentage = Math.floor(progress_message.queries_executed / progress_message.total_queries * 100);
-
-              last_response_length += message.length;
             }
           }
       ).then(response => {
@@ -206,8 +192,14 @@ export default {
           return;
         }
 
-        // strip previous message
-        let response_data = JSON.parse(response.data.substr(last_response_length));
+        let response_data = vue_instance.getLastResultOfOutputBuffer(response.data);
+        if(!response_data) {
+          vue_instance.import_result = {type: 'error', message: 'Could not read server response'};
+          scroll(0, 0);
+          this.is_importing_data   = false;
+          this.progress_bar.active = false;
+          return;
+        }
 
         this.query_results = Object.freeze(response_data.query_results);
 
@@ -224,6 +216,22 @@ export default {
 
     handleFileUpload() {
       this.import_file = this.$refs.importfile.files[0];
+    },
+
+    getLastResultOfOutputBuffer(message) {
+      // the api backend will buffer out the progress each 0.5 second, but each new buffer output is the full response
+      // each new buffered output is a json encoded array, like [{'progress': 10}]
+      // build an array around the message
+      message = '[' + message + ']';
+      // separate each output, this way it will be a valid array
+      message = message.replaceAll('][', '],[');
+      
+      let messages = JSON.parse(message);
+      if (!messages || messages.length === 0) {
+        return;
+      }
+
+      return messages[messages.length - 1][0];
     }
 
   },

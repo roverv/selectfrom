@@ -96,17 +96,18 @@ class ImportDatabaseAction extends Action
         ];
 
         $start_time = microtime(true);
-        $passed_time_step = 0;
+        $output_every_ms = 20; // 0.2 sec
+        $passed_time_step_ms = $output_every_ms;
         foreach ($queries as $query) {
 
             $query_progress['queries_executed']++;
 
             // time passed in microseconds
-            $time_passed = (microtime(true) - $start_time) * 100;
-            // only output every 0.1 sec (10 microseconds)
-            if(floor($time_passed / 10) > $passed_time_step) {
+            $time_passed_ms = (microtime(true) - $start_time) * 100;
+            // only output every x micro seconds
+            if($time_passed_ms > $passed_time_step_ms) {
                 $body->write(json_encode([$query_progress]));
-                $passed_time_step = floor($time_passed / 10);
+                $passed_time_step_ms += $output_every_ms;
             }
 
             if (empty(trim($query))) {
@@ -140,7 +141,7 @@ class ImportDatabaseAction extends Action
             $return_data['query_results'][] = $result_data;
         }
 
-        $body->write(json_encode($return_data));
+        $body->write(json_encode([$return_data]));
 
         return $response;
     }
