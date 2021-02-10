@@ -223,15 +223,13 @@
                     </svg>
                   </label>
                 </td>
-                <td class="table-data-row" v-for="(column_name, index) in columns"
-                    @click.ctrl="toggleRowSidebar(row_index)"
-                    @click="$event.target.focus()" tabindex="1"
+                <td class="table-data-row" v-for="(column_name, index) in columns" @click="$event.target.focus()" tabindex="1"
                     :class="{ ' sticky-first-row-cell' : (index == 0)}">
                   <span v-if="row[column_name.Field] == null" class="null-value"><i>NULL</i></span>
                   <router-link v-else-if="columns_with_foreign_key[index] !== false" class="link"
                                :to="{ name: 'tablewithcolumnvalue', params: {database: active_database, tableid: columns_with_foreign_key[index].reference_table, column: columns_with_foreign_key[index].reference_column_name, comparetype: 'is', value: row[column_name.Field]}}">{{ row[column_name.Field] }}</router-link>
-                  <span v-else-if="shouldTruncateField(column_name.Type)"
-                        :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(20) }}</span>
+                  <span v-else-if="shouldTruncateField(column_name.Type)" @click="swapTruncatedText($event)"
+                        :title="row[column_name.Field]">{{ row[column_name.Field] | truncate(cell_text_display_limit) }}</span>
                   <span v-else>{{ row[column_name.Field] }}</span>
                 </td>
               </tr>
@@ -242,7 +240,7 @@
             <div class="row-actions sticky bottom-0 left-0 z-30 w-full"
                  v-if="tabledata.length > 0 && selected_rows.length > 0">
 
-              <div class="py-3 px-3  flex items-center bg-dark-600 text-white">
+              <div class="py-3 px-3 flex items-center bg-dark-600 text-white">
 
                 <div class="font-bold mr-6">
                   {{ selected_rows.length }} rows
@@ -614,6 +612,7 @@ export default {
     },
 
     shouldTruncateField(column_type) {
+      if(this.cell_text_display_limit === 0) return false;
       if (column_type.includes('text') || column_type.includes('varchar') || column_type.includes('blob')) {
         return true;
       }
@@ -1015,7 +1014,11 @@ export default {
       };
 
       this.selected_rows = [];
-    }
+    },
+
+    swapTruncatedText($event) {
+      $event.target.innerHTML = $event.target.getAttribute('title');
+    },
 
   },
 

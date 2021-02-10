@@ -89,6 +89,7 @@
                     <span v-if="cell === null" class="null-value"><i>NULL</i></span>
                     <router-link v-else-if="query_results_primary_key_columns[query_result_index][index] !== false" class="link"
                                  :to="{ name: 'tablewithcolumnvalue', params: {database: active_database, tableid: query_results_primary_key_columns[query_result_index][index], column: 'primarykey', comparetype: 'is', value: cell}}">{{ cell }}</router-link>
+                    <span v-else-if="shouldTruncateField(query_result.columns_meta[index].native_type)" :title="cell" @click="swapTruncatedText($event)">{{ cell | truncate(cell_text_display_limit) }}</span>
                     <span v-else>{{ cell }}</span>
                   </td>
                 </tr>
@@ -154,6 +155,15 @@
     filters: {
       formatSeconds: function (seconds) {
         return number_format(seconds, 3, '.', '');
+      },
+      truncate: function (value, limit) {
+        if (!value) return value;
+        if (value.length > limit) {
+          value = value.replace(/(\r\n|\n|\r)/gm, ""); // remove line breaks
+          value = value.substring(0, limit) + '...';
+        }
+
+        return value
       }
     },
 
@@ -215,6 +225,10 @@
 
       last_key() {
         return this.$store.getters["queryhistory/last_key"];
+      },
+
+      cell_text_display_limit() {
+        return this.$store.getters["settings/getSetting"]('cell_text_display_limit');
       },
 
       query_result_summary_success() {
@@ -327,6 +341,18 @@
 
       formatQuery() {
         window.editor.setValue(sqlFormatter.format(window.editor.getValue()))
+      },
+
+      shouldTruncateField(column_type) {
+        if(this.cell_text_display_limit === 0) return false;
+        if (column_type === 'BLOB' || column_type === 'VAR_STRING' || column_type === 'STRING') {
+          return true;
+        }
+        return false;
+      },
+
+      swapTruncatedText($event) {
+        $event.target.innerHTML = $event.target.getAttribute('title');
       },
 
     }
