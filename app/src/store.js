@@ -70,9 +70,17 @@ export default new Vuex.Store({
 
   actions: {
     refreshTables() {
-      this.dispatch("tables/get");
+      // in some cases we want to wait for the table list data to be refreshed, we can use the returned promise
+      return new Promise((resolve, reject) => {
+        this.dispatch("tables/get").then(response => {
+          resolve(response);
+        }, error => {
+          reject(error);
+        })
+      });
       this.dispatch("tables/getWithColumns");
     },
+
     refreshDatabases() {
       this.dispatch("databases/get");
     },

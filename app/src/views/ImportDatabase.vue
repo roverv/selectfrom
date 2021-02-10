@@ -225,7 +225,7 @@ export default {
       message = '[' + message + ']';
       // separate each output, this way it will be a valid array
       message = message.replaceAll('][', '],[');
-      
+
       let messages = JSON.parse(message);
       if (!messages || messages.length === 0) {
         return;

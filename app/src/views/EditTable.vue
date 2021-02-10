@@ -402,10 +402,12 @@ export default {
             message: 'Table created',
             query: api_result.query
           });
-          this.$store.dispatch('refreshTables');
-          vue_instance.$router.push({
-            name: 'table',
-            params: {database: this.active_database, tableid: vue_instance.table_name}
+          this.$store.dispatch('refreshTables').then(response => {
+            // we wait for the ajax call to finish, because the refresh fetches data which is needed to show the new table page
+            vue_instance.$router.push({
+              name: 'table',
+              params: {database: this.active_database, tableid: vue_instance.table_name}
+            });
           });
         } else if (api_result.result == 'success') {
           this.$store.commit("flashmessage/ADD_FLASH_MESSAGE", {
@@ -413,11 +415,13 @@ export default {
             message: 'Table updated',
             query: api_result.query
           });
-          this.$store.dispatch('refreshTables');
-          vue_instance.$router.push({
-            name: 'structure',
-            params: {database: this.active_database, tableid: vue_instance.table_name}
+          this.$store.dispatch('refreshTables').then(response => {
+            vue_instance.$router.push({
+              name: 'structure',
+              params: {database: this.active_database, tableid: vue_instance.table_name}
+            });
           });
+
         }
         scroll(0, 0);
       }).catch(error => {
