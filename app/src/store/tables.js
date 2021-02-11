@@ -56,7 +56,10 @@ export default {
         return state.tables_with_primary_keys[table];
       }
       return false;
-    }
+    },
+    getTable: (state) => (table) => {
+      return state.tables.find(table_data => table_data.name == table);
+    },
   },
   mutations: {
     [FETCHING_TABLES](state) {

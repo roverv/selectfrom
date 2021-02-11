@@ -66,12 +66,16 @@ export default {
       return this.$store.state.nodes_skip_on_key;
     },
     is_view() {
-      let current_table_data = this.tables.find(table_data => table_data.name == this.tableid);
+      let current_table_data = this.$store.getters["tables/getTable"](this.tableid);
+      if(typeof current_table_data === 'undefined') return false; // if refreshTables is not finished yet
+
       if (current_table_data.type == 'VIEW') return true;
       return false;
     },
     has_foreign_key_support() {
-      let current_table_data = this.tables.find(table_data => table_data.name == this.tableid);
+      let current_table_data = this.$store.getters["tables/getTable"](this.tableid);
+      if(typeof current_table_data === 'undefined') return false; // if refreshTables is not finished yet
+
       if (current_table_data.has_foreign_key_support === false) return false;
       return true;
     },

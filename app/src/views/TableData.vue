@@ -921,8 +921,11 @@ export default {
           message: 'Table ' + vue_instance.tableid + ' truncated.',
           query: response.data.query,
         });
-        this.$store.dispatch('refreshTables');
-        this.refreshPage();
+        this.$store.dispatch('refreshTables').then(response => {
+          // we wait for the ajax call to finish, because the refresh fetches data which is needed to show the new table page
+          this.refreshPage();
+        });
+
       }).catch(error => {
         this.handleApiError(error);
       })
