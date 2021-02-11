@@ -33,8 +33,8 @@
       <ApiError :key="$route.fullPath + $store.state.reloadMainComponentKey"></ApiError>
     </div>
 
-    <div class="app-sidebar-navigation h-screen">
-      <MainNavigation v-on:SwitchTheme="SwitchTheme"></MainNavigation>
+    <div class="app-sidebar-navigation h-screen" v-if="is_authenticated" >
+      <MainNavigation></MainNavigation>
     </div>
 
     <div class="app-sidebar-tables py-5 h-screen">
@@ -139,6 +139,10 @@
 
       do_not_show_welcome_message() {
         return this.$store.getters["settings/getSetting"]('do_not_show_welcome_message');
+      },
+
+      is_authenticated() {
+        return this.$store.state.authenticated;
       },
 
       a_modal_is_open() {
@@ -269,10 +273,6 @@
             this.$router.push({name: 'database'});
             break;
         }
-      },
-
-      forceupdate() {
-        this.$forceUpdate();
       },
 
       SwitchTheme(theme_name) {
