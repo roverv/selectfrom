@@ -233,34 +233,34 @@
         let row_id   = '';
 
         if (has_id) {
-          let search_values = this.search_value.split("#");
+          let search_values = this.splitOnceBy(this.search_value, '#');
           table_id          = search_values[0];
           column            = 'id';
           row_id            = search_values[1];
         } else if (has_column) {
           if (this.search_value.includes("%")) {
-            let search_values  = this.search_value.split(".");
-            let data_values    = search_values[1].split("%");
+            let search_values = this.splitOnceBy(this.search_value, '.');
+            let data_values = this.splitOnceBy(search_values[1], '%');
             table_id           = search_values[0];
             column             = data_values[0];
             column_value       = data_values[1];
             value_compare_type = 'like';
 
           } else if (this.search_value.includes("=")) {
-            let search_values  = this.search_value.split(".");
-            let data_values    = search_values[1].split("=");
+            let search_values = this.splitOnceBy(this.search_value, '.');
+            let data_values = this.splitOnceBy(search_values[1], '=');
             table_id           = search_values[0];
             column             = data_values[0];
             column_value       = data_values[1];
             value_compare_type = 'is';
 
           } else if (this.column_split_value == '.') {
-            let search_values = this.search_value.split(".");
+            let search_values = this.splitOnceBy(this.search_value, '.');
             table_id          = search_values[0];
             column            = search_values[1];
 
           } else if (this.column_split_value == '|') {
-            let search_values = this.search_value.split("|");
+            let search_values = this.splitOnceBy(this.search_value, '|');
             table_id          = search_values[0];
             column            = search_values[1];
           }
@@ -401,6 +401,11 @@
       isActive(index) {
         return index === this.current
       },
+
+      splitOnceBy(value, divider) {
+        let position_of_first_divider = value.indexOf(divider);
+        return [value.slice(0,position_of_first_divider), value.slice(position_of_first_divider+1)];
+      }
 
     },
 
