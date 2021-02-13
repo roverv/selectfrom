@@ -3,12 +3,6 @@
 
     <ul class="pr-2 mt-12 w-64 mr-8">
 
-      <li class="">
-        <router-link :to="{ name: 'settings' }">
-          Information
-        </router-link>
-      </li>
-
       <li class="active">
         <router-link :to="{ name: 'settings' }">
           Settings
