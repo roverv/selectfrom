@@ -112,7 +112,6 @@
 <script>
 
   import RowSidebar from "@/components/RowSidebar";
-  import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
   import CodeMirror from 'codemirror/lib/codemirror.js';
   import 'codemirror/lib/codemirror.css';
   import "codemirror/mode/sql/sql.js";
@@ -148,7 +147,6 @@
     },
 
     mixins: [
-      TableKeyNavigation,
       ApiMixin
     ],
 
