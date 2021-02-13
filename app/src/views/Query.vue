@@ -97,7 +97,7 @@
               </table>
 
               <row-sidebar :sidebarisopen="sidebarisopen" v-on:closeRowSidebar="closeRowSidebar"
-                           :rowdata="sidebar_row_data" :columndata="sidebar_column_data" :from="query"
+                           :rowdata="sidebar_row_data" :columndata="sidebar_column_data" from="query"
                            :columntabledata="sidebar_column_table_data"></row-sidebar>
             </div>
 
