@@ -319,7 +319,6 @@
 
 import TableNav from '@/components/TableNav.vue'
 import TableDataMeta from '@/components/TableDataMeta.vue'
-import TableKeyNavigation from '@/mixins/TableKeyNavigation.js'
 import RowSidebar from "@/components/RowSidebar";
 import FlashMessage from "@/components/FlashMessage";
 import Spinner from "@/components/Spinner";
@@ -376,7 +375,6 @@ export default {
   },
 
   mixins: [
-    TableKeyNavigation,
     ConfirmModalMixin,
     ApiMixin,
   ],
@@ -592,16 +590,6 @@ export default {
           // DOM updated
           if (vue_instance.column && vue_instance.tabledata.length > 0) {
             vue_instance.gotocolumn(vue_instance.column);
-          }
-
-          // set focus on first cell, for cell navigation with keyboard
-          if (vue_instance.tabledata.length > 0) {
-            let cell_nr = 1;
-            if (vue_instance.column) {
-              let obj = vue_instance.columns.find(column_object => column_object.Field.toLowerCase() == vue_instance.column.toLowerCase());
-              cell_nr = vue_instance.columns.indexOf(obj) + 1; // set the focus on the same column as the column highlight
-              vue_instance.$refs['datatable'].getElementsByTagName('tbody')[0].rows[0].cells[cell_nr].focus();
-            }
           }
         });
 

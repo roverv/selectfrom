@@ -302,10 +302,6 @@
             );
           }
 
-          this.$nextTick().then(function () {
-            // todo: navigation on query results???
-            // vue_instance.$refs['datatable'][0].getElementsByTagName('tbody')[0].rows[0].cells[0].focus();
-          });
           if(response.data.data.refresh_cache === true) {
             // a query has changed the cached data, refresh the cache
             this.$store.dispatch('refreshTables');

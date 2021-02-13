@@ -1,3 +1,4 @@
+/** Currently not used, i see no use case for it **/
 export default {
   methods: {
     focusCellNext($event, step) {
