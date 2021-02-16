@@ -68,7 +68,8 @@ $request = $serverRequestCreator->createServerRequestFromGlobals();
 
 // Create Error Handler
 $responseFactory = $app->getResponseFactory();
-$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+$logger = $app->getContainer()->get(LoggerInterface::class);
+$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory, $logger);
 
 // Register Middleware On Container
 $container->set('csrf', function () use ($responseFactory) {
@@ -87,7 +88,7 @@ $app->addRoutingMiddleware();
 
 // NOTE: for default PHP debugging, comment out these lines
 // Add Error Middleware
-$errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, false, false);
+$errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, true, true);
 $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 // Run App & Emit Response

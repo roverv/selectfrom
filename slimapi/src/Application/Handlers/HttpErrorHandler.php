@@ -56,6 +56,7 @@ class HttpErrorHandler extends SlimErrorHandler
             && $this->displayErrorDetails
         ) {
             $error->setDescription($exception->getMessage());
+            $this->logger->error(sprintf('%s:%s - %s', $exception->getFile(), $exception->getLine(), $exception->getMessage()));
         }
 
         $payload = new ActionPayload($statusCode, null, $error);
