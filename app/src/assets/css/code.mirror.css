@@ -1,6 +1,6 @@
 .cm-s-default.CodeMirror {
-  @apply bg-light-300 outline-none border border-light-300 text-gray-300 text-xl h-auto text-gray-900 ;
-  /*@apply bg-light-300 outline-none border border-light-300 text-dark-600 text-xl;*/
+  @apply bg-light-300 outline-none border border-light-300 text-gray-300 h-auto text-gray-900 ;
+  font-size: 17px; /* rem font-size gets way too big on firefox */
 }
 
 .cm-s-default .CodeMirror-gutters {
@@ -29,6 +29,7 @@
 .CodeMirror-vscrollbar,
 .CodeMirror-hscrollbar {
   scrollbar-width: 11px;
+  scrollbar-width: thin; /* firefox */
   scrollbar-height: 8px;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
   @apply outline-none;

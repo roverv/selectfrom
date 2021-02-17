@@ -20,6 +20,7 @@ html {
   --scrollbarBG:   white;
   --thumbBG:       #90A4AE;
   scrollbar-width: 12px;
+  scrollbar-width: thin; /* firefox */
   scrollbar-height: 12px;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
 }
@@ -233,15 +234,16 @@ a:hover {
 
 .scroll-bar {
   scrollbar-width: 7px;
-  scrollbar-color: var(--thumbBG) var(transparent);
+  scrollbar-width: thin; /* firefox */
+  scrollbar-color: var(--thumbBG) transparent;
 }
 
 .scroll-bar::-webkit-scrollbar-track {
-  background: var(transparent);
+  background: transparent;
 }
 
 .scroll-bar::-webkit-scrollbar-thumb {
   background-color: var(--thumbBG);
   border-radius:    5px;
-  border:           3px solid var(transparent);
+  border:           3px solid transparent;
 }
