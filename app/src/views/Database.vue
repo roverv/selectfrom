@@ -200,7 +200,7 @@
                 <span v-if="table.size" v-html="showTableSize(table.size)"></span>
               </td>
               <td class="table-data-row" @click="$event.target.focus()">
-                <span v-if="table.rows">{{ table.rows | formatNumber }}</span>
+                <span v-if="table.amount_rows">{{ table.amount_rows | formatNumber }}</span>
               </td>
               <td class="table-data-row" @click="$event.target.focus()">
                 <span v-if="table.auto_increment">{{ table.auto_increment | formatNumber }}</span>
@@ -325,7 +325,7 @@ export default {
         "engine": 'Engine',
         "collation": 'Collation',
         "size": 'Size',
-        "rows": 'Rows',
+        "amount_rows": 'Rows',
         "auto_increment": 'Auto_increment',
       };
     },
@@ -353,7 +353,7 @@ export default {
       let vue_instance = this;
 
       // sort numeric
-      if (this.order_by == 'size' || this.order_by == 'rows' || this.order_by == 'auto_increment') {
+      if (this.order_by == 'size' || this.order_by == 'amount_rows' || this.order_by == 'auto_increment') {
         ordered_tables.sort(function (a, b) {
           return reverse * (a[vue_instance.order_by] - b[vue_instance.order_by]);
         });

@@ -17,7 +17,7 @@ class ListSizeDataTableAction extends Action
         $pdo = $this->request->getAttribute('pdo_instance');
 
         $rows = $pdo->query(
-          "SELECT TABLE_NAME as name, TABLE_ROWS as rows, (DATA_LENGTH + INDEX_LENGTH) as size, AUTO_INCREMENT as auto_increment FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME"
+          "SELECT TABLE_NAME as name, TABLE_ROWS as amount_rows, (DATA_LENGTH + INDEX_LENGTH) as size, AUTO_INCREMENT as auto_increment FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME"
         )->fetchAll();
 
         return $this->respondWithData($rows);

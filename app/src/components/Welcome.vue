@@ -10,7 +10,7 @@
         <hr class="border-light-100 mb-4">
 
         <div>
-          <p class="mb-3">To you get you started, here are some tips to navigate through the interface.</p>
+          <p class="mb-3">To get started, here are some tips to navigate through the interface.</p>
           <p class="mb-5">Hover to the far left of the window to open the main menu. There you will find the default
             navigation and the settings and help pages.</p>
 
