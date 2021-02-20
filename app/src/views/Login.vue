@@ -58,6 +58,8 @@ export default {
 
   mounted() {
     this.$refs.username.focus();
+    // @demo: for the demo
+    // this.submitLogin();
   },
 
   methods: {
@@ -70,6 +72,10 @@ export default {
       params.append('host', this.host);
       params.append('username', this.username);
       params.append('password', this.password);
+
+      // @demo: for the demo
+      // params.append('username', 'deb113236n2_admin');
+      // params.append('password', 'demo');
 
       this.$http.post('connect', params).then(response => {
         if (response.data.data.result == 'success') {
