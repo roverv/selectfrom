@@ -81,7 +81,7 @@ class QueryHelper
             $sql = trim($sql.' '.$row);
         }
         if (strlen($sql) > 0) {
-            $queries[] = $row;
+            $queries[] = $sql;
         }
 
         fclose($file);
