@@ -76,9 +76,9 @@ export default new Vuex.Store({
           resolve(response);
         }, error => {
           reject(error);
-        })
+        });
+        this.dispatch("tables/getWithColumns");
       });
-      this.dispatch("tables/getWithColumns");
     },
 
     refreshDatabases() {
