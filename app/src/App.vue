@@ -65,6 +65,7 @@
   import Welcome from "@/components/Welcome";
   import ContextMenu from "@/components/ContextMenu";
   import InventoryModal from "@/components/InventoryModal";
+  import ApiMixin from "@/mixins/Api";
 
   export default {
 
@@ -83,7 +84,15 @@
     },
 
     created() {
-      this.$store.dispatch("databases/get");
+      let vue_instance = this;
+      this.$store.dispatch("databases/get").then(response => {
+        // if the response is null, the api call gave an error, this is most likely the case when the users session
+        // has expired (eg when the users comes back to the app after a day)
+        if(response === null) {
+          this.handleApiError(vue_instance.$store.getters['databases/error']);
+        }
+      });
+
       this.setCsrfTokenOnRequests();
     },
 
@@ -127,6 +136,10 @@
       QueryHistory,
       ContextMenu,
     },
+
+    mixins: [
+      ApiMixin
+    ],
 
     computed: {
       active_database() {
